@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Index from "../components/views/index.vue";
-import Session from "../components/views/session.vue";
-import Procs from "../components/views/procs.vue";
-import Constructor from "../components/views/constructor.vue";
+import Index from "@/components/views/index.vue";
+import Session from "@/components/views/session.vue";
+import Procs from "@/components/views/procs.vue";
+import Constructor from "@/components/views/constructor.vue";
 
 const routes = [
     {
@@ -29,7 +29,7 @@ const routes = [
 
 const router = createRouter({
     routes,
-    // history: createWebHistory(process.env.BASE_URL),
+    history: createWebHistory(import.meta.env.BASE_URL),
 });
 
 export default router;

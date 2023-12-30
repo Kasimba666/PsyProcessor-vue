@@ -3,7 +3,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <PpConstructor v-model="process" @changed="processChanged"/>
+                    <PpConstructor v-model:process="process" @changed="processChanged"/>
 
                 </div>
             </div>
@@ -12,13 +12,10 @@
 </template>
 
 <script>
-    import PpConstructor from "src/components/PpConstructor/PpConstructor.vue";
+    import PpConstructor from "@/components/PpConstructor/PpConstructor.vue";
     import {mapState} from "vuex";
 
     export default {
-        head: {
-            title: 'PsyProcessor : Конструктор процессов'
-        },
         name: "Constructor",
         components: {PpConstructor},
         props: [],
@@ -80,5 +77,6 @@
     .Constructor {
         width: 100%;
         height: auto;
+        min-height: 100dvh;
     }
 </style>

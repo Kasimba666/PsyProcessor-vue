@@ -98,7 +98,7 @@
 </template>
 
 <script>
-    import {nodeTypes} from "/src/assets/js/const.js"
+    import {nodeTypes} from "@/assets/js/const.js"
 
     export default {
         name: "ppcNode",

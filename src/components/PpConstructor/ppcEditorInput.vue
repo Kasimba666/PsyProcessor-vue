@@ -1,25 +1,25 @@
 <template>
-    <div class="ppcEditorInput v-if=!!value">
-        <label class="title" :for="value.key">{{value.inpLabel}}</label>
-        <div v-if="value.inpType==='number'">
-            <input type="number" :id="value.inpLabel" min="0"
+    <div class="ppcEditorInput v-if=!!attr">
+        <label class="title" :for="attr.key">{{attr.inpLabel}}</label>
+        <div v-if="attr.inpType==='number'">
+            <input type="number" :id="attr.inpLabel" min="0"
                    v-model="model"/>
         </div>
-        <div v-else-if="value.inpType==='select'">
-            <select v-model="model" v-if="Array.isArray(value.options)"
-                    :id="value.inpLabel"
+        <div v-else-if="attr.inpType==='select'">
+            <select v-model="model" v-if="Array.isArray(attr.options)"
+                    :id="attr.inpLabel"
                     >
-                <option :value="opt.value" v-for="opt in value.options">{{opt.title}}</option>
+                <option :value="opt.value" v-for="opt in attr.options">{{opt.title}}</option>
             </select>
-            <select v-model="model" v-else-if="typeof(value.options)==='string' && !![value.options]"
-                    :id="value.inpLabel+'--str'"
+            <select v-model="model" v-else-if="typeof(attr.options)==='string' && !![attr.options]"
+                    :id="attr.inpLabel+'--str'"
                     >
-                <option :value="opt.value" v-for="opt in this[value.options]">{{opt.title}}</option>
+                <option :value="opt.value" v-for="opt in this[attr.options]">{{opt.title}}</option>
             </select>
             <div class="error" v-else>Bad select ('options' undefined)</div>
         </div>
         <div v-else>
-            <input type="text" :id="value.inpLabel"
+            <input type="text" :id="attr.inpLabel"
                    v-model="model"/>
         </div>
     </div>
@@ -29,15 +29,15 @@
     export default {
         name: "ppcEditorInput",
         components: {},
-        props: ['value', 'process'],
+        props: ['attr', 'process'],
         data() {
             return {}
         },
         computed: {
             model:{
-                get(){return this.value.value},
+                get(){return this.attr.value},
                 set(v){
-                    this.$emit('input', {...this.value, value: v});
+                    this.$emit('input', {...this.attr, value: v});
                 },
             },
             userVars(){

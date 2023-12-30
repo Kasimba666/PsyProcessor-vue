@@ -20,16 +20,16 @@
                     </div>
                     <div v-for="(attr, i) in attrs">
                         <ppcEditorInput
-                            v-model="attr.val"
+                            v-model:attr="attr.val"
                             @input="v=>{updateAttrs(attr.key, v)}"
-                            :process="value"
+                            :process="process"
                         />
                     </div>
                 </div>
             </div>
 
             <div class="struct-panel">
-                <!--<div class="head">{{'Процесс:'}} {{value.processTitle}}</div>-->
+                <!--<div class="head">{{'Процесс:'}} {{process.processTitle}}</div>-->
                 <div class="head">
                     <span>{{'Процесс:'}}</span>
                     <input class="head-input"
@@ -37,7 +37,7 @@
                            v-model="processTitle"
                            @change="processChanged"
                     />
-                    <!--{{value.processTitle}}-->
+                    <!--{{process.processTitle}}-->
                     <div class="pp-tabs head-tabs">
                         <div class="pp-tab" @click="activeTab=0"
                              :class="{active:activeTab===0}">
@@ -57,8 +57,8 @@
                 <div class="body pt-3 selected">
                     <ppcNode class="selected"     v-if="activeTab===0"
                              ref="rootNode"
-                             :node="value.rootNode"
-                             :owner="value"
+                             :node="process.rootNode"
+                             :owner="process"
                              :createNodeFunc="createNewNode"
                              @select="selectNode"
                              @changed="processChanged"
@@ -66,7 +66,7 @@
                     />
                     <div class="variables-wrap"  v-else-if="activeTab===1">
                         Переменные процесса
-                        <div class="var-item" v-for="(v, i) in value.vars">
+                        <div class="var-item" v-for="(v, i) in process.vars">
                             <input class="head-input"
                                    type="text"
                                    v-model="v.name"
@@ -79,7 +79,7 @@
                     </div>
                     <div class="code-wrap"  v-else>
                         <h4>Код просесса</h4>
-                        <pre class="code-view">{{value}}</pre>
+                        <pre class="code-view">{{process}}</pre>
                     </div>
                 </div>
             </div>
@@ -96,7 +96,7 @@
     export default  {
         name: "PpConstructor",
         components: {ppcEditorInput, ppcNode},
-        props: ['value'],
+        props: ['process'],
         data() {
             return {
                 currentNode: null,
@@ -114,10 +114,10 @@
             },
             processTitle: {
                 get() {
-                    return this.value.processTitle;
+                    return this.process.processTitle;
                 },
                 set(v) {
-                    this.$emit('input', {...this.value, processTitle: v});
+                    this.$emit('input', {...this.process, processTitle: v});
                 }
             },
         },
@@ -206,7 +206,7 @@
                 return a;
             },
             createNewVar(){
-                this.value.vars.push({
+                this.process.vars.push({
                     name: '$newVar',
                     value: '',
                 });
@@ -226,7 +226,8 @@
         },
         mounted() {
 //            vm = this;
-            this.currentNode = this.value.rootNode;
+            console.log('process >> ',this.process);
+            this.currentNode = this.process.rootNode;
             this.$el.addEventListener('unselectAllNodes', this.unselectAllChildren);
             console.log('PpConstructor::this =', this);
         },
