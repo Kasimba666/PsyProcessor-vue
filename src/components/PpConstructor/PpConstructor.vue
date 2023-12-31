@@ -91,6 +91,7 @@
     import ppcEditorInput from "./ppcEditorInput.vue";
     import ppcNode from "./ppcNode.vue"
     import {nodeTypes} from "/src/assets/js/const.js"
+    import {reactive} from "vue";
 
 //    let vm = null;
     export default  {
@@ -135,7 +136,7 @@
                     type: type,
                     attrs: this.createAttrs(type),
                     list: [],
-                    forKey: ( Math.random()*(1<<29 - 1) % 2047 ).toString(16),
+                    forKey: ( ~~(Math.random()*32767)*(1<<9 - 1) % 30477777 ).toString(16),
                 };
             },
             changeNodeType() {
@@ -154,7 +155,7 @@
              * @param type String
              */
             createAttrs(type) {
-                let a = {
+                let a = reactive({
                     nodeName: {
                         inpType: 'text',
                         inpLabel: 'Название узла (optional)',
@@ -166,37 +167,40 @@
                         value: 1,
                         min: 1,
                     },
-                };
+                });
                 switch (type) {
                     case 'quest': {
-                        this.$set(a, 'quest', {
+                        // this.$set(a, 'quest', {
+                        a.quest = {
                             inpType: 'text',
                             inpLabel: 'Вопрос',
                             value: '',
-                        });
-                        this.$set(a, 'out', {
+                        };
+                        // this.$set(a, 'out', {
+                        a.out = {
                             inpType: 'select',
                             inpLabel: 'Output vars',
                             value: null,
                             options: 'userVars'
-                        });
+                        };
                         break;
                     }
                     case 'loopList': {
-                        this.$set(a, 'loopCount', {
+                        // this.$set(a, 'loopCount', {
+                        a.loopCount = {
                             inpType: 'number',
                             inpLabel: 'Количество циклов',
                             value: 0, // ноль означает бесконечный цикл
                             min: 0,
-                        });
+                        };
                         break;
                     }
                     case 'randList': {
-                        this.$set(a, 'loopCount', {
+                        a.loopCount = {
                             inpType: 'number',
                             inpLabel: 'Количество циклов',
                             value: 1,  // ноль означает бесконечный цикл
-                        });
+                        };
                         break;
                     }
                     default: {
@@ -252,6 +256,7 @@
             min-height: 50vh;
             font-size: 13px;
             background-color: hsl(50, 30%, 98%);
+            text-align: start;
 
             & > * {
                 min-height: 100%;

@@ -27,20 +27,23 @@
 
             <div class="node-list" :class="node.type">
 
-                <div class="node-item" v-for="(child, idx) in node.list" :key="child.forKey">
-                    <div class="insert-bar">
-                        <div class="insert-button">
-                            <i class="ico ico-plus"></i>
-                        </div>
-                        <div class="add-list">
-                            <div class="add-item" v-for="mi in types.arr"
-                                 @click="addNode(mi.value, idx)">
-                                {{mi.title}}
-                            </div>
-                        </div>
-                    </div>
+                <div
+                        class="node-item"
+                        v-for="(child, idx) in node.list"
+                        :key="child.forKey">
+<!--                    <div class="insert-bar">-->
+<!--                        <div class="insert-button">-->
+<!--                            <i class="ico ico-plus"></i>-->
+<!--                        </div>-->
+<!--                        <div class="add-list">-->
+<!--                            <div class="add-item" v-for="mi in types.arr"-->
+<!--                                 @click="addNode(mi.value, idx)">-->
+<!--                                {{mi.title}}-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
                     <div class="pay-field" v-if="node.type==='randList'"
-                         @click.stop="$children[idx].focus">
+                         @click.stop="childFocus(idx)">
                         <input class="pay-input"
                                type="text"
                                v-model="child.attrs.pay.value"
@@ -63,6 +66,7 @@
                         @select="select"
                         @changed="processChanged"
                         :index="idx"
+                        :ref="'child_'+child.forKey"
                     />
 
                 </div>
@@ -119,6 +123,11 @@
             }
         },
         methods: {
+            childFocus(idx) {
+                let temp = Object.values(this.$refs)
+                // console.log('child focus', temp);
+                temp[idx][0].focus();
+            },
             processChanged(){
                 this.$emit('changed');
             },
@@ -165,7 +174,7 @@
                 console.log('unselect !', this.index);
                 this.focused = false;
                 this.selectedChild = -1;
-                this.$children.forEach(v => v.unselect());
+                Object.values(this.$refs).forEach(v => v[0].unselect());
             },
             unselectAllNodes(){
                 console.log('!! unselectAllNodes  fired !!');
@@ -198,7 +207,7 @@
             }
         },
         mounted(){
-
+            console.log("ppcNode: this >>", this);
         },
     }
 </script>
