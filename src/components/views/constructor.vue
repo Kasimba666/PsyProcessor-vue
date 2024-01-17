@@ -14,6 +14,7 @@
 <script>
     import PpConstructor from "@/components/PpConstructor/PpConstructor.vue";
     import {mapState} from "vuex";
+    import {reactive} from "vue";
 
     export default {
         name: "Constructor",
@@ -21,7 +22,7 @@
         props: [],
         data() {
             return {
-                process: {
+                process: reactive({
                     processTitle: "Новый процесс",
                     processCategory: "common",
                     type: 'process',
@@ -47,7 +48,7 @@
                         },
                         list: [],
                     }
-                },
+                }),
                 debounceTime: 800,
                 debounceHandle: null,
 
@@ -57,10 +58,10 @@
             ...mapState(['currentEditableProcess']),
         },
         methods: {
-            processChanged(){
+            processChanged(newValue){
                 if(this.debounceHandle) { clearTimeout(this.debounceHandle); }
                 this.debounceHandle = setTimeout(()=>{
-                        this.$store.commit('currentEditableProcess', this.process);
+                        this.$store.commit('currentEditableProcess', newValue);
                         this.debounceHandle = null;
                     }, this.debounceTime);
             },

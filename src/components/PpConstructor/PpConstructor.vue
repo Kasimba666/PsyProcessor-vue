@@ -21,7 +21,7 @@
                     <div v-for="(attr, i) in attrs">
                         <ppcEditorInput
                             v-model:attr="attr.val"
-                            @input="v=>{updateAttrs(attr.key, v)}"
+                            @update:attr="v=>{updateAttrs(attr.key, v)}"
                             :process="process"
                         />
                     </div>
@@ -129,7 +129,8 @@
             updateAttrs(key, value) {
                 console.log("updateAttrs::", arguments);
                 this.currentNode.attrs = {...this.currentNode.attrs, [key]: value};
-                this.$emit('changed');
+
+                this.$emit('changed', this.process);
             },
             createNewNode(type) {
                 return {

@@ -1,4 +1,6 @@
 import {createStore} from "vuex";
+import createPersistedState from 'vuex-persistedstate';
+
 export default createStore({
     state: {
         screen: {},
@@ -54,6 +56,9 @@ export default createStore({
         //    return state.walletList.reduce((s, v) => s += v.confirmed_balance * v.currency_price_usd, 0)
         //},
     },
-    plugins: [],
+    plugins: [createPersistedState({
+        key: 'ppVuexData',
+        // paths: ['currentEditableProcess']
+    })],
 
 })

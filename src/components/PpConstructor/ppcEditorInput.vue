@@ -30,6 +30,7 @@
         name: "ppcEditorInput",
         components: {},
         props: ['attr', 'process'],
+        emits: ['update:attr'],
         data() {
             return {}
         },
@@ -37,7 +38,8 @@
             model:{
                 get(){return this.attr.value},
                 set(v){
-                    this.$emit('input', {...this.attr, value: v});
+                    console.log("set model >>", v);
+                    this.$emit('update:attr', {...this.attr, value: v});
                 },
             },
             userVars(){
