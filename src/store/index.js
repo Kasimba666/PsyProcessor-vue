@@ -58,7 +58,7 @@ export default createStore({
     },
     plugins: [createPersistedState({
         key: 'ppVuexData',
-        // paths: ['currentEditableProcess']
+        paths: ['currentEditableProcess']
     })],
 
 })

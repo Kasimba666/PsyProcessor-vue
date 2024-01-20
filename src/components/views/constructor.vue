@@ -61,10 +61,11 @@
             processChanged(newValue){
                 if(this.debounceHandle) { clearTimeout(this.debounceHandle); }
                 this.debounceHandle = setTimeout(()=>{
-                        this.$store.commit('currentEditableProcess', newValue);
+                    this.$store.commit('currentEditableProcess', newValue);
                         this.debounceHandle = null;
                     }, this.debounceTime);
             },
+
         },
         mounted(){
             if(!!this.currentEditableProcess) {
@@ -81,3 +82,5 @@
         min-height: 100dvh;
     }
 </style>
+
+"

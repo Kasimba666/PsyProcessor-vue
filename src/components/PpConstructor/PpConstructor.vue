@@ -60,7 +60,7 @@
                              :node="process.rootNode"
                              :owner="process"
                              :createNodeFunc="createNewNode"
-                             @select="selectNode"
+                             @selectNode="selectNode"
                              @changed="processChanged"
                              :index="0"
                     />
@@ -92,6 +92,7 @@
     import ppcNode from "./ppcNode.vue"
     import {nodeTypes} from "/src/assets/js/const.js"
     import {reactive} from "vue";
+    import ppConstructor from "@/components/PpConstructor/PpConstructor.vue";
 
 //    let vm = null;
     export default  {
@@ -123,8 +124,9 @@
             },
         },
         methods: {
-            processChanged(){
-                this.$emit('changed');
+            processChanged(v){
+                // console.log('ppConstructor: ppcNode changed value >>', v);
+                this.$emit('changed', v);
             },
             updateAttrs(key, value) {
                 console.log("updateAttrs::", arguments);

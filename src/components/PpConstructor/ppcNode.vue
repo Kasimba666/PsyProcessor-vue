@@ -48,6 +48,7 @@
                                type="text"
                                v-model="child.attrs.pay.value"
                                v-number-only
+                               @input="processChanged"
                         />
                         <div class="pay-percent">
                             {{(child.attrs.pay.value/paySum*100).toFixed(2)}}%
@@ -63,10 +64,11 @@
                         :node="child"
                         :owner="node"
                         :createNodeFunc="createNodeFunc"
-                        @select="select"
+                        @selectNode="selectNode"
                         @changed="processChanged"
                         :index="idx"
                         :ref="'child_'+child.forKey"
+                        :key="'child_'+child.forKey+child.list.length"
                     />
 
                 </div>
@@ -129,7 +131,7 @@
                 temp[idx][0].focus();
             },
             processChanged(){
-                this.$emit('changed');
+                this.$emit('changed', this.owner);
             },
             addNode(type, idx){
                 if(idx===undefined) {
@@ -137,7 +139,7 @@
                 } else {
                     this.node.list.splice(idx, 0, this.createNodeFunc(type));
                 }
-                this.$emit('changed');
+                this.$emit('changed', this.owner);
             },
             removeNode(idx){
                 if(this.node.list[idx].type==='quest') {
@@ -145,7 +147,7 @@
                 } else {
                     this.node.list.splice(idx, 1, ...this.node.list[idx].list);
                 }
-                this.$emit('changed');
+                this.$emit('changed', this.owner);
             },
 //            select({i, selected}){
 //                console.log(arguments);
@@ -159,14 +161,17 @@
 //                    this.focused = true;
 //                }
 //            },
-            select({i, selected}){
-                this.$emit('select', {i:this.index, selected});
+            selectNode({i, selected}){
+                this.$emit('selectNode', {i:this.index, selected});
                     this.selectedChild = i;
                     this.focused = false;
             },
             focus(){
+                if (this.focused) {
+                    return;
+                }
                 this.unselectAllNodes();
-                this.$emit('select', {i:this.index, selected:this.node});
+                this.$emit('selectNode', {i:this.index, selected:this.node});
                 this.selectedChild = -1;
                 this.focused = true;
             },
@@ -174,7 +179,9 @@
                 console.log('unselect !', this.index);
                 this.focused = false;
                 this.selectedChild = -1;
-                Object.values(this.$refs).forEach(v => v[0].unselect());
+                if (Object.keys(this.$refs).length !== 0) {
+                    Object.values(this.$refs).forEach(v => v[0].unselect());
+                };
             },
             unselectAllNodes(){
                 console.log('!! unselectAllNodes  fired !!');
