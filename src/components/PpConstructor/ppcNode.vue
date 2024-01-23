@@ -42,16 +42,16 @@
 <!--                            </div>-->
 <!--                        </div>-->
 <!--                    </div>-->
-                    <div class="pay-field" v-if="node.type==='randList'"
+                    <div class="rate-field" v-if="node.type==='randList'"
                          @click.stop="childFocus(idx)">
-                        <input class="pay-input"
+                        <input class="rate-input"
                                type="text"
-                               v-model="child.attrs.pay.value"
+                               v-model="child.attrs.rate.value"
                                v-number-only
                                @changed="processChanged"
                         />
-                        <div class="pay-percent">
-                            {{(child.attrs.pay.value/paySum*100).toFixed(2)}}%
+                        <div class="rate-percent">
+                            {{(child.attrs.rate.value/rateSum*100).toFixed(2)}}%
                         </div>
                     </div>
 
@@ -87,9 +87,9 @@
             </div>
         </div>
         <div class="quest-container" v-else-if="node.type==='quest'">
-            <!--<input class="pay-input" v-if="owner.type==='randList'"-->
+            <!--<input class="rate-input" v-if="owner.type==='randList'"-->
                    <!--type="text"-->
-                   <!--v-model="node.attrs.pay"/>-->
+                   <!--v-model="node.attrs.rate"/>-->
             <textarea class="quest-input" type="text"
                   v-model="node.attrs.quest.value"
                   @input="processChanged"
@@ -118,9 +118,9 @@
             }
         },
         computed: {
-            paySum(){
+            rateSum(){
                 return this.node.list.reduce((s,v)=>{
-                    return s + (v.attrs.pay.value * 1);
+                    return s + (v.attrs.rate.value * 1);
                 },0);
             }
         },
@@ -275,7 +275,7 @@
                 .ppcNode {
                     flex: 1 1 auto;
                 }
-                .pay-field {
+                .rate-field {
                     flex: 0 0 auto;
                     width: 70px;
                     height: 30px;
@@ -288,7 +288,7 @@
                     margin: 4px 0px 4px 4px;
                     padding: 0px;
                     /*bc*/
-                    input.pay-input {
+                    input.rate-input {
                         flex: 0 0 auto;
                         height: 28px;
                         width: 22px;
@@ -306,7 +306,7 @@
                              border-color: hsl(50, 30%, 75%);
                          }
                     }
-                    .pay-percent {
+                    .rate-percent {
                         flex: 1 1 auto;
                         font-size: 12px;
                         /*font-weight: bold;*/
@@ -386,7 +386,7 @@
                 padding: 0px 5px 0px 5px;
                 line-height: 20px;
             }
-            .pay-input {
+            .rate-input {
                 display: block;
                 flex: 0 0 auto;
                 width: 35px;

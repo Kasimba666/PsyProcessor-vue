@@ -167,7 +167,7 @@
                         inpLabel: 'Название узла (optional)',
                         value: 'new node',
                     },
-                    pay: {
+                    rate: {
                         inpType: 'number',
                         inpLabel: 'Доля',
                         value: 1,

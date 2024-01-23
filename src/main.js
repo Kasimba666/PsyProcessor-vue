@@ -1,9 +1,12 @@
+import 'bootstrap-vue-next/dist/bootstrap-vue-next.css'
+// import '@/style.css'
+import '@/assets/css/app.scss';
+
 import { createApp } from 'vue';
-import '@/style.css'
-import '@/assets/css/app.scss'
-import App from '@/App.vue'
+import App from "@/App.vue"
 import router from "@/router/router.js";
 import store from '@/store/index.js';
+
 
 const app = createApp(App);
 

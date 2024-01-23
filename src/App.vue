@@ -1,6 +1,6 @@
 <template>
   <AppHeader />
-  <div class="app">
+  <div class="App">
     <router-view />
   </div>
   <AppFooter />
@@ -12,14 +12,14 @@ export default {
   components: {AppHeader, AppFooter}
 }
 </script>
-<style scoped>
+<style>
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-.app {
+.App {
   padding: 20px;
 }
 </style>
