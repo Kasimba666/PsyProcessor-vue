@@ -34,7 +34,7 @@
                     <span>{{'Процесс:'}}</span>
                     <input class="head-input"
                            type="text"
-                           v-model="processTitle"
+                           v-model="process.processTitle"
                            @change="processChanged"
                     />
                     <!--{{process.processTitle}}-->
@@ -56,13 +56,15 @@
                 </div>
                 <div class="body pt-3 selected">
                     <ppcNode class="selected"     v-if="activeTab===0"
-                             ref="rootNode"
                              :node="process.rootNode"
                              :owner="process"
                              :createNodeFunc="createNewNode"
                              @selectNode="selectNode"
                              @changed="processChanged"
                              :index="0"
+                             ref="rootNode"
+                             :key="'root_'+process.rootNode.list.length"
+
                     />
                     <div class="variables-wrap"  v-else-if="activeTab===1">
                         Переменные процесса
@@ -70,6 +72,7 @@
                             <input class="head-input"
                                    type="text"
                                    v-model="v.name"
+                                   @change="processChanged"
                             />
                             &nbsp;({{v.value}})
                         </div>
@@ -92,7 +95,6 @@
     import ppcNode from "./ppcNode.vue"
     import {nodeTypes} from "/src/assets/js/const.js"
     import {reactive} from "vue";
-    import ppConstructor from "@/components/PpConstructor/PpConstructor.vue";
 
 //    let vm = null;
     export default  {
@@ -114,19 +116,19 @@
                     return {key: key, val: this.currentNode.attrs[key]};
                 });
             },
-            processTitle: {
-                get() {
-                    return this.process.processTitle;
-                },
-                set(v) {
-                    this.$emit('input', {...this.process, processTitle: v});
-                }
-            },
+            // processTitle: {
+            //     get() {
+            //         return this.process.processTitle;
+            //     },
+            //     set(v) {
+            //         this.$emit('input', {...this.process, processTitle: v});
+            //     }
+            // },
         },
         methods: {
-            processChanged(v){
+            processChanged(){
                 // console.log('ppConstructor: ppcNode changed value >>', v);
-                this.$emit('changed', v);
+                this.$emit('changed', this.process);
             },
             updateAttrs(key, value) {
                 console.log("updateAttrs::", arguments);
@@ -152,7 +154,7 @@
                     ...this.currentNode.attrs,
                 };
 
-                this.$emit('changed');
+                this.$emit('changed', this.process);
             },
             /**
              *
@@ -219,14 +221,14 @@
                     value: '',
                 });
 
-                this.$emit('changed');
+                this.$emit('changed', this.process);
             },
             selectNode({i, selected}) {
                 this.currentNode = selected;
             },
             unselectAllChildren(){
                 console.log('!! unselectAllChildren  fired !!');
-                this.$refs.rootNode.unselect();
+                this.$refs.rootNode.unselectNode();
             },
         },
         watch: {

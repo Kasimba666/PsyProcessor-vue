@@ -1,6 +1,6 @@
 <template>
 
-    <div class="ppcNode" :class="[{focused},node.type]"
+    <div class="ppcNode" :class="[{focused},node.type]" v-if="!!node"
          @click.stop="focus">
          <!--@click.stop="select({i:index, selected: node})">-->
         <div class="node-container" v-if="node.type==='randList' || node.type==='loopList'">
@@ -48,7 +48,7 @@
                                type="text"
                                v-model="child.attrs.pay.value"
                                v-number-only
-                               @input="processChanged"
+                               @changed="processChanged"
                         />
                         <div class="pay-percent">
                             {{(child.attrs.pay.value/paySum*100).toFixed(2)}}%
@@ -175,12 +175,12 @@
                 this.selectedChild = -1;
                 this.focused = true;
             },
-            unselect(){
-                console.log('unselect !', this.index);
+            unselectNode(){
+                console.log('unselectNode!', this.index);
                 this.focused = false;
                 this.selectedChild = -1;
                 if (Object.keys(this.$refs).length !== 0) {
-                    Object.values(this.$refs).forEach(v => v[0].unselect());
+                    Object.values(this.$refs).forEach(v => v[0].unselectNode());
                 };
             },
             unselectAllNodes(){
