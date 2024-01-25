@@ -79,6 +79,7 @@
                 width: auto;
                 padding: 3px 10px 0;
                 font-size:13px;
+                cursor: pointer;
                 &:hover {
                      background-color: hsl(50, 50%, 98%);
                     &.nuxt-link-active {

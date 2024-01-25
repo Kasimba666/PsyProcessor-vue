@@ -8,7 +8,7 @@
         </div>
         <div class="btn-files-control">
           <button class="btn btn-outline-primary btn-custom btn-sm"
-                  @click="saves(process, file && file.name?file.name:'process', typeFile)">
+                  @click="saves(process, process.processTitle + ' ' + process.changedDt, typeFile)">
             Сохранить
           </button>
           <button class="btn btn-outline-primary btn-custom btn-sm">
@@ -81,6 +81,7 @@ export default {
   },
   methods: {
     processChanged(newValue) {
+      this.process.changedDt = (new Date()).toISOString();
       if (this.debounceHandle) {
         clearTimeout(this.debounceHandle);
       }
