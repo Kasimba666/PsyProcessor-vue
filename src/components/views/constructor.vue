@@ -82,12 +82,10 @@ export default {
   methods: {
     processChanged(newValue) {
       this.process.changedDt = (new Date()).toISOString();
-      if (this.debounceHandle) {
         clearTimeout(this.debounceHandle);
-      }
+
       this.debounceHandle = setTimeout(() => {
         this.$store.commit('currentEditableProcess', newValue);
-        this.debounceHandle = null;
       }, this.debounceTime);
     },
     saves(dataJS, filename, type) {
