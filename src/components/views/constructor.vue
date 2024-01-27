@@ -6,10 +6,10 @@
           <PpConstructor v-model:process="process" @changed="processChanged"/>
 
         </div>
-        <div class="btn-files-control">
+        <div class="files-control">
           <button class="btn btn-outline-primary btn-custom btn-sm"
-                  @click="saves(process, process.processTitle + ' ' + process.changedDt, typeFile)">
-            Сохранить
+                  @click="loadProcess">
+            Выгрузить
           </button>
           <button class="btn btn-outline-primary btn-custom btn-sm">
             <label class="add-item" for="id-input-file-2" style="margin-bottom: 0">
@@ -20,6 +20,7 @@
               Загрузить
             </label>
           </button>
+
         </div>
       </div>
     </div>
@@ -133,7 +134,7 @@ export default {
   width: 100%;
   height: auto;
   min-height: 100 dvh;
-  .btn-files-control {
+  .files-control {
     width: auto;
     display: flex;
     flex-flow: row nowrap;
