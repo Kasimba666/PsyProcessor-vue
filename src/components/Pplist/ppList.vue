@@ -1,91 +1,104 @@
 <template>
-  <div class="ppList">
-    <b-table class="table-custom"
-        striped
-             small
-             hover
-             selectable
-             bordered
-             sortable
-             select-mode="multi"
-             :items="processList"
-             :fields="fields"
-             @row-selected="onRowSelected"
-             @row-clicked="onRowClicked"
-    >
+    <div class="ppList">
+        <b-table class="table-custom"
+                 striped
+                 small
+                 hover
+                 selectable
+                 bordered
+                 sortable
+                 select-mode="multi"
+                 :items="processList"
+                 :fields="fields"
+                 @row-clicked="onRowClicked"
+        >
 
-    </b-table>
-    <div class="process-list-control">
-      <button class="btn btn-outline-primary btn-custom btn-sm"
-              @click="createNewProcess">
-        Создать
-      </button>
-      <button class="btn btn-outline-primary btn-custom btn-sm"
-              @click="changeProcess">
-        Изменить
-      </button>
-      <button class="btn btn-outline-primary btn-custom btn-sm"
-              @click="removeProcess">
-        Удалить
-      </button>
-      <button class="btn btn-outline-primary btn-custom btn-sm"
-              @click="loadProcess">
-        Загрузить
-      </button>
-      <button class="btn btn-outline-primary btn-custom btn-sm"
-              @click="saveProcess">
-        Выгрузить
-      </button>
+        </b-table>
+        <div class="process-list-control">
+            <button class="btn btn-outline-primary btn-custom btn-sm"
+                    @click="createNewProcess">
+                Создать
+            </button>
+            <button class="btn btn-outline-primary btn-custom btn-sm"
+                    @click="changeProcess">
+                Изменить
+            </button>
+            <button class="btn btn-outline-primary btn-custom btn-sm"
+                    @click="removeProcess">
+                Удалить
+            </button>
+            <button class="btn btn-outline-primary btn-custom btn-sm"
+                    @click="cloneProcess">
+                Дублировать
+            </button>
+            <button class="btn btn-outline-primary btn-custom btn-sm"
+                    @click="loadProcesses">
+                Загрузить
+            </button>
+            <button class="btn btn-outline-primary btn-custom btn-sm"
+                    @click="saveProcesses">
+                Выгрузить
+            </button>
+        </div>
+
     </div>
-
-  </div>
 </template>
 <script>
 
 export default {
-  name: "ppList",
-  props: ['processList'],
-  emits: ['update:processList', 'setCurrProcess'],
-  data() {
-    return {
-      currProcess: null,
-      fields: [
-        {key: 'processTitle', label: 'Наименование', sortable: true},
-        {key: 'processCategory', label: 'Категория', sortable: true},
-        {key: 'createdDt', label: 'Дата создания', sortable: true},
-        {key: 'changedDt', label: 'Дата изменения', sortable: true},
-        {key: 'description', label: 'Описание', sortable: true},
-
-      ],
-    }
-  },
-  computed: {
-    rows() {
-      return this.processList.map(v => {
+    name: "ppList",
+    props: ['processList'],
+    emits: ['idx', 'action'],
+    data() {
         return {
-          processTitle: v.processTitle,
-          processCategory: v.processCategory,
-          createdDt: v.createdDt,
-          changedDt: v.changedDt,
-          description: v.description
+            currProcess: null,
+            selectedProcessesIdxs: [],
+            fields: [
+                {key: 'processTitle', label: 'Наименование', sortable: true},
+                {key: 'processCategory', label: 'Категория', sortable: true},
+                {key: 'createdDt', label: 'Дата создания', sortable: true},
+                {key: 'changedDt', label: 'Дата изменения', sortable: true},
+                {key: 'description', label: 'Описание', sortable: true},
+
+            ],
         }
-      });
+    },
+    computed: {
     },
 
+    methods: {
+        createProcess() {
 
-  },
-  methods: {
-    onRowSelected() {
+        },
+        changeProcess() {
 
-      this.$emit('setCurrProcess', this.currProcess);
+        },
+        cloneProcess() {
+
+        },
+        removeProcess() {
+
+        },
+        loadProcesses() {
+
+
+        },
+        saveProcesses() {
+//собрать массив процессов для выгрузки
+            let arr = [];
+            for (let i; i < this.selectedProcessesIdxs.length; i++) {
+                arr.push(this.processList[this.selectedProcessesIdxs[i]]);
+            }
+//получить имя для набора процессов
+        },
+
+        onRowClicked(item, index, event) {
+            this.currProcess = this.processList[index];
+        },
     },
-    onRowClicked(item, index, event) {
-      console.log(index);
-    },
-  },
-  mounted() {
+    mounted() {
 
-  },
+    },
 }
 
 </script>
@@ -98,6 +111,7 @@ export default {
   thead {
     text-align: center;
   }
+
   .table-custom {
     //color: blue;
   }
