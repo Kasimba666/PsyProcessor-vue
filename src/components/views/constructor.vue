@@ -43,7 +43,8 @@ export default {
             content: '',
             process: reactive({
                 processTitle: "Новый процесс",
-                processCategory: "common",
+                version: "0.0.1",
+                processCategory: ["common"],
                 type: 'process',
                 createdDt: (new Date()).toISOString(),
                 changedDt: (new Date()).toISOString(),
