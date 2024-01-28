@@ -1,104 +1,131 @@
 <template>
-    <div class="ppList">
-        <b-table class="table-custom"
-                 striped
-                 small
-                 hover
-                 selectable
-                 bordered
-                 sortable
-                 select-mode="multi"
-                 :items="processList"
-                 :fields="fields"
-                 @row-clicked="onRowClicked"
+  <div class="ppList">
+    <div class="table-custom">
+      <div class="table-head">
+        <div class="table-checkbox">
+        </div>
+        <div class="table-cell cell-title" :class="{right: (i === fields.length-1)}"
+             v-for="(field, i) of fields" :key="i">
+          {{ field.label }}
+        </div>
+      </div>
+      <div class="table-row"
+           :class="{last: (r === rows.length-1)}"
+           v-if="!!rows && rows.length  >0"
+           v-for="(row, r) of rows" :key="r"
+           :style="{backgroundColor: (r%2 === 1) ? 'hsl(0, 0%, 83%, 0.3)' : 'none'}"
+           @click="">
+        <div class="table-checkbox">
+          <input class="form-check-input" type="checkbox"
+                 @click="onCheckBoxClick(r)"
+          />
+        </div>
+        <div class="table-cell cell-row" :class="{right: (f === fields.length-1)}"
+             v-if="!!fields && fields.length>0"
+             v-for="(field, f) of fields" :key="f"
         >
-
-        </b-table>
-        <div class="process-list-control">
-            <button class="btn btn-outline-primary btn-custom btn-sm"
-                    @click="createNewProcess">
-                Создать
-            </button>
-            <button class="btn btn-outline-primary btn-custom btn-sm"
-                    @click="changeProcess">
-                Изменить
-            </button>
-            <button class="btn btn-outline-primary btn-custom btn-sm"
-                    @click="removeProcess">
-                Удалить
-            </button>
-            <button class="btn btn-outline-primary btn-custom btn-sm"
-                    @click="cloneProcess">
-                Дублировать
-            </button>
-            <button class="btn btn-outline-primary btn-custom btn-sm"
-                    @click="loadProcesses">
-                Загрузить
-            </button>
-            <button class="btn btn-outline-primary btn-custom btn-sm"
-                    @click="saveProcesses">
-                Выгрузить
-            </button>
+          {{ row[field.key] }}
         </div>
 
+      </div>
     </div>
+    <hr>
+    <b-table
+        striped
+        small
+        hover
+        selectable
+        bordered
+        sortable
+        select-mode="multi"
+        :items="rows"
+        :fields="fields"
+        @row-clicked="onRowClicked"
+    >
+
+    </b-table>
+
+    <div class="process-list-control">
+      <button class="btn btn-outline-primary btn-custom btn-sm"
+              @click="createProcess">
+        Создать
+      </button>
+      <button class="btn btn-outline-primary btn-custom btn-sm"
+              @click="changeProcess">
+        Изменить
+      </button>
+      <button class="btn btn-outline-primary btn-custom btn-sm"
+              @click="removeProcess">
+        Удалить
+      </button>
+      <button class="btn btn-outline-primary btn-custom btn-sm"
+              @click="cloneProcess">
+        Дублировать
+      </button>
+      <button class="btn btn-outline-primary btn-custom btn-sm"
+              @click="loadProcesses">
+        Загрузить
+      </button>
+      <button class="btn btn-outline-primary btn-custom btn-sm"
+              @click="saveProcesses">
+        Выгрузить
+      </button>
+    </div>
+
+
+  </div>
 </template>
 <script>
 
 export default {
-    name: "ppList",
-    props: ['processList'],
-    emits: ['idx', 'action'],
-    data() {
-        return {
-            currProcess: null,
-            selectedProcessesIdxs: [],
-            fields: [
-                {key: 'processTitle', label: 'Наименование', sortable: true},
-                {key: 'processCategory', label: 'Категория', sortable: true},
-                {key: 'createdDt', label: 'Дата создания', sortable: true},
-                {key: 'changedDt', label: 'Дата изменения', sortable: true},
-                {key: 'description', label: 'Описание', sortable: true},
+  name: "ppList",
+  props: ['rows', 'fields'],
+  emits: ['idx', 'action'],
+  data() {
+    return {
+      selectedIdxs: [],
 
-            ],
-        }
-    },
-    computed: {
-    },
+    }
+  },
+  computed: {},
 
-    methods: {
-        createProcess() {
-
-        },
-        changeProcess() {
-
-        },
-        cloneProcess() {
-
-        },
-        removeProcess() {
-
-        },
-        loadProcesses() {
-
-
-        },
-        saveProcesses() {
-//собрать массив процессов для выгрузки
-            let arr = [];
-            for (let i; i < this.selectedProcessesIdxs.length; i++) {
-                arr.push(this.processList[this.selectedProcessesIdxs[i]]);
-            }
-//получить имя для набора процессов
-        },
-
-        onRowClicked(item, index, event) {
-            this.currProcess = this.processList[index];
-        },
-    },
-    mounted() {
+  methods: {
+    createProcess() {
 
     },
+    changeProcess() {
+
+    },
+    cloneProcess() {
+
+    },
+    removeProcess() {
+
+    },
+    loadProcesses() {
+
+
+    },
+    saveProcesses() {
+
+    },
+
+    onRowClicked(item, index, event) {
+
+    },
+
+    onCheckBoxClick(idx) {
+      if (!this.selectedIdxs.includes(idx)) {
+        this.selectedIdxs.push(idx)
+      } else {
+        let index = this.selectedIdxs.indexOf(idx);
+        this.selectedIdxs.splice(index, 1);
+      }
+    },
+  },
+  mounted() {
+
+  },
 }
 
 </script>
@@ -107,14 +134,111 @@ export default {
 .ppList {
   width: 100%;
   height: auto;
+  font-size: 13px;
 
   thead {
     text-align: center;
   }
 
   .table-custom {
-    //color: blue;
+    position: relative;
+    width: 100%;
+    min-width: 500px;
+    height: auto;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: start;
+    border: 1px solid hsla(0, 0%, 50%, 0.8);
+    user-select: none;
+
+    .table-head {
+      position: relative;
+      width: 100%;
+      height: auto;
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: center;
+      border-bottom: 1px solid hsla(0, 0%, 50%, 0.6);
+      background-color: hsl(0, 0%, 83%, 0.3);
+
+    }
+
+    .table-row {
+      position: relative;
+      width: 100%;
+      height: auto;
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: center;
+      border-bottom: 1px solid hsla(0, 0%, 50%, 0.6);
+      cursor: pointer;
+
+      &:hover {
+        box-shadow: 0 0 10px 3px rgba(0, 140, 186, 0.5);
+      }
+
+      &.chosen {
+        background-color: rgba(0, 140, 186, 0.5);
+      }
+
+      &.last {
+        border-bottom: none;
+      }
+
+      .current {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border: 2px solid rgba(0, 140, 186, 0.5);
+      }
+
+
+    }
+
+    .table-checkbox {
+      width: 25px;
+      min-width: 25px;;
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: start;
+      align-items: center;
+      padding: 5px;
+      border-right: 1px solid hsla(0, 0%, 50%, 0.8);
+
+    }
+
+    .table-cell {
+      position: relative;
+      width: 100px;
+      height: auto;
+      padding: 2px;
+      flex: 1 1 auto;
+      min-width: 50px;
+      border-right: 1px solid hsla(0, 0%, 50%, 0.8);
+      text-align: left;
+
+      &.cell-title {
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        word-break: break-word;
+        font-weight: bold;
+      }
+
+      &.cell-row {
+        justify-content: flex-start;
+        align-items: flex-start;
+        text-align: left;
+        word-break: break-all;
+      }
+
+      &.right {
+        border-right: none;
+      }
+    }
+
   }
+
 
   .process-list-control {
     width: auto;
@@ -135,7 +259,6 @@ export default {
       }
     }
   }
-
 }
 
 </style>
