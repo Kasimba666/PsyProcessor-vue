@@ -62,9 +62,14 @@
               @click="cloneProcess">
         Дублировать
       </button>
-      <button class="btn btn-outline-primary btn-custom btn-sm"
-              @click="loadProcesses">
-        Загрузить
+      <button class="btn btn-outline-primary btn-custom btn-sm">
+        <label class="add-item" for="id-input-file-2" style="margin-bottom: 0">
+          <input type="file" class="d-none" id="id-input-file-2"
+                 value=""
+                 :accept="'.'+'json'"
+                 @change.prevent="loadProcesses($event)">
+          Загрузить
+        </label>
       </button>
       <button class="btn btn-outline-primary btn-custom btn-sm"
               @click="saveProcesses">
@@ -80,7 +85,7 @@
 export default {
   name: "ppList",
   props: ['rows', 'fields'],
-  emits: ['idx', 'action'],
+  // emits: ['action', 'idxs', 'file'],
   data() {
     return {
       selectedIdxs: [],
@@ -91,23 +96,24 @@ export default {
 
   methods: {
     createProcess() {
-
+      this.$emit('doAction', 'create', [], null);
     },
     changeProcess() {
-
+      this.$emit('doAction', 'change', this.selectedIdxs, null);
     },
     cloneProcess() {
-
+      this.$emit('doAction', 'clone', this.selectedIdxs, null);
     },
     removeProcess() {
-
+      this.$emit('doAction', 'remove', this.selectedIdxs, null);
     },
-    loadProcesses() {
-
+    loadProcesses(e) {
+      this.$emit('doAction', 'load', this.selectedIdxs, e);
 
     },
     saveProcesses() {
 
+      this.$emit('doAction', 'save', this.selectedIdxs, null);
     },
 
     onRowClicked(item, index, event) {
