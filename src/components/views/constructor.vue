@@ -20,7 +20,10 @@
                             Загрузить
                         </label>
                     </button>
-
+                  <button class="btn btn-outline-primary btn-custom btn-sm"
+                          @click="onSaveInList">
+                    Сохранить в списке
+                  </button>
                 </div>
             </div>
         </div>
@@ -38,9 +41,7 @@ export default {
     props: [],
     data() {
         return {
-            file: null,
-            jsonObj: '',
-            content: '',
+
             process: reactive({
                 processTitle: "Новый процесс",
                 version: "0.0.1",
@@ -48,7 +49,7 @@ export default {
                 type: 'process',
                 createdDt: (new Date()).toISOString(),
                 changedDt: (new Date()).toISOString(),
-                descripton: '',
+                descripton: 'Описание',
                 toSave: false,
                 toAdd: false,
                 vars: [
@@ -84,36 +85,13 @@ export default {
         processChanged(newValue) {
             this.process.changedDt = (new Date()).toISOString();
             clearTimeout(this.debounceHandle);
-
             this.debounceHandle = setTimeout(() => {
                 this.$store.commit('currentEditableProcess', newValue);
             }, this.debounceTime);
         },
-        saveJSONFile(object, filename) {
-            const json = JSON.stringify(object, null, 2); // Преобразуем объект в строку JSON
-            const blob = new Blob([json], { type: "application/json" }); // Создаем Blob из строки JSON
-            const url = URL.createObjectURL(blob); // Создаем URL для Blob
+      onSaveInList(){
 
-            const a = document.createElement("a"); // Создаем элемент <a>
-            a.href = url;
-            a.download = filename + ".json"; // Устанавливаем имя файла
-            a.click(); // "Жмем" на <a>, чтобы начать скачивание
-
-            URL.revokeObjectURL(url); // Очищаем URL после скачивания
-        },
-        loadJSONFile(event) {
-            let file = event.target.files[0];
-            let reader = new FileReader();
-            reader.readAsText(file);
-            reader.onload = () => {
-                try {
-                    this.process = JSON.parse(reader.result);
-                } catch {
-                    alert('Ошибка загрузки файла')
-                }
-            };
-            this.processChanged(this.process);
-        },
+      },
         dateTime(dtISO) {
             let result = dtISO.substring(0, 20).split('');
             result[10] = '-';
