@@ -14,7 +14,7 @@
            v-if="!!rows && rows.length  >0"
            v-for="(row, r) of rows" :key="r"
            :style="{backgroundColor: (r%2 === 1) ? 'hsl(0, 0%, 83%, 0.3)' : 'none'}"
-           @click="">
+           @click="onRowClicked(r)">
         <div class="table-checkbox">
           <input class="form-check-input" type="checkbox"
                  @click="onCheckBoxClick(r)"
@@ -89,6 +89,7 @@ export default {
   data() {
     return {
       selectedIdxs: [],
+      currentIdx: null,
 
     }
   },
@@ -99,7 +100,7 @@ export default {
       this.$emit('doAction', 'create', [], null);
     },
     changeProcess() {
-      this.$emit('doAction', 'change', this.selectedIdxs, null);
+      if (!!this.currentIdx && this.currentIdx>-1) this.$emit('doAction', 'change', this.selectedIdxs, null);
     },
     cloneProcess() {
       this.$emit('doAction', 'clone', this.selectedIdxs, null);
@@ -116,8 +117,8 @@ export default {
       this.$emit('doAction', 'save', this.selectedIdxs, null);
     },
 
-    onRowClicked(item, index, event) {
-
+    onRowClicked(v) {
+       this.currentIdx = v;
     },
 
     onCheckBoxClick(idx) {
