@@ -3,6 +3,11 @@
     <div class="container">
       <div class="row">
         <div class="col-12 mt-40">
+            <SplittedBalance
+            :val="'0123456789354562.123456712341235'"
+            :rel="0.8"
+            locale="ru"
+            />
           <pp-list
               :rows="rows"
               :fields="fields"
@@ -16,6 +21,7 @@
 
 <script>
 import ppList from "@/components/Pplist/ppList.vue";
+import SplittedBalance from "@/components/SplittedBalance.vue";
 
 
 export default {
@@ -23,7 +29,7 @@ export default {
     title: 'PsyProcessor : Процессы'
   },
   name: "ProcessList",
-  components: {ppList},
+  components: {SplittedBalance, ppList},
   props: [],
   data() {
     return {
@@ -57,7 +63,7 @@ export default {
   },
   methods: {
     onDoAction(action, idxs, e) {
-      // console.log(action, idxs, e);
+      console.log(action, idxs, e);
       switch (action) {
         case 'create': {
           this.$router.push({path: 'constructor'});

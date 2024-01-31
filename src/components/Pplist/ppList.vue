@@ -32,7 +32,7 @@
         </div>
         <div class="table-button">
           <button class="btn btn-outline-primary btn-custom btn-sm"
-                  @click.stop="changeProcess">
+                  @click.stop="changeProcess(r)">
             Изменить
           </button>
         </div>
@@ -108,22 +108,22 @@ export default {
     createProcess() {
       this.$emit('doAction', 'create', [], null);
     },
-    changeProcess() {
-      if (!!this.currentIdx && this.currentIdx > -1) this.$emit('doAction', 'change', this.selectedIdxs, null);
+    changeProcess(v) {
+      if (!!this.currentIdx && this.currentIdx > -1) this.$emit('doAction', 'change', [v], null);
     },
     cloneProcess() {
       this.$emit('doAction', 'clone', this.selectedIdxs, null);
     },
     removeProcess() {
-      this.$emit('doAction', 'remove', this.selectedIdxs, null);
+      if (this.selectedIdxs.length>0) this.$emit('doAction', 'remove', this.selectedIdxs, null);
     },
     loadProcesses(e) {
       this.$emit('doAction', 'load', this.selectedIdxs, e);
 
+
     },
     saveProcesses() {
-
-      this.$emit('doAction', 'save', this.selectedIdxs, null);
+        if (this.selectedIdxs.length>0) this.$emit('doAction', 'save', this.selectedIdxs, null);
     },
 
     onRowClicked(v) {
