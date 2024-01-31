@@ -8,6 +8,8 @@
              v-for="(field, i) of fields" :key="i">
           {{ field.label }}
         </div>
+        <div class="table-button">
+        </div>
       </div>
       <div class="table-row"
            :class="{last: (r === rows.length-1)}"
@@ -15,9 +17,11 @@
            v-for="(row, r) of rows" :key="r"
            :style="{backgroundColor: (r%2 === 1) ? 'hsl(0, 0%, 83%, 0.3)' : 'none'}"
            @click="onRowClicked(r)">
+        <div :class="{current: r===currentIdx}">
+        </div>
         <div class="table-checkbox">
           <input class="form-check-input" type="checkbox"
-                 @click="onCheckBoxClick(r)"
+                 @click.stop="onCheckBoxClick(r)"
           />
         </div>
         <div class="table-cell cell-row" :class="{right: (f === fields.length-1)}"
@@ -26,34 +30,39 @@
         >
           {{ row[field.key] }}
         </div>
-
+        <div class="table-button">
+          <button class="btn btn-outline-primary btn-custom btn-sm"
+                  @click.stop="changeProcess">
+            Изменить
+          </button>
+        </div>
       </div>
     </div>
-    <hr>
-    <b-table
-        striped
-        small
-        hover
-        selectable
-        bordered
-        sortable
-        select-mode="multi"
-        :items="rows"
-        :fields="fields"
-        @row-clicked="onRowClicked"
-    >
+<!--    <hr>-->
+    <!--    <b-table-->
+    <!--        striped-->
+    <!--        small-->
+    <!--        hover-->
+    <!--        selectable-->
+    <!--        bordered-->
+    <!--        sortable-->
+    <!--        select-mode="multi"-->
+    <!--        :items="rows"-->
+    <!--        :fields="fields"-->
+    <!--        @row-clicked="onRowClicked"-->
+    <!--    >-->
 
-    </b-table>
+    <!--    </b-table>-->
 
     <div class="process-list-control">
       <button class="btn btn-outline-primary btn-custom btn-sm"
               @click="createProcess">
         Создать
       </button>
-      <button class="btn btn-outline-primary btn-custom btn-sm"
-              @click="changeProcess">
-        Изменить
-      </button>
+      <!--      <button class="btn btn-outline-primary btn-custom btn-sm"-->
+      <!--              @click="changeProcess">-->
+      <!--        Изменить-->
+      <!--      </button>-->
       <button class="btn btn-outline-primary btn-custom btn-sm"
               @click="removeProcess">
         Удалить
@@ -100,7 +109,7 @@ export default {
       this.$emit('doAction', 'create', [], null);
     },
     changeProcess() {
-      if (!!this.currentIdx && this.currentIdx>-1) this.$emit('doAction', 'change', this.selectedIdxs, null);
+      if (!!this.currentIdx && this.currentIdx > -1) this.$emit('doAction', 'change', this.selectedIdxs, null);
     },
     cloneProcess() {
       this.$emit('doAction', 'clone', this.selectedIdxs, null);
@@ -118,7 +127,7 @@ export default {
     },
 
     onRowClicked(v) {
-       this.currentIdx = v;
+      this.currentIdx = v;
     },
 
     onCheckBoxClick(idx) {
@@ -197,6 +206,7 @@ export default {
         width: 100%;
         height: 100%;
         border: 2px solid rgba(0, 140, 186, 0.5);
+        pointer-events: none;
       }
 
 
@@ -213,7 +223,17 @@ export default {
       border-right: 1px solid hsla(0, 0%, 50%, 0.8);
 
     }
+    .table-button {
+      width: 100px;
+      min-width: 100px;
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: start;
+      align-items: center;
+      padding: 0px;
+      //border-right: 1px solid hsla(0, 0%, 50%, 0.8);
 
+    }
     .table-cell {
       position: relative;
       width: 100px;
@@ -240,7 +260,7 @@ export default {
       }
 
       &.right {
-        border-right: none;
+        //border-right: none;
       }
     }
 
@@ -250,22 +270,28 @@ export default {
   .process-list-control {
     width: auto;
     display: flex;
-    flex-flow: row nowrap;
-    justify-content: flex-start;
+    flex-flow: row;
+    justify-content: center;
     gap: 10px;
-    padding: 5px;
+    //padding-right: 5px;
     margin: 10px;
 
-    .btn-custom {
-      color: black;
-      background-color: transparent;
-      border: 1px solid hsl(50, 30%, 75%);
+  }
 
-      &:hover {
-        background-color: hsl(52, 29%, 90%);
-      }
+  .btn-custom {
+    height: auto;
+    width: auto;
+    color: black;
+    background-color: transparent;
+    border: 1px solid hsl(50, 30%, 75%);
+    margin: 5px;
+
+    &:hover {
+      color: black;
+      background-color: hsl(52, 29%, 90%);
     }
   }
+
 }
 
 </style>
