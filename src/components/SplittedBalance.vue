@@ -30,7 +30,7 @@ const leftPart = computed(()=> {
     while (!!arr.length) {
        result.unshift(arr.splice(-3).join(''));
     }
-    return result.join(props.locale==='en'+ ? ',' : ' ');
+    return result.join(props.locale==='en' ? ',' : ' ');
 });
 const rightPart = computed(()=>splitted.value[1]);
 

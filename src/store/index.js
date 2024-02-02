@@ -6,7 +6,7 @@ export default createStore({
         screen: {},
         mobileMenuActive: false,
         mobileMenuTransition: false,
-        currentEditableList: null,
+        currentList: null,
         currentEditableProcess: null,
         token: null,
         user: null,
@@ -17,14 +17,15 @@ export default createStore({
         testData: '',
     },
     mutations: {
+        currentList(state, v) {
+            state.currentList = v;
+        },
+
         testData(state, v) {
             state.testData = v;
         },
         currentEditableProcess(state, v) {
             state.currentEditableProcess = v;
-        },
-        currentEditableList(state, v) {
-            state.currentEditableList = v;
         },
         mobileMenuActive(state, v) {
             state.mobileMenuTransition = true;
@@ -64,8 +65,8 @@ export default createStore({
         key: 'ppVuexDataEditableProcess',
         paths: ['currentEditableProcess']
     }), createPersistedState({
-        key: 'ppVuexDataEditableList',
-        paths: ['currentEditableList']
+        key: 'ppVuexDataList',
+        paths: ['currentList']
     })],
 
 })

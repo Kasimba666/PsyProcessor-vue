@@ -19,8 +19,13 @@
            @click="onRowClicked(r)">
         <div :class="{current: r===currentIdx}">
         </div>
-        <div class="table-checkbox">
+        <div class="table-checkbox"
+
+        >
           <input class="form-check-input" type="checkbox"
+                 v-model="arrayCheckboxes[r]"
+                 value="true"
+                 unchecked-value="false"
                  @click.stop="onCheckBoxClick(r)"
           />
         </div>
@@ -38,7 +43,7 @@
         </div>
       </div>
     </div>
-<!--    <hr>-->
+    <!--    <hr>-->
     <!--    <b-table-->
     <!--        striped-->
     <!--        small-->
@@ -55,6 +60,14 @@
     <!--    </b-table>-->
 
     <div class="process-list-control">
+      <button class="btn btn-outline-primary btn-custom btn-sm"
+              @click="selectAll">
+        Выбрать все
+      </button>
+      <button class="btn btn-outline-primary btn-custom btn-sm"
+              @click="unselectAll">
+        Развыбрать все
+      </button>
       <button class="btn btn-outline-primary btn-custom btn-sm"
               @click="createProcess">
         Создать
@@ -94,28 +107,42 @@
 export default {
   name: "ppList",
   props: ['rows', 'fields'],
-  // emits: ['action', 'idxs', 'file'],
   data() {
     return {
-      selectedIdxs: [],
       currentIdx: null,
-
+      arrayCheckboxes: [],
     }
   },
-  computed: {},
+  computed: {
+    selectedIdxs() {
+      let s=[];
+      for (let i = 0; i<this.arrayCheckboxes.length; i++) if (this.arrayCheckboxes[i] === true) s.push(i);
+      return s;
+    },
+  },
 
   methods: {
+    setCheckboxesValues() {
+      for (let i = 0; i < this.rows.length; i++) this.arrayCheckboxes[i] = false;
+    },
+    selectAll() {
+      for (let i = 0; i < this.arrayCheckboxes.length; i++) this.arrayCheckboxes[i] = true;
+    },
+    unselectAll() {
+      for (let i = 0; i < this.arrayCheckboxes.length; i++) this.arrayCheckboxes[i] = false;
+    },
+
     createProcess() {
       this.$emit('doAction', 'create', [], null);
     },
     changeProcess(v) {
-      if (!!this.currentIdx && this.currentIdx > -1) this.$emit('doAction', 'change', [v], null);
+      this.$emit('doAction', 'change', [v], null);
     },
     cloneProcess() {
       this.$emit('doAction', 'clone', this.selectedIdxs, null);
     },
     removeProcess() {
-      if (this.selectedIdxs.length>0) this.$emit('doAction', 'remove', this.selectedIdxs, null);
+      if (this.selectedIdxs.length > 0) this.$emit('doAction', 'remove', this.selectedIdxs, null);
     },
     loadProcesses(e) {
       this.$emit('doAction', 'load', this.selectedIdxs, e);
@@ -123,7 +150,7 @@ export default {
 
     },
     saveProcesses() {
-        if (this.selectedIdxs.length>0) this.$emit('doAction', 'save', this.selectedIdxs, null);
+      if (this.selectedIdxs.length > 0) this.$emit('doAction', 'save', this.selectedIdxs, null);
     },
 
     onRowClicked(v) {
@@ -140,7 +167,11 @@ export default {
     },
   },
   mounted() {
-
+  },
+  watch: {
+    "rows"()  {
+      this.setCheckboxesValues();
+    }
   },
 }
 
@@ -223,6 +254,7 @@ export default {
       border-right: 1px solid hsla(0, 0%, 50%, 0.8);
 
     }
+
     .table-button {
       width: 100px;
       min-width: 100px;
@@ -234,6 +266,7 @@ export default {
       //border-right: 1px solid hsla(0, 0%, 50%, 0.8);
 
     }
+
     .table-cell {
       position: relative;
       width: 100px;

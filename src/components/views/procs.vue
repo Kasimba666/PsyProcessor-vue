@@ -3,11 +3,11 @@
     <div class="container">
       <div class="row">
         <div class="col-12 mt-40">
-            <SplittedBalance
-            :val="'0123456789354562.123456712341235'"
-            :rel="0.8"
-            locale="ru"
-            />
+<!--            <SplittedBalance-->
+<!--            :val="'0123456789354562.123456712341235'"-->
+<!--            :rel="0.8"-->
+<!--            locale="ru"-->
+<!--            />-->
           <pp-list
               :rows="rows"
               :fields="fields"
@@ -55,7 +55,7 @@ export default {
           processCategory: v.processCategory,
           createdDt: this.dtFormatCustom(v.createdDt),
           changedDt: this.dtFormatCustom(v.changedDt),
-          description: v.description
+          description: v.description,
         }
       });
     },
@@ -66,11 +66,16 @@ export default {
       console.log(action, idxs, e);
       switch (action) {
         case 'create': {
+          this.$store.commit('currentEditableProcess', null);
           this.$router.push({path: 'constructor'});
         }
           break;
         case 'change': {
-
+          console.log('onDoAction:',idxs);
+          if (idxs.length > 0) {
+            this.$store.commit('currentEditableProcess', this.processList[idxs[0]]);
+            this.$router.push({path: 'constructor'});
+          }
         }
           break;
         case 'clone': {
@@ -93,7 +98,7 @@ export default {
         }
       }
 
-      this.$store.commit('currentEditableList', this.processList);
+      this.$store.commit('currentList', this.processList);
     },
 
     saveProcesses() {
@@ -118,32 +123,92 @@ export default {
       this.processList = [
         {
           processTitle: 'Процесс 1',
+          key: (~~(Math.random() * 32767) * (1 << 19 - 1) % 3047777777).toString(16),
+          version: "0.0.1",
           processCategory: 'Общие',
           createdDt: '2024-01-23T15:11:37',
           changedDt: '2024-01-24T15:11:37',
-          description: 'Описание 1'
+          description: 'Описание 1',
+          vars: [
+            {name: '$topic', value: '',},
+            {name: '$last', value: [null],},
+          ],
+          rootNode: {
+            type: 'loopList',
+            attrs: {
+              nodeName: {
+                inpType: 'text',
+                inpLabel: 'Название узла (optional)',
+                value: 'root',
+              },
+              loopCount: {
+                inpType: 'number',
+                inpLabel: 'Количество циклов',
+                value: 0, // ноль означает бесконечный цикл
+              },
+            },
+            list: [],
+          }
         },
         {
           processTitle: 'Процесс 2',
-          processCategory: 'Креативность',
-          createdDt: '2024-02-23T15:11:37',
-          changedDt: '2024-02-24T15:11:37',
-          description: 'Описание 2'
+          key: (~~(Math.random() * 32767) * (1 << 19 - 1) % 3047777777).toString(16),
+          version: "0.0.1",
+          processCategory: 'Общие',
+          createdDt: '2024-01-23T15:11:37',
+          changedDt: '2024-01-24T15:11:37',
+          description: 'Описание 2',
+          vars: [
+            {name: '$topic', value: '',},
+            {name: '$last', value: [null],},
+          ],
+          rootNode: {
+            type: 'loopList',
+            attrs: {
+              nodeName: {
+                inpType: 'text',
+                inpLabel: 'Название узла (optional)',
+                value: 'root',
+              },
+              loopCount: {
+                inpType: 'number',
+                inpLabel: 'Количество циклов',
+                value: 0, // ноль означает бесконечный цикл
+              },
+            },
+            list: [],
+          }
         },
         {
           processTitle: 'Процесс 3',
-          processCategory: 'Осознавание',
-          createdDt: '2024-03-23T15:11:37',
-          changedDt: '2024-03-24T15:11:37',
-          description: 'Описание 3'
+          key: (~~(Math.random() * 32767) * (1 << 19 - 1) % 3047777777).toString(16),
+          version: "0.0.1",
+          processCategory: 'Общие',
+          createdDt: '2024-01-23T15:11:37',
+          changedDt: '2024-01-24T15:11:37',
+          description: 'Описание 3',
+          vars: [
+            {name: '$topic', value: '',},
+            {name: '$last', value: [null],},
+          ],
+          rootNode: {
+            type: 'loopList',
+            attrs: {
+              nodeName: {
+                inpType: 'text',
+                inpLabel: 'Название узла (optional)',
+                value: 'root',
+              },
+              loopCount: {
+                inpType: 'number',
+                inpLabel: 'Количество циклов',
+                value: 0, // ноль означает бесконечный цикл
+              },
+            },
+            list: [],
+          }
         },
-        {
-          processTitle: 'Процесс 4',
-          processCategory: 'Пространство',
-          createdDt: '2024-04-23T15:11:37',
-          changedDt: '2024-04-24T15:11:37',
-          description: 'Описание 4'
-        },
+
       ];
     },
 
