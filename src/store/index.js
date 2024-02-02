@@ -8,6 +8,7 @@ export default createStore({
         mobileMenuTransition: false,
         currentList: null,
         currentEditableProcess: null,
+        currentEditableProcessIdx: -1,
         token: null,
         user: null,
         //curLang: 'en',
@@ -17,16 +18,25 @@ export default createStore({
         testData: '',
     },
     mutations: {
+        testData(state, v) {
+            state.testData = v;
+        },
         currentList(state, v) {
             state.currentList = v;
         },
-
-        testData(state, v) {
-            state.testData = v;
+        addProcessInList(state, v) {
+            state.currentList.push(v);
+        },
+        changeProcessInList(state, v) {
+            state.currentList[v.idx] = v.process;
         },
         currentEditableProcess(state, v) {
             state.currentEditableProcess = v;
         },
+        currentEditableProcessIdx(state, v) {
+            state.currentEditableProcessIdx = v;
+        },
+
         mobileMenuActive(state, v) {
             state.mobileMenuTransition = true;
             state.mobileMenuActive = v;

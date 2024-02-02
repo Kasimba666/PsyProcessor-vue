@@ -33,7 +33,7 @@
              v-if="!!fields && fields.length>0"
              v-for="(field, f) of fields" :key="f"
         >
-          {{ row[field.key] }}
+          {{ Array.isArray(row[field.key]) ? row[field.key].join(', ') : row[field.key]  }}
         </div>
         <div class="table-button">
           <button class="btn btn-outline-primary btn-custom btn-sm"
@@ -81,7 +81,7 @@
         Удалить
       </button>
       <button class="btn btn-outline-primary btn-custom btn-sm"
-              @click="cloneProcess">
+              @click="duplicateProcess">
         Дублировать
       </button>
       <button class="btn btn-outline-primary btn-custom btn-sm">
@@ -138,8 +138,8 @@ export default {
     changeProcess(v) {
       this.$emit('doAction', 'change', [v], null);
     },
-    cloneProcess() {
-      this.$emit('doAction', 'clone', this.selectedIdxs, null);
+      duplicateProcess() {
+      this.$emit('doAction', 'duplicate', this.selectedIdxs, null);
     },
     removeProcess() {
       if (this.selectedIdxs.length > 0) this.$emit('doAction', 'remove', this.selectedIdxs, null);
