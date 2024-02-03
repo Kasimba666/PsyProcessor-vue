@@ -1,27 +1,31 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Index from "@/components/views/index.vue";
-import Session from "@/components/views/session.vue";
-import Procs from "@/components/views/procs.vue";
-import Constructor from "@/components/views/constructor.vue";
+import Home from "@/components/views/Home.vue";
+import Session from "@/components/views/Session.vue";
+import ProcessList from "@/components/views/ProcessList.vue";
+import Constructor from "@/components/views/Constructor.vue";
 
 const routes = [
     {
-        path: '/index',
-        component: Index,
+        name: 'Home',
+        path: '/home',
+        component: Home,
     },
     {
         path: '/',
-        redirect: '/index',
+        redirect: {name: 'Home'},
     },
     {
+        name: 'Session',
         path: '/session',
         component: Session,
     },
     {
+        name: 'ProcessList',
         path: '/procs',
-        component: Procs,
+        component: ProcessList,
     },
     {
+        name: 'Constructor',
         path: '/constructor',
         component: Constructor,
     },

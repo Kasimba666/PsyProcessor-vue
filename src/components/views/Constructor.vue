@@ -99,6 +99,7 @@ export default {
                 //добавить в список
                 this.$store.commit('addProcessesInList', [forSave]);
             }
+            this.$router.push({name: 'ProcessList'});
         },
     },
     mounted() {

@@ -5,7 +5,7 @@ import '@/assets/css/app.scss';
 import { createApp } from 'vue';
 import App from "@/App.vue"
 import router from "@/router/router.js";
-import store from '@/store/index.js';
+import store from '@/store/mainStore.js';
 
 
 const app = createApp(App);

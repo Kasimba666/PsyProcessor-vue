@@ -6,9 +6,11 @@ export default createStore({
         screen: {},
         mobileMenuActive: false,
         mobileMenuTransition: false,
-        currentList: null,
+        processList: [],
         currentEditableProcess: null,
         currentEditableProcessIdx: -1,
+        sessionList: null,
+        currentSession: null,
         token: null,
         user: null,
         //curLang: 'en',
@@ -21,14 +23,15 @@ export default createStore({
         testData(state, v) {
             state.testData = v;
         },
-        currentList(state, v) {
-            state.currentList = v;
+        processList(state, v) {
+            state.processList = v;
         },
         addProcessesInList(state, arr) {
-            arr.forEach((v)=>state.currentList.unshift(v));
+            console.log(arr);
+            if (!!arr) arr.forEach((v)=>state.processList.unshift(v));
         },
         changeProcessInList(state, v) {
-            state.currentList[v.idx] = v.process;
+            state.processList[v.idx] = v.process;
         },
         currentEditableProcess(state, v) {
             state.currentEditableProcess = v;
@@ -36,6 +39,14 @@ export default createStore({
         currentEditableProcessIdx(state, v) {
             state.currentEditableProcessIdx = v;
         },
+
+        sessionList(state, v) {
+            state.sessionList = v;
+        },
+        currentSession(state, v) {
+            state.currentSession = v;
+        },
+
 
         mobileMenuActive(state, v) {
             state.mobileMenuTransition = true;
@@ -76,7 +87,7 @@ export default createStore({
         paths: ['currentEditableProcess']
     }), createPersistedState({
         key: 'ppVuexDataList',
-        paths: ['currentList']
+        paths: ['processList']
     })],
 
 })
