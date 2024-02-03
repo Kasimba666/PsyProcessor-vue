@@ -145,9 +145,8 @@ export default {
       if (this.selectedIdxs.length > 0) this.$emit('doAction', 'remove', this.selectedIdxs, null);
     },
     loadProcesses(e) {
-      this.$emit('doAction', 'load', this.selectedIdxs, e);
-
-
+      let file = e.target.files[0];
+      this.$emit('doAction', 'load', null, file);
     },
     saveProcesses() {
       if (this.selectedIdxs.length > 0) this.$emit('doAction', 'save', this.selectedIdxs, null);

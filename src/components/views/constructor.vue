@@ -8,7 +8,7 @@
                 </div>
                 <div class="files-control">
 <!--                    <button class="btn btn-outline-primary btn-custom btn-sm"-->
-<!--                            @click="saveJSONFile(process, process.processTitle + ' ' + dateTime(process.changedDt))">-->
+<!--                            @click="saveJSONFile(process, process.processTitle + ' ' + dtFormatCustom(process.changedDt))">-->
 <!--                        Выгрузить-->
 <!--                    </button>-->
 <!--                    <button class="btn btn-outline-primary btn-custom btn-sm">-->
@@ -50,7 +50,7 @@ export default {
                 type: 'process',
                 createdDt: (new Date()).toISOString(),
                 changedDt: (new Date()).toISOString(),
-                descripton: 'Описание',
+                description: 'Описание',
                 toSave: false,
                 toAdd: false,
                 vars: [
@@ -97,17 +97,9 @@ export default {
                 this.$store.commit('changeProcessInList', {idx: this.currentEditableProcessIdx, process: forSave});
             } else {
                 //добавить в список
-                this.$store.commit('addProcessInList', forSave);
+                this.$store.commit('addProcessesInList', [forSave]);
             }
         },
-        dateTime(dtISO) {
-            let result = dtISO.substring(0, 20).split('');
-            result[10] = '-';
-            result[13] = '-';
-            result[16] = '-';
-            result[19] = '-';
-            return result.join('');
-        }
     },
     mounted() {
         if (this.currentEditableProcessIdx !== -1) {
@@ -115,7 +107,6 @@ export default {
                 this.process = this.currentEditableProcess;
             }
         }
-
         // if (!!this.currentEditableProcess) {
         //   this.process = this.currentEditableProcess;
         // }

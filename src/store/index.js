@@ -24,8 +24,8 @@ export default createStore({
         currentList(state, v) {
             state.currentList = v;
         },
-        addProcessInList(state, v) {
-            state.currentList.push(v);
+        addProcessesInList(state, arr) {
+            arr.forEach((v)=>state.currentList.unshift(v));
         },
         changeProcessInList(state, v) {
             state.currentList[v.idx] = v.process;
