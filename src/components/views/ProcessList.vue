@@ -93,20 +93,37 @@ export default {
                     }
                 }
                     break;
+                // case 'load': {
+                //     // let rawArr = null;
+                //         this.loadJSON(file).then((data)=>{
+                //             this.$store.commit('addProcessesInList', data.content);
+                //         });
+                //     //проверка на существование в списке
+                // }
+                //     break;
                 case 'load': {
-                    // let rawArr = null;
-                        this.loadJSON(file).then((data)=>{
+                  let reader = new FileReader();
+                  const promise = new Promise((resolve, reject) => {
+                    reader.onload = () => {
+                      try {
+                        let content = JSON.parse(reader.result);
+                        this.file = {content: content, name: file.name};
+                        resolve({content: content, name: file.name});
+
+                      } catch (e){
+                        reject(e);
+                      }
+                    };
+                  });
+                  reader.readAsText(file);
+                  promise.then((data)=>{
                             this.$store.commit('addProcessesInList', data.content);
+                        }).catch(e=>{
+                          console.log('onload error:', e);
                         });
-                    // console.log(arr);
-
-                    //проверка на существование в списке
-
-
-
-
                 }
                     break;
+
                 case 'save': {
                     let arr = [];
                     idxs.forEach((v) => {
@@ -135,98 +152,6 @@ export default {
             return result.join('');
         },
 
-        initProcessListMock() {
-            // this.processList = [
-            //     {
-            //         processTitle: 'Процесс 1',
-            //         key: (~~(Math.random() * 32767) * (1 << 19 - 1) % 3047777777).toString(16),
-            //         version: "0.0.1",
-            //         processCategory: 'Общие',
-            //         createdDt: '2024-01-23T15:11:37',
-            //         changedDt: '2024-01-24T15:11:37',
-            //         description: 'Описание 1',
-            //         vars: [
-            //             {name: '$topic', value: '',},
-            //             {name: '$last', value: [null],},
-            //         ],
-            //         rootNode: {
-            //             type: 'loopList',
-            //             attrs: {
-            //                 nodeName: {
-            //                     inpType: 'text',
-            //                     inpLabel: 'Название узла (optional)',
-            //                     value: 'root',
-            //                 },
-            //                 loopCount: {
-            //                     inpType: 'number',
-            //                     inpLabel: 'Количество циклов',
-            //                     value: 0, // ноль означает бесконечный цикл
-            //                 },
-            //             },
-            //             list: [],
-            //         }
-            //     },
-            //     {
-            //         processTitle: 'Процесс 2',
-            //         key: (~~(Math.random() * 32767) * (1 << 19 - 1) % 3047777777).toString(16),
-            //         version: "0.0.1",
-            //         processCategory: 'Общие',
-            //         createdDt: '2024-01-23T15:11:37',
-            //         changedDt: '2024-01-24T15:11:37',
-            //         description: 'Описание 2',
-            //         vars: [
-            //             {name: '$topic', value: '',},
-            //             {name: '$last', value: [null],},
-            //         ],
-            //         rootNode: {
-            //             type: 'loopList',
-            //             attrs: {
-            //                 nodeName: {
-            //                     inpType: 'text',
-            //                     inpLabel: 'Название узла (optional)',
-            //                     value: 'root',
-            //                 },
-            //                 loopCount: {
-            //                     inpType: 'number',
-            //                     inpLabel: 'Количество циклов',
-            //                     value: 0, // ноль означает бесконечный цикл
-            //                 },
-            //             },
-            //             list: [],
-            //         }
-            //     },
-            //     {
-            //         processTitle: 'Процесс 3',
-            //         key: (~~(Math.random() * 32767) * (1 << 19 - 1) % 3047777777).toString(16),
-            //         version: "0.0.1",
-            //         processCategory: 'Общие',
-            //         createdDt: '2024-01-23T15:11:37',
-            //         changedDt: '2024-01-24T15:11:37',
-            //         description: 'Описание 3',
-            //         vars: [
-            //             {name: '$topic', value: '',},
-            //             {name: '$last', value: [null],},
-            //         ],
-            //         rootNode: {
-            //             type: 'loopList',
-            //             attrs: {
-            //                 nodeName: {
-            //                     inpType: 'text',
-            //                     inpLabel: 'Название узла (optional)',
-            //                     value: 'root',
-            //                 },
-            //                 loopCount: {
-            //                     inpType: 'number',
-            //                     inpLabel: 'Количество циклов',
-            //                     value: 0, // ноль означает бесконечный цикл
-            //                 },
-            //             },
-            //             list: [],
-            //         }
-            //     },
-            //
-            // ];
-        },
 
         saveJSONFile: function (object, filename) {
             const json = JSON.stringify(object, null, 2); // Преобразуем объект в строку JSON
@@ -240,7 +165,7 @@ export default {
 
             URL.revokeObjectURL(url); // Очищаем URL после скачивания
         },
-
+        //функция возвращает Promise
         loadJSON(file) {
             let reader = new FileReader();
             const result = new Promise((resolve, reject) => {
@@ -248,7 +173,6 @@ export default {
                     try {
                         let content = JSON.parse(reader.result);
                         this.file = {content: content, name: file.name};
-                        // resolve(JSON.parse(file.content));
                         resolve({content: content, name: file.name});
 
                     } catch (e){
@@ -257,18 +181,13 @@ export default {
                     }
                 };
             });
-
             reader.readAsText(file);
             return result;
 
         },
     },
     mounted() {
-        // if (!!this.currentList) {
-        //     this.processList = this.currentList;
-        // } else {
-        //     this.initProcessListMock();
-        // }
+
     },
 }
 </script>
