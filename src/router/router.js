@@ -1,8 +1,9 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import {createRouter, createWebHistory} from 'vue-router'
 import Home from "@/components/views/Home.vue";
-import Session from "@/components/views/Session.vue";
+import PersonalSpace from "@/components/views/PersonalSpace.vue";
 import ProcessList from "@/components/views/ProcessList.vue";
 import Constructor from "@/components/views/Constructor.vue";
+import Session from "@/components/views/Session.vue";
 
 const routes = [
     {
@@ -15,9 +16,17 @@ const routes = [
         redirect: {name: 'Home'},
     },
     {
-        name: 'Session',
-        path: '/session',
-        component: Session,
+        name: 'PersonalSpace',
+        path: '/user-space',
+        component: PersonalSpace,
+        // redirect: {name: 'Session'},
+        children: [
+            {
+                name: 'Session',
+                path: 'session',
+                component: Session,
+            },
+        ],
     },
     {
         name: 'ProcessList',

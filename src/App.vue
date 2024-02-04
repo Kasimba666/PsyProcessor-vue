@@ -1,25 +1,23 @@
 <template>
-  <AppHeader />
-  <div class="App">
-    <router-view />
-  </div>
-  <AppFooter />
+    <div class="App">
+        <AppLayout/>
+    </div>
 </template>
 <script>
-import AppHeader from "@/components/AppHeader.vue";
-import AppFooter from "@/components/AppFooter.vue";
+import AppLayout from "@/components/Layouts/AppLayout.vue";
+
 export default {
-  components: {AppHeader, AppFooter}
+    components: {AppLayout}
 }
 </script>
 <style>
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 .App {
-  padding: 20px;
+    padding: 0px;
 }
 </style>

@@ -5,9 +5,9 @@
     </div>
     <div class="top-nav">
       <router-link class="menu-item home" :to="{name: 'Home'}">Главная</router-link>
-      <router-link class="menu-item" :to="{name: 'Session'}">Сессия</router-link>
       <router-link class="menu-item" :to="{name: 'ProcessList'}">Процессы</router-link>
       <router-link class="menu-item" :to="{name: 'Constructor'}">Конструктор</router-link>
+      <router-link class="menu-item" :to="{name: 'Session'}">Личный кабинет</router-link>
     </div>
   </div>
 </template>

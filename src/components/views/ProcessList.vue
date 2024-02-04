@@ -8,7 +8,7 @@
                             :fields="fields"
                             @doAction="onDoAction"
                     ></pp-list>
-<!--                    <pre>{{ !!this.file ? this.file.content : 'нет' }}</pre>-->
+                    <!--                    <pre>{{ !!this.file ? this.file.content : 'нет' }}</pre>-->
                 </div>
             </div>
         </div>
@@ -60,7 +60,7 @@ export default {
     },
     methods: {
         onDoAction(action, idxs, file) {
-            // console.log(action, idxs, file);
+            console.log(action, idxs, file);
             switch (action) {
                 case 'create': {
                     this.$store.commit('currentEditableProcessIdx', -1);
@@ -102,27 +102,27 @@ export default {
                 // }
                 //     break;
                 case 'load': {
-                  let reader = new FileReader();
-                  const promise = new Promise((resolve, reject) => {
-                    reader.onload = () => {
-                      try {
-                        let content = JSON.parse(reader.result);
-                        this.file = {content: content, name: file.name};
-                        resolve({content: content, name: file.name});
+                    let reader = new FileReader();
+                    const promise = new Promise((resolve, reject) => {
+                        reader.onload = () => {
+                            try {
+                                let content = JSON.parse(reader.result);
+                                this.file = {content: content, name: file.name};
+                                resolve({content: content, name: file.name});
 
-                      } catch (e){
-                        reject(e);
-                      }
-                    };
-                  });
-                  reader.readAsText(file);
-                  promise.then((data)=>{
-                            this.$store.commit('addProcessesInList', data.content);
-                        }).catch(e=>{
-                          console.log('onload error:', e);
-                        });
+                            } catch (e) {
+                                reject(e);
+                            }
+                        };
+                    });
+                    reader.readAsText(file);
+                    promise.then((data) => {
+                        this.$store.commit('addProcessesInList', data.content);
+                    }).catch(e => {
+                        console.log('onload error:', e);
+                    });
                 }
-                    break;
+                    return;
 
                 case 'save': {
                     let arr = [];
@@ -140,7 +140,7 @@ export default {
                 }
             }
 
-            this.$store.commit('processList', this.processList);
+           // this.$store.commit('processList', this.processList);
         },
 
 
@@ -175,7 +175,7 @@ export default {
                         this.file = {content: content, name: file.name};
                         resolve({content: content, name: file.name});
 
-                    } catch (e){
+                    } catch (e) {
                         console.log('onload error:', e);
                         reject(e);
                     }
