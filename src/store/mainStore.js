@@ -76,7 +76,8 @@ export default createStore({
             state.blur = v;
         },
     },
-    actions: {},
+    actions: {
+    },
     getters: {
         //balance(state) {
         //    return state.walletList.reduce((s, v) => s += v.confirmed_balance * v.currency_price_usd, 0)
