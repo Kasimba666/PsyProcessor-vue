@@ -29,15 +29,13 @@
       </div>
 
       <div class="struct-panel">
-        <!--<div class="head">{{'Процесс:'}} {{process.processTitle}}</div>-->
         <div class="head">
           <span>{{ 'Процесс:' }}</span>
           <input class="head-input"
                  type="text"
-                 v-model="process.processTitle"
+                 v-model="process.header.processTitle"
                  @change="processChanged"
           />
-          <!--{{process.processTitle}}-->
           <div class="pp-tabs head-tabs">
             <div class="pp-tab" @click="activeTab=0"
                  :class="{active:activeTab===0}">
@@ -116,18 +114,10 @@ export default {
         return {key: key, val: this.currentNode.attrs[key]};
       });
     },
-    // processTitle: {
-    //     get() {
-    //         return this.process.processTitle;
-    //     },
-    //     set(v) {
-    //         this.$emit('input', {...this.process, processTitle: v});
-    //     }
-    // },
+
   },
   methods: {
     processChanged() {
-      // console.log('ppConstructor: ppcNode changed value >>', v);
       this.$emit('changed', this.process);
     },
     updateAttrs(key, value) {

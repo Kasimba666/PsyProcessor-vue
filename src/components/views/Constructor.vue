@@ -7,19 +7,6 @@
 
                 </div>
                 <div class="files-control">
-<!--                    <button class="btn btn-outline-primary btn-custom btn-sm"-->
-<!--                            @click="saveJSONFile(process, process.processTitle + ' ' + dtFormatCustom(process.changedDt))">-->
-<!--                        Выгрузить-->
-<!--                    </button>-->
-<!--                    <button class="btn btn-outline-primary btn-custom btn-sm">-->
-<!--                        <label class="add-item" for="id-input-file-2" style="margin-bottom: 0">-->
-<!--                            <input type="file" class="d-none" id="id-input-file-2"-->
-<!--                                   value=""-->
-<!--                                   :accept="'.'+'json'"-->
-<!--                                   @change.prevent="loadJSONFile($event)">-->
-<!--                            Загрузить-->
-<!--                        </label>-->
-<!--                    </button>-->
                     <button class="btn btn-outline-primary btn-custom btn-sm"
                             @click="onSaveInList">
                         Сохранить в списке
@@ -43,16 +30,20 @@ export default {
         return {
             isNew: Boolean,
             process: reactive({
-                processTitle: "Новый процесс",
-                key: (~~(Math.random() * 32767) * (1 << 19 - 1) % 3047777777).toString(16),
-                version: "0.0.1",
-                processCategory: ["common"],
+                header: {
+                    processTitle: "Новый процесс",
+                    key: (~~(Math.random() * 32767) * (1 << 19 - 1) % 3047777777).toString(16),
+                    version: "0.0.1",
+                    processCategory: ["common"],
+                    type: 'process',
+                    createdDt: (new Date()).toISOString(),
+                    changedDt: (new Date()).toISOString(),
+                    description: 'Описание',
+                    toSave: false,
+                    toAdd: false,
+
+                },
                 type: 'process',
-                createdDt: (new Date()).toISOString(),
-                changedDt: (new Date()).toISOString(),
-                description: 'Описание',
-                toSave: false,
-                toAdd: false,
                 vars: [
                     {name: '$topic', value: '',},
                     {name: '$last', value: [null],},
@@ -84,7 +75,7 @@ export default {
     },
     methods: {
         processChanged() {
-            this.process.changedDt = (new Date()).toISOString();
+            this.process.header.changedDt = (new Date()).toISOString();
             clearTimeout(this.debounceHandle);
             this.debounceHandle = setTimeout(() => {
                 this.$store.commit('currentEditableProcess', this.process);

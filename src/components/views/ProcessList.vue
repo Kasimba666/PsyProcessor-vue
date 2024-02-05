@@ -3,11 +3,11 @@
     <div class="container">
       <div class="row">
         <div class="col-12 mt-40">
-          <pp-list
+          <ppProcessList
               :rows="rows"
               :fields="fields"
               @doAction="onDoAction"
-          ></pp-list>
+          ></ppProcessList>
           <!--                    <pre>{{ !!this.file ? this.file.content : 'нет' }}</pre>-->
         </div>
       </div>
@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import ppList from "@/components/PpProcesses/ppProcessList.vue";
+import ppProcessList from "@/components/PpProcesses/ppProcessList.vue";
 import {mapState} from "vuex";
 
 export default {
@@ -24,13 +24,12 @@ export default {
     title: 'PsyProcessor : Процессы'
   },
   name: "ProcessList",
-  components: {ppList},
+  components: {ppProcessList},
   props: [],
   data() {
     return {
       file: null,
       typeFile: 'json',
-      // processList: [],
       fields: [
         {key: 'processTitle', label: 'Наименование', sortable: true},
         {key: 'processCategory', label: 'Категория', sortable: true},
@@ -48,11 +47,11 @@ export default {
       if (this.processList === null || this.processList.length === 0) return [];
       return this.processList.map(v => {
         return {
-          processTitle: v.processTitle,
-          processCategory: v.processCategory,
-          createdDt: this.dtFormatCustom(v.createdDt),
-          changedDt: this.dtFormatCustom(v.changedDt),
-          description: v.description,
+          processTitle: v.header.processTitle,
+          processCategory: v.header.processCategory,
+          createdDt: this.dtFormatCustom(v.header.createdDt),
+          changedDt: this.dtFormatCustom(v.header.changedDt),
+          description: v.header.description,
         }
       });
     },
@@ -130,10 +129,12 @@ export default {
           idxs.forEach((v) => {
             arr.push(this.processList[v]);
           });
-          this.saveJSONFile(arr, arr[0].processTitle + ' ' + this.dtFormatCustom(arr[0].changedDt))
+          this.saveJSONFile(arr, arr[0].header.processTitle + ' ' + this.dtFormatCustom(arr[0].header.changedDt))
         }
           return;
+
         case 'start': {
+          this.$store.dispatch('createNewSession', this.processList[idxs[0]]);
           this.$router.push({name: 'Session'});
         }
           return;

@@ -1,5 +1,5 @@
 <template>
-  <div class="ppList">
+  <div class="ppProcessList">
     <div class="table-custom">
       <div class="table-head">
         <div class="table-checkbox">
@@ -51,21 +51,6 @@
         </div>
       </div>
     </div>
-    <!--    <hr>-->
-    <!--    <b-table-->
-    <!--        striped-->
-    <!--        small-->
-    <!--        hover-->
-    <!--        selectable-->
-    <!--        bordered-->
-    <!--        sortable-->
-    <!--        select-mode="multi"-->
-    <!--        :items="rows"-->
-    <!--        :fields="fields"-->
-    <!--        @row-clicked="onRowClicked"-->
-    <!--    >-->
-
-    <!--    </b-table>-->
 
     <div class="process-list-control">
       <button class="btn btn-outline-primary btn-custom btn-sm"
@@ -80,10 +65,6 @@
               @click="createProcess">
         Создать
       </button>
-      <!--      <button class="btn btn-outline-primary btn-custom btn-sm"-->
-      <!--              @click="changeProcess">-->
-      <!--        Изменить-->
-      <!--      </button>-->
       <button class="btn btn-outline-primary btn-custom btn-sm"
               @click="removeProcess">
         Удалить
@@ -113,7 +94,7 @@
 <script>
 
 export default {
-  name: "ppList",
+  name: "ppProcessList",
   props: ['rows', 'fields'],
   data() {
     return {
@@ -191,14 +172,11 @@ export default {
 
 </script>
 <style lang="scss">
-.ppList {
+.ppProcessList {
   width: 100%;
   height: auto;
   font-size: 13px;
 
-  thead {
-    text-align: center;
-  }
 
   .table-custom {
     position: relative;

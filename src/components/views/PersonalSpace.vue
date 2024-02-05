@@ -1,8 +1,12 @@
 <template>
   <div class="PersonalSpace">
     <div class="menu-panel">
-      <PpUserMenu class="user-menu"/>
-      <PpSessionList class="session-list"/>
+      <ppUserMenu class="user-menu"/>
+      <ppSessionList class="session-list"
+                     :rows="rows"
+                     :fields="fields"
+                     @doAction="onDoAction"
+      />
     </div>
     <div class="container">
       <div class="row">
@@ -15,15 +19,54 @@
 </template>
 
 <script>
+import ppSessionList from "@/components/PpUserSpace/ppSessionList.vue";
+import {mapState} from "vuex";
+import ppUserMenu from "@/components/PpUserSpace/ppUserMenu.vue";
+
 export default {
   name: "PersonalSpace",
-  components: {},
+  components: {ppUserMenu, ppSessionList},
   props: [],
   data() {
-    return {}
+    return {
+        fields: [
+            {key: 'sessionTitle', label: 'Наименование'},
+            {key: 'createdDt', label: 'Дата создания'},
+            {key: 'status', label: 'Статус'},
+
+            // {key: 'changedDt', label: 'Дата изменения'},
+            // {key: 'description', label: 'Описание'},
+
+        ],
+    }
   },
-  computed: {},
-  methods: {},
+  computed: {
+    ...mapState(['sessionList']),
+      rows() {
+          if (this.sessionList === null || this.sessionList.length === 0) return [];
+          return this.sessionList.map(v => {
+              return {
+                  sessionTitle: v.header.sessionTitle,
+                  createdDt: this.dtFormatCustom(v.header.createdDt),
+                  status: v.status,
+                  // changedDt: this.dtFormatCustom(v.header.changedDt),
+                  // description: v.header.description,
+              }
+          });
+      },
+  },
+  methods: {
+      dtFormatCustom(dtISO) {
+          let result = dtISO.substring(0, 19).split('');
+          result[10] = '-';
+          result[13] = '-';
+          result[16] = '-';
+          return result.join('');
+      },
+      onDoAction() {
+
+      },
+  },
   mounted() {
   },
 }
@@ -42,7 +85,7 @@ export default {
 
   .menu-panel {
     width: 400px;
-    height: 100%;
+    height: 80dvh;
     display: flex;
     flex-flow: column nowrap;
     justify-content: start;
@@ -51,17 +94,13 @@ export default {
 
     .user-menu {
       width: 100%;
-      height: 200px;
-      background-color: hsl(180, 100%, 99%);
-      border: 1px solid gray;
+      height: auto;
     }
 
     .session-list {
       width: 100%;
-      height: 200px;
+      height: auto;
       margin-top: auto;
-      background-color: hsl(180, 100%, 97%);;
-      border: 1px solid gray;
     }
   }
 }
