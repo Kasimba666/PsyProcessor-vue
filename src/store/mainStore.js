@@ -41,6 +41,10 @@ export default createStore({
         sessionList(state, v) {
             state.sessionList = v;
         },
+        sessionStatus(state, {idx, status}) {
+            state.sessionList[idx].status = status;
+        },
+
         currentSession(state, v) {
             state.currentSession = v;
         },
@@ -90,7 +94,6 @@ export default createStore({
                 process: p,
                 history: []
             };
-            console.log(newSession);
             commit('addSessionInList', newSession);
         },
     },
@@ -103,8 +106,11 @@ export default createStore({
         key: 'ppVuexDataEditableProcess',
         paths: ['currentEditableProcess']
     }), createPersistedState({
-        key: 'ppVuexDataList',
+        key: 'ppVuexDataProcessList',
         paths: ['processList']
-    })],
+    }), createPersistedState({
+        key: 'ppVuexDataSessionList',
+        paths: ['sessionList']
+    }),],
 
 })

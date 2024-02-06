@@ -23,10 +23,10 @@
                 >
                     {{ Array.isArray(row[field.key]) ? row[field.key].join(', ') : row[field.key] }}
                 </div>
-                <div class="table-button border-right">
+                <div class="table-button">
                     <button class="btn btn-outline-primary btn-custom btn-sm"
-                            @click.stop="doSomething(r)">
-                        Сделать
+                            @click.stop="changeStatus(r)">
+                        {{showStatus(row.status)}}
                     </button>
                 </div>
             </div>
@@ -51,10 +51,16 @@ export default {
         onRowClicked(v) {
             this.currentIdx = v;
         },
-        doSomething(v) {
-            console.log('Сделать с:', v);
-            this.$emit('doAction', 'something', [this.currentIdx])
+      changeStatus(v) {
+            this.$emit('doAction', 'changeStatus', [v])
         },
+      showStatus(v) {
+        switch (v) {
+          case 'paused': return 'Запустить';
+          case 'inProgress':  return 'Пауза';
+          default: {}
+        }
+      },
     },
     mounted() {
 
@@ -168,6 +174,30 @@ export default {
       }
     }
 
+  }
+  .session-list-control {
+    width: auto;
+    display: flex;
+    flex-flow: row;
+    justify-content: center;
+    gap: 10px;
+    //padding-right: 5px;
+    margin: 10px;
+
+  }
+
+  .btn-custom {
+    height: auto;
+    width: auto;
+    color: black;
+    background-color: transparent;
+    border: 1px solid hsl(50, 30%, 75%);
+    margin: 5px;
+
+    &:hover {
+      color: black;
+      background-color: hsl(52, 29%, 90%);
+    }
   }
 }
 </style>
