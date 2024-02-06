@@ -16,6 +16,7 @@
       </div>
     </div>
   </div>
+    <b-modal v-model="modalNewSession">Новая сессия:</b-modal>
 </template>
 
 <script>
@@ -33,7 +34,7 @@ export default {
         {key: 'sessionTitle', label: 'Наименование'},
         {key: 'processTitle', label: 'Процесс'},
         {key: 'createdDt', label: 'Дата создания'},
-        {key: 'status', label: 'Статус'},
+        {key: 'status', label: 'Состояние'},
 
 
       ],
@@ -41,6 +42,13 @@ export default {
   },
   computed: {
     ...mapState(['sessionList']),
+    ...mapState(['isNewSession']),
+      modalNewSession: {
+          get(){return this.isNewSession},
+          set(){
+              this.$store.commit('isNewSession', false);
+          },
+      },
     rows() {
       if (this.sessionList === null || this.sessionList.length === 0) return [];
       return this.sessionList.map(v => {

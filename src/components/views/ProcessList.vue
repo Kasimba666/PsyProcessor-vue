@@ -135,6 +135,7 @@ export default {
 
         case 'start': {
           this.$store.dispatch('createNewSession', this.processList[idxs[0]]);
+          this.$store.commit('isNewSession', true);
           this.$router.push({name: 'Session'});
         }
           return;

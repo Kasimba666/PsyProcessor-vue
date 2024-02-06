@@ -10,6 +10,7 @@ export default createStore({
         currentEditableProcess: null,
         currentEditableProcessIdx: -1,
         sessionList: [],
+        isNewSession: false,
         currentSession: null,
         token: null,
         user: null,
@@ -50,6 +51,9 @@ export default createStore({
         },
         addSessionInList(state, v) {
             if (!!v) state.sessionList.unshift(v);
+        },
+        isNewSession(state, v) {
+            state.isNewSession = v;
         },
 
         mobileMenuActive(state, v) {
