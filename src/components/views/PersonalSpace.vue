@@ -16,13 +16,26 @@
       </div>
     </div>
   </div>
-    <b-modal v-model="modalNewSession">Новая сессия:</b-modal>
+  <b-modal v-model="showModalName"
+           @ok="onOkChangeName"
+  >
+    <b-form-group
+        label="Введите название сессии:"
+        label-for="input-name"
+    >
+      <b-form-input
+          id="input-name"
+          v-model="newSessionName"
+          required
+      ></b-form-input>
+    </b-form-group>
+  </b-modal>
 </template>
 
 <script>
 import ppSessionList from "@/components/PpUserSpace/ppSessionList.vue";
-import {mapState} from "vuex";
 import ppUserMenu from "@/components/PpUserSpace/ppUserMenu.vue";
+import {mapState} from "vuex";
 
 export default {
   name: "PersonalSpace",
@@ -30,25 +43,21 @@ export default {
   props: [],
   data() {
     return {
+      newSessionName: '',
+      showModalName: false,
+      currentIdx: null,
       fields: [
         {key: 'sessionTitle', label: 'Наименование'},
         {key: 'processTitle', label: 'Процесс'},
         {key: 'createdDt', label: 'Дата создания'},
         {key: 'status', label: 'Состояние'},
-
-
       ],
     }
   },
   computed: {
     ...mapState(['sessionList']),
     ...mapState(['isNewSession']),
-      modalNewSession: {
-          get(){return this.isNewSession},
-          set(){
-              this.$store.commit('isNewSession', false);
-          },
-      },
+
     rows() {
       if (this.sessionList === null || this.sessionList.length === 0) return [];
       return this.sessionList.map(v => {
@@ -70,22 +79,57 @@ export default {
       result[13] = '-';
       result[16] = '-';
       return result.join('');
-    },
+    }
+    ,
     onDoAction(action, idxs) {
+      console.log(action, idxs);
       switch (action) {
         case 'changeStatus': {
           let newStatus = '';
-          if (this.sessionList[idxs[0]].status === 'paused') newStatus = 'inProgress';
-          if (this.sessionList[idxs[0]].status === 'inProgress') newStatus = 'paused';
+          if (this.sessionList[idxs[0]].status === 'paused') {
+            newStatus = 'inProgress';
+            this.currentSession = this.sessionList[idxs[0]].p;
+          };
+          if (this.sessionList[idxs[0]].status === 'inProgress') {
+            newStatus = 'paused';
+            this.$store.commit('sessionList', this.sessionList);
+          };
           this.$store.commit('sessionStatus', {idx: idxs[0], status: newStatus});
         }
-        return
-        default: {}
+          return
+        case 'remove': {
+          if (idxs.length > 0) {
+            idxs.reverse().forEach(v => {
+              this.sessionList.splice(v, 1)
+            });
+            this.$store.commit('sessionList', this.sessionList);
+          }
+        }
+          return
+        case 'changeName': {
+          if (idxs.length > 0) {
+            this.newSessionName = this.sessionList[idxs[0]].header.sessionTitle;
+            this.currentIdx = idxs[0];
+            this.showModalName = true;
+          }
+        }
+          return
+        default: {
+        }
       }
-    },
-  },
+    }
+    ,
+    onOkChangeName() {
+      this.sessionList[!!this.currentIdx ? this.currentIdx : 0].header.sessionTitle = this.newSessionName;
+      this.$store.commit('sessionList', this.sessionList);
+    }
+    ,
+
+  }
+  ,
   mounted() {
-  },
+  }
+  ,
 }
 </script>
 
@@ -98,6 +142,7 @@ export default {
   flex-flow: row nowrap;
   justify-content: start;
   align-items: start;
+  padding: 0px;
 
   .menu-panel {
     width: 400px;

@@ -55,7 +55,6 @@ export default createStore({
         isNewSession(state, v) {
             state.isNewSession = v;
         },
-
         mobileMenuActive(state, v) {
             state.mobileMenuTransition = true;
             state.mobileMenuActive = v;
@@ -88,7 +87,7 @@ export default createStore({
         createNewSession({commit, state}, p) {
             let newSession = {
                 header: {
-                    sessionTitle: 'Новая сессия',
+                    sessionTitle: 'Новая сессия. ' + p.header.processTitle,
                     createdDt: (new Date()).toISOString(),
                     changedDt: (new Date()).toISOString(),
                     description: 'Описание',

@@ -98,7 +98,7 @@ export default {
   props: ['rows', 'fields'],
   data() {
     return {
-      currentIdx: [],
+      currentIdx: -1,
       arrayCheckboxes: [],
     }
   },
@@ -212,11 +212,7 @@ export default {
       cursor: pointer;
 
       &:hover {
-        box-shadow: 0 0 10px 3px rgba(0, 140, 186, 0.5);
-      }
-
-      &.chosen {
-        background-color: rgba(0, 140, 186, 0.5);
+        box-shadow: 0 0 10px 3px hsla(195, 100%, 36%, 0.5);
       }
 
       &.last {
@@ -229,6 +225,7 @@ export default {
         height: 100%;
         border: 2px solid rgba(0, 140, 186, 0.5);
         pointer-events: none;
+        background-color: hsla(195, 100%, 36%, 0.05);
       }
 
 

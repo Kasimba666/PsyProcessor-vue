@@ -1,70 +1,103 @@
 <template>
-    <div class="ppSessionList">
-        <div class="table-custom">
-            <div class="table-head">
-                <div class="table-cell cell-title" :class="{right: (i === fields.length-1)}"
-                     v-for="(field, i) of fields" :key="i">
-                    {{ field.label }}
-                </div>
-                <div class="table-button">
-                </div>
-            </div>
-            <div class="table-row"
-                 :class="{last: (r === rows.length-1)}"
-                 v-if="!!rows && rows.length  >0"
-                 v-for="(row, r) of rows" :key="r"
-                 :style="{backgroundColor: (r%2 === 1) ? 'hsl(0, 0%, 83%, 0.3)' : 'none'}"
-                 @click="onRowClicked(r)">
-                <div :class="{current: r===currentIdx}">
-                </div>
-                <div class="table-cell cell-row" :class="{right: (f === fields.length-1)}"
-                     v-if="!!fields && fields.length>0"
-                     v-for="(field, f) of fields" :key="f"
-                >
-                    {{ Array.isArray(row[field.key]) ? row[field.key].join(', ') : row[field.key] }}
-                </div>
-                <div class="table-button">
-                    <button class="btn btn-outline-primary btn-custom btn-sm"
-                            @click.stop="changeStatus(r)">
-                        {{showStatus(row.status)}}
-                    </button>
-                </div>
-            </div>
+  <div class="ppSessionList">
+    <div class="table-custom">
+      <div class="table-head">
+        <div class="table-cell cell-title" :class="{right: (i === fields.length-1)}"
+             v-for="(field, i) of fields" :key="i">
+          {{ field.label }}
         </div>
-
+        <div class="table-button">
+        </div>
+      </div>
+      <div class="table-row"
+           :class="{last: (r === rows.length-1)}"
+           v-if="!!rows && rows.length  >0"
+           v-for="(row, r) of rows" :key="r"
+           :style="{backgroundColor: (r%2 === 1) ? 'hsl(0, 0%, 83%, 0.3)' : 'none'}"
+           @click="onRowClicked(r)">
+        <div :class="{current: r===currentIdx}">
+        </div>
+        <div class="table-cell cell-row" :class="{right: (f === fields.length-1)}"
+             v-if="!!fields && fields.length>0"
+             v-for="(field, f) of fields" :key="f"
+        >
+          {{ Array.isArray(row[field.key]) ? row[field.key].join(', ') : row[field.key] }}
+        </div>
+        <div class="table-button">
+          <button class="btn btn-outline-primary btn-custom btn-sm"
+                  @click="changeStatus(r)">
+            {{ showStatus(row.status) }}
+          </button>
+        </div>
+      </div>
     </div>
+    <div class="session-list-control">
+      <button class="btn btn-outline-primary btn-custom btn-sm"
+              @click="changeName(currentIdx)">
+        Изменить название
+      </button>
+      <button class="btn btn-outline-primary btn-custom btn-sm"
+              @click="remove(currentIdx)">
+        Удалить
+      </button>
+      <button class="btn btn-outline-primary btn-custom btn-sm"
+              @click="loadSession(currentIdx)">
+       Загрузить
+      </button>
+      <button class="btn btn-outline-primary btn-custom btn-sm"
+              @click="saveSession(currentIdx)">
+        Сохранить
+      </button>
+    </div>
+
+  </div>
 </template>
 
 <script>
 
 export default {
-    name: "ppSessionList",
-    components: {},
-    props: ['rows', 'fields'],
-    data() {
-        return {
-            currentIdx: [],
-        }
+  name: "ppSessionList",
+  components: {},
+  props: ['rows', 'fields'],
+  data() {
+    return {
+      currentIdx: null,
+    }
+  },
+  computed: {},
+  methods: {
+    onRowClicked(v) {
+      this.currentIdx = v;
     },
-    computed: {},
-    methods: {
-        onRowClicked(v) {
-            this.currentIdx = v;
-        },
-      changeStatus(v) {
-            this.$emit('doAction', 'changeStatus', [v])
-        },
-      showStatus(v) {
-        switch (v) {
-          case 'paused': return 'Запустить';
-          case 'inProgress':  return 'Пауза';
-          default: {}
-        }
-      },
+    changeStatus(v) {
+      this.$emit('doAction', 'changeStatus', [v]);
     },
-    mounted() {
+    changeName(v) {
+      if (!!v || v === 0) this.$emit('doAction', 'changeName', [v]);
+    },
+    remove(v) {
+      if (!!v || v === 0) this.$emit('doAction', 'remove', [v]);
+    },
+    saveSession(v) {
+      if (!!v || v === 0) this.$emit('doAction', 'save', [v]);
+    },
+    loadSession(v) {
+      if (!!v || v === 0) this.$emit('doAction', 'load', [v]);
+    },
+    showStatus(v) {
+      switch (v) {
+        case 'paused':
+          return 'Запустить';
+        case 'inProgress':
+          return 'Пауза';
+        default: {
+        }
+      }
+    },
+  },
+  mounted() {
 
-    },
+  },
 }
 </script>
 
@@ -111,10 +144,6 @@ export default {
         box-shadow: 0 0 10px 3px rgba(0, 140, 186, 0.5);
       }
 
-      &.chosen {
-        background-color: rgba(0, 140, 186, 0.5);
-      }
-
       &.last {
         border-bottom: none;
       }
@@ -125,6 +154,7 @@ export default {
         height: 100%;
         border: 2px solid rgba(0, 140, 186, 0.5);
         pointer-events: none;
+        background-color: hsla(195, 100%, 36%, 0.05);
       }
 
 
@@ -175,6 +205,7 @@ export default {
     }
 
   }
+
   .session-list-control {
     width: auto;
     display: flex;
