@@ -6,7 +6,7 @@
                      :rows="rows"
                      :fields="fields"
                      @doAction="onDoAction"
-      />
+      />*
     </div>
     <div class="container">
       <div class="row">
@@ -45,7 +45,7 @@ export default {
     return {
       newSessionName: '',
       showModalName: false,
-      currentIdx: null,
+      cur n;.rentIdx: null,
       fields: [
         {key: 'sessionTitle', label: 'Наименование'},
         {key: 'processTitle', label: 'Процесс'},

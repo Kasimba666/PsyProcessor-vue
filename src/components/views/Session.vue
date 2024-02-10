@@ -23,9 +23,13 @@
         layout: 'default',
         name: "session",
         components: {},
-        props: [],
+        props: [
+'session'
+        ],
         data() {
-            return {}
+            return {
+                historyItem: {q: '', a: '', qDt: null, aDt: null, qKey: null},
+            }
         },
         computed: {
             ...mapState(['testData']),
@@ -38,7 +42,14 @@
                 },
             },
         },
-        methods: {},
+        methods: {
+           createHistoryItem() {
+               return {q: '', a: '', qDt: null, aDt: null, qKey: null};
+           },
+           addHistoryItem() {
+
+           },
+        },
         mounted(){
         },
     }

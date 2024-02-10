@@ -12,9 +12,10 @@
                     v-model="currentNode.type"
                     @change="changeNodeType">
               <option :value="item.value"
+                      :disabled="currentNode===process.rootNode && item.value==='quest'"
                       v-for="item in types"
-                      :disabled="currentNode.attrs.nodeName.value==='root' && item.value==='quest'"
               >{{ item.title }}
+<!--                      :disabled="currentNode.owner.type==='process' && item.value==='quest'"-->
               </option>
             </select>
           </div>
