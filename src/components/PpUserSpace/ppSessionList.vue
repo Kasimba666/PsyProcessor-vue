@@ -24,7 +24,7 @@
           {{ Array.isArray(row[field.key]) ? row[field.key].join(', ') : row[field.key] }}
         </div>
         <div class="table-button">
-          <button class="btn btn-outline-primary btn-custom btn-sm"
+          <button class="btn btn-outline-primary btn-next btn-sm"
                   @click="changeStatus(r)">
             {{ showStatus(row.status) }}
           </button>
@@ -32,19 +32,19 @@
       </div>
     </div>
     <div class="session-list-control">
-      <button class="btn btn-outline-primary btn-custom btn-sm"
+      <button class="btn btn-outline-primary btn-next btn-sm"
               @click="changeName(currentIdx)">
         Изменить название
       </button>
-      <button class="btn btn-outline-primary btn-custom btn-sm"
+      <button class="btn btn-outline-primary btn-next btn-sm"
               @click="remove(currentIdx)">
         Удалить
       </button>
-      <button class="btn btn-outline-primary btn-custom btn-sm"
+      <button class="btn btn-outline-primary btn-next btn-sm"
               @click="loadSession(currentIdx)">
        Загрузить
       </button>
-      <button class="btn btn-outline-primary btn-custom btn-sm"
+      <button class="btn btn-outline-primary btn-next btn-sm"
               @click="saveSession(currentIdx)">
         Сохранить
       </button>
@@ -217,7 +217,7 @@ export default {
 
   }
 
-  .btn-custom {
+  .btn-next {
     height: auto;
     width: auto;
     color: black;

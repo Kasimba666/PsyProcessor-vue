@@ -7,7 +7,7 @@
 
         </div>
         <div class="files-control">
-          <button class="btn btn-outline-primary btn-custom btn-sm"
+          <button class="btn btn-outline-primary btn-next btn-sm"
                   @click="onSaveInList">
             Сохранить в списке
           </button>
@@ -62,6 +62,7 @@ export default {
             },
           },
           list: [],
+          currChildIdx: 0,  
           forKey: 'root',
         }
       }),
@@ -121,7 +122,7 @@ export default {
     padding: 5px;
     margin: 10px;
 
-    .btn-custom {
+    .btn-next {
       color: black;
       border: 1px solid hsl(50, 30%, 75%);
 

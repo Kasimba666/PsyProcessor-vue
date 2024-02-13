@@ -94,10 +94,9 @@ export default createStore({
 
                 },
                 process: p,
-                status: 'paused',
+                status: 'new',
                 state: {
-                    node: null,
-                    quest: null,
+                    nodeKey: null,
                 },
                 history: []
             };

@@ -8,6 +8,10 @@
                     <h2>Session</h2>
                     <hr/>
                     <input type="text" v-model="model"/>
+                    <SessionPlayer
+                        :session="session"
+
+                    />
                 </div>
             </div>
         </div>
@@ -16,13 +20,14 @@
 
 <script>
     import {mapState} from "vuex";
+    import SessionPlayer from "@/components/SessionPlayer/SessionPlayer.vue";
     export default {
         head: {
             title: 'PsyProcessor : Сессия'
         },
         layout: 'default',
         name: "session",
-        components: {},
+        components: {SessionPlayer},
         props: ['session'],
         data() {
             return {

@@ -38,13 +38,13 @@
           {{ Array.isArray(row[field.key]) ? row[field.key].join(', ') : row[field.key] }}
         </div>
         <div class="table-button border-right">
-          <button class="btn btn-outline-primary btn-custom btn-sm"
+          <button class="btn btn-outline-primary btn-next btn-sm"
                   @click.stop="changeProcess(r)">
             Изменить
           </button>
         </div>
         <div class="table-button">
-          <button class="btn btn-outline-primary btn-custom btn-sm"
+          <button class="btn btn-outline-primary btn-next btn-sm"
                   @click.stop="startProcess(r)">
             Начать
           </button>
@@ -53,27 +53,27 @@
     </div>
 
     <div class="process-list-control">
-      <button class="btn btn-outline-primary btn-custom btn-sm"
+      <button class="btn btn-outline-primary btn-next btn-sm"
               @click="selectAll">
         Выбрать все
       </button>
-      <button class="btn btn-outline-primary btn-custom btn-sm"
+      <button class="btn btn-outline-primary btn-next btn-sm"
               @click="unselectAll">
         Развыбрать все
       </button>
-      <button class="btn btn-outline-primary btn-custom btn-sm"
+      <button class="btn btn-outline-primary btn-next btn-sm"
               @click="createProcess">
         Создать
       </button>
-      <button class="btn btn-outline-primary btn-custom btn-sm"
+      <button class="btn btn-outline-primary btn-next btn-sm"
               @click="removeProcess">
         Удалить
       </button>
-      <button class="btn btn-outline-primary btn-custom btn-sm"
+      <button class="btn btn-outline-primary btn-next btn-sm"
               @click="duplicateProcess">
         Дублировать
       </button>
-      <button class="btn btn-outline-primary btn-custom btn-sm">
+      <button class="btn btn-outline-primary btn-next btn-sm">
         <label class="add-item" for="id-input-file-2" style="margin-bottom: 0">
           <input type="file" class="d-none" id="id-input-file-2"
                  value=""
@@ -82,7 +82,7 @@
           Загрузить
         </label>
       </button>
-      <button class="btn btn-outline-primary btn-custom btn-sm"
+      <button class="btn btn-outline-primary btn-next btn-sm"
               @click="saveProcesses">
         Выгрузить
       </button>
@@ -301,7 +301,7 @@ export default {
 
   }
 
-  .btn-custom {
+  .btn-next {
     height: auto;
     width: auto;
     color: black;
