@@ -23,9 +23,7 @@
         layout: 'default',
         name: "session",
         components: {},
-        props: [
-'session'
-        ],
+        props: ['session'],
         data() {
             return {
                 historyItem: {q: '', a: '', qDt: null, aDt: null, qKey: null},

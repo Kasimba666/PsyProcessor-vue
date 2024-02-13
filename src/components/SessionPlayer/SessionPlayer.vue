@@ -1,23 +1,27 @@
 <template>
-    <div class="SessionPlayer">
-        <h4>Сессия:
-        {{}}
-        </h4>
+  <div class="SessionPlayer">
+    <div class="history">
+
     </div>
+    <h4>Сессия:
+      {{}}
+    </h4>
+  </div>
 </template>
 
 <script>
 export default {
-    name: "SessionPlayer",
-    components: {},
-    props: [],
-    data() {
-        return {}
-    },
-    computed: {},
-    methods: {},
-    mounted() {
-    },
+  name: "SessionPlayer",
+  components: {},
+  props: ['session', 'tableKeys'],
+  emits: ['action'],
+  data() {
+    return {}
+  },
+  computed: {},
+  methods: {},
+  mounted() {
+  },
 }
 </script>
 

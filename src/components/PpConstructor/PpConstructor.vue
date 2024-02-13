@@ -127,13 +127,14 @@ export default {
 
       this.$emit('changed', this.process);
     },
-    createNewNode(type) {
-      let forKey = (~~(Math.random() * 32767) * (1 << 19 - 1) % 3047777777).toString(16);
+    createNewNode(type, parentKey) {
+      let forKey = type + '-' + (~~(Math.random() * 32767) * (1 << 19 - 1) % 3047777777).toString(16);
       return {
         type: type,
         attrs: this.createAttrs(type),
         list: [],
         forKey: forKey,
+        parentKey: parentKey,
       };
     },
     changeNodeType() {

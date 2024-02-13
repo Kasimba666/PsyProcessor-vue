@@ -93,8 +93,12 @@ export default createStore({
                     description: 'Описание',
 
                 },
-                status: 'paused',
                 process: p,
+                status: 'paused',
+                state: {
+                    node: null,
+                    quest: null,
+                },
                 history: []
             };
             commit('addSessionInList', newSession);

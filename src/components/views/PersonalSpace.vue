@@ -6,7 +6,8 @@
                      :rows="rows"
                      :fields="fields"
                      @doAction="onDoAction"
-      />*
+      />
+      *
     </div>
     <div class="container">
       <div class="row">
@@ -45,7 +46,8 @@ export default {
     return {
       newSessionName: '',
       showModalName: false,
-      cur n;.rentIdx: null,
+      currentIdx: null,
+      mapKeysNodes: null,
       fields: [
         {key: 'sessionTitle', label: 'Наименование'},
         {key: 'processTitle', label: 'Процесс'},
@@ -79,21 +81,22 @@ export default {
       result[13] = '-';
       result[16] = '-';
       return result.join('');
-    }
-    ,
+    },
     onDoAction(action, idxs) {
       console.log(action, idxs);
       switch (action) {
         case 'changeStatus': {
           let newStatus = '';
-          if (this.sessionList[idxs[0]].status === 'paused') {
+          this.currentIdx = idxs[0];
+          if (this.sessionList[this.currentIdx].status === 'paused') {
             newStatus = 'inProgress';
-            this.currentSession = this.sessionList[idxs[0]].p;
-          };
-          if (this.sessionList[idxs[0]].status === 'inProgress') {
+            // this.currentSession = this.sessionList[idxs[0]].p;
+            this.createTableKeys(this.sessionList[this.currentIdx].process);
+          }
+          if (this.sessionList[this.currentIdx].status === 'inProgress') {
             newStatus = 'paused';
             this.$store.commit('sessionList', this.sessionList);
-          };
+          }
           this.$store.commit('sessionStatus', {idx: idxs[0], status: newStatus});
         }
           return
@@ -117,19 +120,24 @@ export default {
         default: {
         }
       }
-    }
-    ,
+    },
     onOkChangeName() {
       this.sessionList[!!this.currentIdx ? this.currentIdx : 0].header.sessionTitle = this.newSessionName;
       this.$store.commit('sessionList', this.sessionList);
-    }
-    ,
+    },
+    createTableKeys(process) {
+      const getNode = (node) =>
+      {
+        this.mapKeysNodes[node.forKey] = node;
+        if (node.list.length > 0) node.list.forEach((v)=>{getNode(v)});
 
-  }
-  ,
+      }
+      this.mapKeysNodes = {};
+      getNode(process.rootNode);
+    },
+  },
   mounted() {
-  }
-  ,
+  },
 }
 </script>
 
