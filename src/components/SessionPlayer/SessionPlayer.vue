@@ -65,22 +65,25 @@ export default {
   },
   methods: {
     initSession() {
-      switch (this.currentSession.status) {
-        case 'new': {
-
-        }
-          break;
-        case 'inPause': {
-
-        }
-          break;
-        default: {
-        }
-      }
+      // switch (this.currentSession.status) {
+      //   case 'new': {
+      //
+      //   }
+      //     break;
+      //   case 'inPause': {
+      //
+      //   }
+      //     break;
+      //   default: {
+      //   }
+      // }
+        this.currentSession.stack = [{
+            key: 'root', idxChild: -1
+        }];
       console.log(this.currentSession.stack[0]);
     },
     onClickBtnNext() {
-      this.quest = this.nextNode();
+      this.quest = this.nextQuest();
 
     },
     onClickBtnNew() {
@@ -89,17 +92,22 @@ export default {
     saveHistoryItem() {
 
     },
-    getResponse() {
-      return 'Ok';
+    nextQuest() {
+        let response = {};
+        do
+           response = this.nextElement();
+        while (response.q === '')
+        return response.q;
     },
-
-    nextNode() {
-      let result = '';
+    nextElement() {
+      let result = {q: ''};
       this.currentSession.stack[0].idxChild += 1;
       if (this.currentSession.stack[0].idxChild < this.mapKeyNodes[this.currentSession.stack[0].key].list.length) {
         switch (this.mapKeyNodes[this.currentSession.stack[0].key].list[this.currentSession.stack[0].idxChild].type) {
           case 'quest': {
-            result = this.mapKeyNodes[this.currentSession.stack[0].key].list[this.currentSession.stack[0].idxChild].attrs.quest.value;
+            result = {
+                q: this.mapKeyNodes[this.currentSession.stack[0].key].list[this.currentSession.stack[0].idxChild].attrs.quest.value
+            };
           }
             break;
           case 'loopList': {
@@ -109,12 +117,12 @@ export default {
           }
             break;
           default: {
-          }
+          }-**+
         }
       } else {
         if (this.currentSession.stack.length > 1) {
           this.currentSession.stack.shift();
-        } else result = 'Сказочке конец'
+        } else result = {q: 'Сказочке конец'}
       }
       console.log(result);
       return result;

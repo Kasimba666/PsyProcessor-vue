@@ -155,7 +155,7 @@ export default {
     flex-flow: column nowrap;
     justify-content: start;
     align-items: start;
-    border-right: 1px solid hsl(0, 0%, 70%);
+    //border-right: 1px solid hsl(0, 0%, 70%);
 
     .user-menu {
       width: 100%;

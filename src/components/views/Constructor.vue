@@ -34,7 +34,6 @@ export default {
           processTitle: "Новый процесс",
           version: "0.0.1",
           processCategory: ["common"],
-          type: 'process',
           createdDt: (new Date()).toISOString(),
           changedDt: (new Date()).toISOString(),
           description: 'Описание',
