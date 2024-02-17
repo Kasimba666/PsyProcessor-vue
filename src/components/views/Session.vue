@@ -3,14 +3,10 @@
         <div class="container">
             <div class="row">
                 <div class="col-12 mt-40">
-
-
                     <h2>Session</h2>
                     <hr/>
                     <input type="text" v-model="model"/>
                     <SessionPlayer
-                        :session="session"
-
                     />
                 </div>
             </div>
@@ -28,10 +24,10 @@
         layout: 'default',
         name: "session",
         components: {SessionPlayer},
-        props: ['session'],
+
         data() {
             return {
-                historyItem: {q: '', a: '', qDt: null, aDt: null, qKey: null},
+
             }
         },
         computed: {

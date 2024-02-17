@@ -62,7 +62,6 @@ export default {
             },
           },
           list: [],
-          currChildIdx: 0,  
           forKey: 'root',
         }
       }),

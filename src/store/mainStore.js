@@ -10,11 +10,9 @@ export default createStore({
         currentEditableProcess: null,
         currentEditableProcessIdx: -1,
         sessionList: [],
-        isNewSession: false,
         currentSession: null,
         token: null,
-        user: null,
-        //curLang: 'en',
+        user: null, //curLang: 'en',
         //verbs: verbs['en'],
         isMobile: false,
         blur: false,
@@ -82,8 +80,7 @@ export default createStore({
         blur(state, v) {
             state.blur = v;
         },
-    },
-    actions: {
+    }, actions: {
         createNewSession({commit, state}, p) {
             let newSession = {
                 header: {
@@ -92,31 +89,27 @@ export default createStore({
                     changedDt: (new Date()).toISOString(),
                     description: 'Описание',
 
-                },
-                process: p,
+                }, process: p,
                 status: 'new',
-                state: {
-                    nodeKey: null,
-                },
+                stack: [{
+                    key: 'root', idxChild: -1
+                }],
                 history: []
             };
             commit('addSessionInList', newSession);
         },
-    },
-    getters: {
+    }, getters: {
         //balance(state) {
         //    return state.walletList.reduce((s, v) => s += v.confirmed_balance * v.currency_price_usd, 0)
         //},
-    },
-    plugins: [createPersistedState({
-        key: 'ppVuexDataEditableProcess',
-        paths: ['currentEditableProcess']
+    }, plugins: [createPersistedState({
+        key: 'ppVuexDataEditableProcess', paths: ['currentEditableProcess']
     }), createPersistedState({
-        key: 'ppVuexDataProcessList',
-        paths: ['processList']
+        key: 'ppVuexDataProcessList', paths: ['processList']
     }), createPersistedState({
-        key: 'ppVuexDataSessionList',
-        paths: ['sessionList']
+        key: 'ppVuexDataSessionList', paths: ['sessionList']
+    }), createPersistedState({
+        key: 'ppVuexDataSession', paths: ['currentSession']
     }),],
 
 })

@@ -86,6 +86,8 @@ export default {
     },
     showStatus(v) {
       switch (v) {
+        case 'new':
+          return 'Запустить';
         case 'paused':
           return 'Запустить';
         case 'inProgress':

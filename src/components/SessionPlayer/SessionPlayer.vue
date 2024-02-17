@@ -1,88 +1,129 @@
 <template>
-    <div class="SessionPlayer">
-        <div class="main">
-            <div class="history">
-                История вопросов и ответов
-            </div>
+  <div class="SessionPlayer">
+    <div class="main">
+      <div class="history">
+        История вопросов и ответов
+      </div>
 
-            <div class="quest">
-                Вопрос и поощрение
-            </div>
-            <div class="answer">
-                <b-form-textarea
-                        v-model="answer"
-                        placeholder="Введите ответ"
-                        rows="2"
-                        max-rows="10"
-                />
-            </div>
-            <div class="next">
-                <button class="btn btn-outline-primary btn-next btn-sm"
-                        @click="onClickBtnNext">
-                    Далее
-                </button>
-            </div>
-        </div>
+      <div class="quest">
+        Вопрос и поощрение: {{ quest }}
+      </div>
+      <div class="answer">
+        <b-form-textarea
+            v-model="answer"
+            placeholder="Введите ответ"
+            rows="2"
+            max-rows="10"
+        />
+      </div>
+      <div class="next">
+        <button class="btn btn-outline-primary btn-next btn-sm"
+                @click="onClickBtnNext">
+          Далее
+        </button>
+      </div>
+      <div class="next">
+        <button class="btn btn-outline-primary btn-next btn-sm"
+                @click="onClickBtnNew">
+          Подготовить новую сессию
+        </button>
+      </div>
     </div>
+  </div>
 </template>
 
 <script>
 
+import {mapState} from "vuex";
+
 export default {
-    name: "SessionPlayer",
-    components: {},
-    props: ['session'],
-    emits: ['action', 'status'],
-    data() {
-        return {
-            answer: '',
+  name: "SessionPlayer",
+  components: {},
+
+  data() {
+    return {
+      quest: '',
+      answer: '',
+      stepCounter: 0,
+    }
+  },
+  computed: {
+    ...mapState(['currentSession']),
+    mapKeyNodes() {
+      if (this.currentSession === null) return null;
+      let result = {};
+      const getNode = (node) => {
+        result[node.forKey] = node;
+        if (node.list.length > 0) node.list.forEach((v) => {
+          getNode(v)
+        });
+
+      }
+      getNode(this.currentSession.process.rootNode);
+      return result;
+    },
+  },
+  methods: {
+    initSession() {
+      switch (this.currentSession.status) {
+        case 'new': {
+
         }
-    },
-    computed: {
-        mapKeysNodes() {
-            let result = {};
-            const getNode = (node) => {
-                result[node.forKey] = node;
-                if (node.list.length > 0) node.list.forEach((v) => {
-                    getNode(v)
-                });
+          break;
+        case 'inPause': {
 
+        }
+          break;
+        default: {
+        }
+      }
+      console.log(this.currentSession.stack[0]);
+    },
+    onClickBtnNext() {
+      this.quest = this.nextNode();
+
+    },
+    onClickBtnNew() {
+      this.initSession();
+    },
+    saveHistoryItem() {
+
+    },
+    getResponse() {
+      return 'Ok';
+    },
+
+    nextNode() {
+      let result = '';
+      this.currentSession.stack[0].idxChild += 1;
+      if (this.currentSession.stack[0].idxChild < this.mapKeyNodes[this.currentSession.stack[0].key].list.length) {
+        switch (this.mapKeyNodes[this.currentSession.stack[0].key].list[this.currentSession.stack[0].idxChild].type) {
+          case 'quest': {
+            result = this.mapKeyNodes[this.currentSession.stack[0].key].list[this.currentSession.stack[0].idxChild].attrs.quest.value;
+          }
+            break;
+          case 'loopList': {
+            if (this.mapKeyNodes[this.currentSession.stack[0].key].list.length > 1) {
+              this.currentSession.stack.unshift({key: this.mapKeyNodes[this.currentSession.stack[0].key].list[this.currentSession.stack[0].idxChild].forKey, idxChild: -1});
             }
-            getNode(this.session.process.rootNode);
-            return result;
-        },
+          }
+            break;
+          default: {
+          }
+        }
+      } else {
+        if (this.currentSession.stack.length > 1) {
+          this.currentSession.stack.shift();
+        } else result = 'Сказочке конец'
+      }
+      console.log(result);
+      return result;
     },
-    methods: {
-        initSession() {
-            switch (this.session.status) {
-                case 'new': {
 
-                }
-                    break;
-                case 'inPause': {
+  },
+  mounted() {
 
-                }
-                    break;
-                default: {
-                }
-            }
-        },
-        onClickBtnNext() {
-
-        },
-        nextStep() {
-
-        },
-        saveHistoryItem() {
-
-        },
-        getResponse() {
-            return 'Ok';
-        },
-    },
-    mounted() {
-        this.initSession();
-    },
+  },
 }
 </script>
 
