@@ -78,7 +78,10 @@ export default {
       //   }
       // }
         this.session.stack = [{
-            key: 'root', idxChild: -1
+            key: 'root',
+            counter: -1,
+            totalCount: 1000000,
+            // maxCount: this.session.process.rootNode.attrs.loopCount.value
         }];
       console.log(this.session.stack[0]);
     },
@@ -102,26 +105,31 @@ export default {
     },
     nextElement() {
       let result = {q: ''};
-      this.session.stack[0].idxChild += 1;
-      if (this.session.stack[0].idxChild < this.mapKeyNodes[this.session.stack[0].key].list.length) {
-        switch (this.mapKeyNodes[this.session.stack[0].key].list[this.session.stack[0].idxChild].type) {
+      let curr = this.session.stack[0];
+      curr.counter += 1;
+      let childrenAmount = this.mapKeyNodes[curr.key].list.length;
+      if (curr.counter < curr.totalCount) {
+          console.log('Тип узла:', this.mapKeyNodes[curr.key].list[curr.counter % childrenAmount].type);
+          switch (this.mapKeyNodes[curr.key].list[curr.counter % childrenAmount].type) {
           case 'quest': {
+            console.log('Формируется вопрос:', this.mapKeyNodes[curr.key].list[curr.counter % childrenAmount].attrs.quest.value);
             result = {
-                q: this.mapKeyNodes[this.session.stack[0].key].list[this.session.stack[0].idxChild].attrs.quest.value
+                q: this.mapKeyNodes[curr.key].list[curr.counter % childrenAmount].attrs.quest.value
             };
           }
             break;
           case 'loopList': {
-            if (this.mapKeyNodes[this.session.stack[0].key].list.length > 1) {
+
+              let childrenOfChildAmount = this.mapKeyNodes[curr.key].list[curr.counter % childrenAmount].list.length;
+              if (childrenOfChildAmount > 1) {
+              let totalCount = this.mapKeyNodes[curr.key].list[curr.counter % childrenAmount].attrs.loopCount.value * childrenOfChildAmount;
+              console.log('totalCount', totalCount);
               this.session.stack.unshift({
-                key: this.mapKeyNodes[this.session.stack[0].key].list[this.session.stack[0].idxChild].forKey,
-                idxChild: -1,
-                maxCount: this.mapKeyNodes[this.session.stack[0].key].list[this.session.stack[0].idxChild].attrs.loopCount.value,
+                key: this.mapKeyNodes[curr.key].list[curr.counter % childrenAmount].forKey,
+                countChild: -1,
+                totalCount: totalCount,
               });
             }
-          }
-            break;
-          default: {
           }
         }
       } else {

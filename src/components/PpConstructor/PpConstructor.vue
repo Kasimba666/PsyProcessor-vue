@@ -188,7 +188,7 @@ export default {
           a.loopCount = {
             inpType: 'number',
             inpLabel: 'Количество циклов',
-            value: 0, // ноль означает бесконечный цикл
+            value: 1, // ноль означает бесконечный цикл
             min: 0,
           };
           break;

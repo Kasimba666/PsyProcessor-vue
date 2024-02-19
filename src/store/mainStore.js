@@ -89,10 +89,13 @@ export default createStore({
                     changedDt: (new Date()).toISOString(),
                     description: 'Описание',
 
-                }, process: p,
+                },
+                process: p,
                 status: 'new',
                 stack: [{
-                    key: 'root', idxChild: -1
+                    key: 'root',
+                    idxChild: -1,
+                    maxCount: 0
                 }],
                 history: []
             };

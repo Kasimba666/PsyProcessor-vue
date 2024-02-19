@@ -7,7 +7,6 @@
                      :fields="fields"
                      @doAction="onDoAction"
       />
-      *
     </div>
     <div class="container">
       <div class="row">

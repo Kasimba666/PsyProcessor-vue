@@ -30,6 +30,7 @@ export default {
 <style lang="scss">
 .AppHeader {
   position: fixed;
+  z-index: 1000;
   left: 0;
   top: 0;
   padding: 0 20px;
