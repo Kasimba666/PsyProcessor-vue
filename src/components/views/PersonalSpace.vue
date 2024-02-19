@@ -91,12 +91,12 @@ export default {
           this.currentIdx = idxs[0];
           if (this.sessionList[this.currentIdx].status === 'new') {
             this.currentSession = this.sessionList[idxs[0]];
-            this.$store.commit('currentSession', this.currentSession);
+            this.$store.commit('session', this.currentSession);
           }
           if (this.sessionList[this.currentIdx].status === 'paused' || this.sessionList[this.currentIdx].status === 'new') {
             newStatus = 'inProgress';
             this.currentSession = this.sessionList[idxs[0]];
-            this.$store.commit('currentSession', this.currentSession);
+            this.$store.commit('session', this.currentSession);
           }
           if (this.sessionList[this.currentIdx].status === 'inProgress') {
             newStatus = 'paused';

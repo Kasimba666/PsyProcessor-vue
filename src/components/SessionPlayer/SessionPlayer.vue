@@ -48,9 +48,9 @@ export default {
     }
   },
   computed: {
-    ...mapState(['currentSession']),
+    ...mapState(['session']),
     mapKeyNodes() {
-      if (this.currentSession === null) return null;
+      if (this.session === null) return null;
       let result = {};
       const getNode = (node) => {
         result[node.forKey] = node;
@@ -59,7 +59,7 @@ export default {
         });
 
       }
-      getNode(this.currentSession.process.rootNode);
+      getNode(this.session.process.rootNode);
       return result;
     },
   },
@@ -77,10 +77,10 @@ export default {
       //   default: {
       //   }
       // }
-        this.currentSession.stack = [{
+        this.session.stack = [{
             key: 'root', idxChild: -1
         }];
-      console.log(this.currentSession.stack[0]);
+      console.log(this.session.stack[0]);
     },
     onClickBtnNext() {
       this.quest = this.nextQuest();
@@ -96,32 +96,37 @@ export default {
         let response = {};
         do
            response = this.nextElement();
-        while (response.q === '')
+        while (response.q === '');
+
         return response.q;
     },
     nextElement() {
       let result = {q: ''};
-      this.currentSession.stack[0].idxChild += 1;
-      if (this.currentSession.stack[0].idxChild < this.mapKeyNodes[this.currentSession.stack[0].key].list.length) {
-        switch (this.mapKeyNodes[this.currentSession.stack[0].key].list[this.currentSession.stack[0].idxChild].type) {
+      this.session.stack[0].idxChild += 1;
+      if (this.session.stack[0].idxChild < this.mapKeyNodes[this.session.stack[0].key].list.length) {
+        switch (this.mapKeyNodes[this.session.stack[0].key].list[this.session.stack[0].idxChild].type) {
           case 'quest': {
             result = {
-                q: this.mapKeyNodes[this.currentSession.stack[0].key].list[this.currentSession.stack[0].idxChild].attrs.quest.value
+                q: this.mapKeyNodes[this.session.stack[0].key].list[this.session.stack[0].idxChild].attrs.quest.value
             };
           }
             break;
           case 'loopList': {
-            if (this.mapKeyNodes[this.currentSession.stack[0].key].list.length > 1) {
-              this.currentSession.stack.unshift({key: this.mapKeyNodes[this.currentSession.stack[0].key].list[this.currentSession.stack[0].idxChild].forKey, idxChild: -1});
+            if (this.mapKeyNodes[this.session.stack[0].key].list.length > 1) {
+              this.session.stack.unshift({
+                key: this.mapKeyNodes[this.session.stack[0].key].list[this.session.stack[0].idxChild].forKey,
+                idxChild: -1,
+                maxCount: this.mapKeyNodes[this.session.stack[0].key].list[this.session.stack[0].idxChild].attrs.loopCount.value,
+              });
             }
           }
             break;
           default: {
-          }-**+
+          }
         }
       } else {
-        if (this.currentSession.stack.length > 1) {
-          this.currentSession.stack.shift();
+        if (this.session.stack.length > 1) {
+          this.session.stack.shift();
         } else result = {q: 'Сказочке конец'}
       }
       console.log(result);

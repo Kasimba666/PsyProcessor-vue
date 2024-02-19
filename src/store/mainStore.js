@@ -10,7 +10,7 @@ export default createStore({
         currentEditableProcess: null,
         currentEditableProcessIdx: -1,
         sessionList: [],
-        currentSession: null,
+        session: null,
         token: null,
         user: null, //curLang: 'en',
         //verbs: verbs['en'],
@@ -44,8 +44,8 @@ export default createStore({
             state.sessionList[idx].status = status;
         },
 
-        currentSession(state, v) {
-            state.currentSession = v;
+        session(state, v) {
+            state.session = v;
         },
         addSessionInList(state, v) {
             if (!!v) state.sessionList.unshift(v);
