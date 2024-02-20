@@ -140,7 +140,7 @@ export default {
 /****  PersonalSpace  ****/
 .PersonalSpace {
   width: 100%;
-  height: 90 dvh;
+  height: auto;
   display: flex;
   flex-flow: row nowrap;
   justify-content: start;
@@ -149,7 +149,7 @@ export default {
 
   .menu-panel {
     width: 400px;
-    height: 80 dvh;
+    height: 80dvh;
     display: flex;
     flex-flow: column nowrap;
     justify-content: start;
