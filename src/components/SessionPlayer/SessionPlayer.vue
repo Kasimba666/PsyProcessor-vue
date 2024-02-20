@@ -77,12 +77,12 @@ export default {
       //   default: {
       //   }
       // }
-        this.session.stack = [{
-            key: 'root',
-            counter: -1,
-            totalCount: 1000000,
-            // maxCount: this.session.process.rootNode.attrs.loopCount.value
-        }];
+      this.session.stack = [{
+        key: 'root',
+        counter: -1,
+        totalCount: 1000000,
+        // maxCount: this.session.process.rootNode.attrs.loopCount.value
+      }];
       console.log(this.session.stack[0]);
     },
     onClickBtnNext() {
@@ -96,12 +96,12 @@ export default {
 
     },
     nextQuest() {
-        let response = {};
-        do
-           response = this.nextElement();
-        while (response.q === '');
+      let response = {};
+      do
+        response = this.nextElement();
+      while (response.q === '');
 
-        return response.q;
+      return response.q;
     },
     nextElement() {
       let result = {q: ''};
@@ -109,27 +109,30 @@ export default {
       curr.counter += 1;
       let childrenAmount = this.mapKeyNodes[curr.key].list.length;
       if (curr.counter < curr.totalCount) {
-          console.log('Тип узла:', this.mapKeyNodes[curr.key].list[curr.counter % childrenAmount].type);
-          switch (this.mapKeyNodes[curr.key].list[curr.counter % childrenAmount].type) {
+        switch (this.mapKeyNodes[curr.key].list[curr.counter % childrenAmount].type) {
           case 'quest': {
             console.log('Формируется вопрос:', this.mapKeyNodes[curr.key].list[curr.counter % childrenAmount].attrs.quest.value);
             result = {
-                q: this.mapKeyNodes[curr.key].list[curr.counter % childrenAmount].attrs.quest.value
+              q: this.mapKeyNodes[curr.key].list[curr.counter % childrenAmount].attrs.quest.value
             };
           }
             break;
           case 'loopList': {
-
-              let childrenOfChildAmount = this.mapKeyNodes[curr.key].list[curr.counter % childrenAmount].list.length;
-              if (childrenOfChildAmount > 1) {
+            let childrenOfChildAmount = this.mapKeyNodes[curr.key].list[curr.counter % childrenAmount].list.length;
+            if (childrenOfChildAmount > 0) {
               let totalCount = this.mapKeyNodes[curr.key].list[curr.counter % childrenAmount].attrs.loopCount.value * childrenOfChildAmount;
-              console.log('totalCount', totalCount);
               this.session.stack.unshift({
                 key: this.mapKeyNodes[curr.key].list[curr.counter % childrenAmount].forKey,
-                countChild: -1,
+                counter: -1,
                 totalCount: totalCount,
               });
             }
+          }
+          case 'randList': {
+
+          }
+            break;
+          default: {
           }
         }
       } else {
