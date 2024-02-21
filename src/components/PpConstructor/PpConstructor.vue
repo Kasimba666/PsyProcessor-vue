@@ -1,92 +1,92 @@
 <template>
-  <div class="PpConstructor">
+    <div class="PpConstructor">
 
-    <div class="pp-panel mt-4" v-if="!!currentNode">
-      <div class="attr-panel">
-        <div class="head">{{ 'Редактор атрибутов' }}</div>
-        <div class="body">
-          <div class="ppcEditorInput mt-1">
-            <!--<div class="type-select">-->
-            <label for="type">Тип узла</label>
-            <select name="type" id="type"
-                    v-model="currentNode.type"
-                    @change="changeNodeType">
-              <option :value="item.value"
-                      :disabled="currentNode===process.rootNode && item.value==='quest'"
-                      v-for="item in types"
-              >{{ item.title }}
-<!--                      :disabled="currentNode.owner.type==='process' && item.value==='quest'"-->
-              </option>
-            </select>
-          </div>
-          <div v-for="(attr, i) in attrs">
-            <ppcEditorInput
-                v-model:attr="attr.val"
-                @update:attr="v=>{updateAttrs(attr.key, v)}"
-                :process="process"
-            />
-          </div>
+        <div class="pp-panel mt-4" v-if="!!currentNode">
+            <div class="attr-panel">
+                <div class="head">{{ 'Редактор атрибутов' }}</div>
+                <div class="body">
+                    <div class="ppcEditorInput mt-1">
+                        <!--<div class="type-select">-->
+                        <label for="type">Тип узла</label>
+                        <select name="type" id="type"
+                                v-model="currentNode.type"
+                                @change="changeNodeType">
+                            <option :value="item.value"
+                                    :disabled="currentNode===process.rootNode && item.value==='quest'"
+                                    v-for="item in types"
+                            >{{ item.title }}
+                                <!--                      :disabled="currentNode.owner.type==='process' && item.value==='quest'"-->
+                            </option>
+                        </select>
+                    </div>
+                    <div v-for="(attr, i) in attrs">
+                        <ppcEditorInput
+                                v-model:attr="attr.val"
+                                @update:attr="v=>{updateAttrs(attr.key, v)}"
+                                :process="process"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div class="struct-panel">
+                <div class="head">
+                    <span>{{ 'Процесс:' }}</span>
+                    <input class="head-input"
+                           type="text"
+                           v-model="process.header.processTitle"
+                           @change="processChanged"
+                    />
+                    <div class="pp-tabs head-tabs">
+                        <div class="pp-tab" @click="activeTab=0"
+                             :class="{active:activeTab===0}">
+                            Структура
+                        </div>
+                        <div class="pp-tab" @click="activeTab=1"
+                             :class="{active: activeTab===1}">
+                            Переменные
+                        </div>
+                        <div class="pp-tab" @click="activeTab=2"
+                             :class="{active: activeTab===2}">
+                            Код
+                        </div>
+                    </div>
+
+                </div>
+                <div class="body pt-3 selected">
+                    <ppcNode class="selected" v-if="activeTab===0"
+                             :node="process.rootNode"
+                             :owner="process"
+                             :createNodeFunc="createNewNode"
+                             @selectNode="selectNode"
+                             @changed="processChanged"
+                             :index="0"
+                             ref="rootNode"
+                             :key="'root_'+process.rootNode.list.length"
+
+                    />
+                    <div class="variables-wrap" v-else-if="activeTab===1">
+                        Переменные процесса
+                        <div class="var-item" v-for="(v, i) in process.vars">
+                            <input class="head-input"
+                                   type="text"
+                                   v-model="v.name"
+                                   @change="processChanged"
+                            />
+                            &nbsp;({{ v.value }})
+                        </div>
+                        <div class="add-button" @click="createNewVar">
+                            <i class="ico ico-plus"></i>
+                        </div>
+                    </div>
+                    <div class="code-wrap" v-else>
+                        <h4>Код процесса</h4>
+                        <pre class="code-view">{{ process }}</pre>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-
-      <div class="struct-panel">
-        <div class="head">
-          <span>{{ 'Процесс:' }}</span>
-          <input class="head-input"
-                 type="text"
-                 v-model="process.header.processTitle"
-                 @change="processChanged"
-          />
-          <div class="pp-tabs head-tabs">
-            <div class="pp-tab" @click="activeTab=0"
-                 :class="{active:activeTab===0}">
-              Структура
-            </div>
-            <div class="pp-tab" @click="activeTab=1"
-                 :class="{active: activeTab===1}">
-              Переменные
-            </div>
-            <div class="pp-tab" @click="activeTab=2"
-                 :class="{active: activeTab===2}">
-              Код
-            </div>
-          </div>
-
-        </div>
-        <div class="body pt-3 selected">
-          <ppcNode class="selected" v-if="activeTab===0"
-                   :node="process.rootNode"
-                   :owner="process"
-                   :createNodeFunc="createNewNode"
-                   @selectNode="selectNode"
-                   @changed="processChanged"
-                   :index="0"
-                   ref="rootNode"
-                   :key="'root_'+process.rootNode.list.length"
-
-          />
-          <div class="variables-wrap" v-else-if="activeTab===1">
-            Переменные процесса
-            <div class="var-item" v-for="(v, i) in process.vars">
-              <input class="head-input"
-                     type="text"
-                     v-model="v.name"
-                     @change="processChanged"
-              />
-              &nbsp;({{ v.value }})
-            </div>
-            <div class="add-button" @click="createNewVar">
-              <i class="ico ico-plus"></i>
-            </div>
-          </div>
-          <div class="code-wrap" v-else>
-            <h4>Код процесса</h4>
-            <pre class="code-view">{{ process }}</pre>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -97,142 +97,148 @@ import {reactive} from "vue";
 
 //    let vm = null;
 export default {
-  name: "PpConstructor",
-  components: {ppcEditorInput, ppcNode},
-  props: ['process'],
-  data() {
-    return {
-      currentNode: null,
-      currentNodeLastType: 'loopList',
-      types: nodeTypes.arr,
-      activeTab: 0,
+    name: "PpConstructor",
+    components: {ppcEditorInput, ppcNode},
+    props: ['process'],
+    data() {
+        return {
+            currentNode: null,
+            currentNodeLastType: 'loopList',
+            types: nodeTypes.arr,
+            activeTab: 0,
 
-    }
-  },
-  computed: {
-    attrs() {
-      return Object.keys(this.currentNode.attrs).map(key => {
-        return {key: key, val: this.currentNode.attrs[key]};
-      });
+        }
     },
-
-  },
-  methods: {
-    processChanged() {
-      this.$emit('changed', this.process);
-    },
-    updateAttrs(key, value) {
-      console.log("updateAttrs::", arguments);
-      this.currentNode.attrs = {...this.currentNode.attrs, [key]: value};
-
-      this.$emit('changed', this.process);
-    },
-    createNewNode(type, parentKey) {
-      let forKey = type + '-' + (~~(Math.random() * 32767) * (1 << 19 - 1) % 3047777777).toString(16);
-      return {
-        type: type,
-        attrs: this.createAttrs(type),
-        list: [],
-        forKey: forKey,
-        parentKey: parentKey,
-      };
-    },
-    changeNodeType() {
-      console.log("! changeNodeType");
-    },
-    changeAttrs(type) {
-      this.currentNode.attrs = {
-        ...createAttrs(this.currentNode.type),
-        ...this.currentNode.attrs,
-      };
-
-      this.$emit('changed', this.process);
-    },
-    /**
-     *
-     * @param type String
-     */
-    createAttrs(type) {
-      let a = reactive({
-        nodeName: {
-          inpType: 'text',
-          inpLabel: 'Название узла (optional)',
-          value: 'new node',
+    computed: {
+        attrs() {
+            return Object.keys(this.currentNode.attrs).map(key => {
+                return {key: key, val: this.currentNode.attrs[key]};
+            });
         },
-        rate: {
-          inpType: 'number',
-          inpLabel: 'Доля',
-          value: 1,
-          min: 1,
-        },
-      });
-      switch (type) {
-        case 'quest': {
-          // this.$set(a, 'quest', {
-          a.quest = {
-            inpType: 'text',
-            inpLabel: 'Вопрос',
-            value: '',
-          };
-          // this.$set(a, 'out', {
-          a.out = {
-            inpType: 'select',
-            inpLabel: 'Output vars',
-            value: null,
-            options: 'userVars'
-          };
-          break;
-        }
-        case 'loopList': {
-          // this.$set(a, 'loopCount', {
-          a.loopCount = {
-            inpType: 'number',
-            inpLabel: 'Количество циклов',
-            value: 1, // ноль означает бесконечный цикл
-            min: 0,
-          };
-          break;
-        }
-        case 'randList': {
-          a.loopCount = {
-            inpType: 'number',
-            inpLabel: 'Количество циклов',
-            value: 1,  // ноль означает бесконечный цикл
-          };
-          break;
-        }
-        default: {
-          alert(`PpConstructor::createAttrs::  Неизвестный тип ("${type})"`);
-        }
-      }
-      return a;
-    },
-    createNewVar() {
-      this.process.vars.push({
-        name: '$newVar',
-        value: '',
-      });
 
-      this.$emit('changed', this.process);
     },
-    selectNode({i, selected}) {
-      this.currentNode = selected;
+    methods: {
+        processChanged() {
+            this.$emit('changed', this.process);
+        },
+        updateAttrs(key, value) {
+            console.log("updateAttrs::", arguments);
+            this.currentNode.attrs = {...this.currentNode.attrs, [key]: value};
+
+            this.$emit('changed', this.process);
+        },
+        createNewNode(type, parentKey) {
+            let forKey = type + '-' + (~~(Math.random() * 32767) * (1 << 19 - 1) % 3047777777).toString(16);
+            return {
+                type: type,
+                attrs: this.createAttrs(type),
+                list: [],
+                forKey: forKey,
+                parentKey: parentKey,
+            };
+        },
+        changeNodeType() {
+            console.log("! changeNodeType");
+        },
+        changeAttrs(type) {
+            this.currentNode.attrs = {
+                ...createAttrs(this.currentNode.type),
+                ...this.currentNode.attrs,
+            };
+
+            this.$emit('changed', this.process);
+        },
+        /**
+         *
+         * @param type String
+         */
+        createAttrs(type) {
+            let a = reactive({
+                nodeName: {
+                    inpType: 'text',
+                    inpLabel: 'Название узла (optional)',
+                    value: 'new node',
+                },
+                rate: {
+                    inpType: 'number',
+                    inpLabel: 'Доля',
+                    value: 1,
+                    min: 1,
+                },
+            });
+            switch (type) {
+                case 'quest': {
+                    // this.$set(a, 'quest', {
+                    a.quest = {
+                        inpType: 'text',
+                        inpLabel: 'Вопрос',
+                        value: '',
+                    };
+                    // this.$set(a, 'out', {
+                    a.out = {
+                        inpType: 'select',
+                        inpLabel: 'Output vars',
+                        value: null,
+                        options: 'userVars'
+                    };
+                    a.loopCount = {
+                        inpType: 'number',
+                        inpLabel: 'Количество циклов',
+                        value: 1, // ноль означает бесконечный цикл
+                        min: 0,
+                    };
+                    break;
+                }
+                case 'loopList': {
+                    // this.$set(a, 'loopCount', {
+                    a.loopCount = {
+                        inpType: 'number',
+                        inpLabel: 'Количество циклов',
+                        value: 1, // ноль означает бесконечный цикл
+                        min: 0,
+                    };
+                    break;
+                }
+                case 'randList': {
+                    a.loopCount = {
+                        inpType: 'number',
+                        inpLabel: 'Количество циклов',
+                        value: 1,  // ноль означает бесконечный цикл
+                    };
+                    break;
+                }
+                default: {
+                    alert(`PpConstructor::createAttrs::  Неизвестный тип ("${type})"`);
+                }
+            }
+            return a;
+        },
+        createNewVar() {
+            this.process.vars.push({
+                name: '$newVar',
+                value: '',
+            });
+
+            this.$emit('changed', this.process);
+        },
+        selectNode({i, selected}) {
+            this.currentNode = selected;
+        },
+        unselectAllChildren() {
+            console.log('!! unselectAllChildren  fired !!');
+            this.$refs.rootNode.unselectNode();
+        },
     },
-    unselectAllChildren() {
-      console.log('!! unselectAllChildren  fired !!');
-      this.$refs.rootNode.unselectNode();
-    },
-  },
-  watch: {
+    watch: {
 //            attrs
-  },
-  mounted() {
+    },
+    mounted() {
 //            vm = this;
-    console.log('process >> ', this.process);
-    this.currentNode = this.process.rootNode;
-    this.$el.addEventListener('unselectAllNodes', this.unselectAllChildren);
-    console.log('PpConstructor::this =', this);
-  },
+        console.log('process >> ', this.process);
+        this.currentNode = this.process.rootNode;
+        this.$el.addEventListener('unselectAllNodes', this.unselectAllChildren);
+        console.log('PpConstructor::this =', this);
+    },
 }
 </script>
 
@@ -359,7 +365,7 @@ export default {
           border: 1px solid hsl(50, 30%, 70%);
           background-color: transparent;
           background-image: linear-gradient(to bottom,
-              hsla(60, 27%, 98%, 0), hsl(60, 27%, 99%) 30%, hsl(60, 27%, 98%));
+                  hsla(60, 27%, 98%, 0), hsl(60, 27%, 99%) 30%, hsl(60, 27%, 98%));
         }
       }
     }
