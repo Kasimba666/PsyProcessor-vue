@@ -95,7 +95,7 @@ export default createStore({
                 stack: [{
                     key: 'root',
                     type: p.rootNode.type,
-                    idxChild: -1,
+                    counter: -1,
                     maxCount:  0,
                 }],
                 history: []
