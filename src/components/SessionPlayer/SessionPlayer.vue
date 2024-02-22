@@ -164,7 +164,7 @@ export default {
             let childrenOfChildAmount = this.mapKeyNodes[curr.key].list[curr.counter % childrenAmount].list.length;
             if (childrenOfChildAmount > 0) {
               let maxCount = this.mapKeyNodes[curr.key].list[curr.counter % childrenAmount].attrs.loopCount.value;
-              if (typeChild === 'loopList') maxCount *= childrenOfChildAmount;
+              // if (typeChild === 'loopList') maxCount *= childrenOfChildAmount;
               this.session.stack.unshift({
                 key: this.mapKeyNodes[curr.key].list[curr.counter % childrenAmount].forKey,
                 type: typeChild,
