@@ -60,6 +60,7 @@ export default {
   computed: {
     ...mapState(['sessionList']),
     ...mapState(['session']),
+    ...mapState(['sessionIdx']),
 
     rows() {
       if (this.sessionList === null || this.sessionList.length === 0) return [];
@@ -111,30 +112,17 @@ export default {
 
               this.currentSession = this.session;
               this.currentSession.status = 'paused';
-              this.$store.commit('changeSessionInList', {idx: idxs[0], session: this.currentSession});
+              this.$store.commit('changeSessionInList', {idx: this.sessionIdx, session: this.currentSession});
               //убрать текущую сессию
-              this.sessionList[idxs[0]].status = 'paused';
+              this.sessionList[this.sessionIdx].status = 'paused';
               this.$store.commit('session', null);
+              this.$store.commit('sessionIdx', -1);
+
             }
             break;
             default: {}
           }
 
-
-
-          if (this.sessionList[this.currentIdx].status === 'new') {
-            this.currentSession = this.sessionList[idxs[0]];
-            this.$store.commit('session', this.currentSession);
-          }
-          if (this.sessionList[this.currentIdx].status === 'paused' || this.sessionList[this.currentIdx].status === 'new') {
-            newStatus = 'inProgress';
-            this.currentSession = this.sessionList[idxs[0]];
-            this.$store.commit('session', this.currentSession);
-          }
-          if (this.sessionList[this.currentIdx].status === 'inProgress') {
-            newStatus = 'paused';
-            this.$store.commit('sessionList', this.sessionList);
-          }
           // this.$store.commit('sessionStatus', {idx: idxs[0], status: newStatus});
         }
           return
