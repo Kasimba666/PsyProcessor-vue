@@ -11,6 +11,7 @@ export default createStore({
         currentEditableProcessIdx: -1,
         sessionList: [],
         session: null,
+        sessionIdx: -1,
         token: null,
         user: null, //curLang: 'en',
         //verbs: verbs['en'],
@@ -40,6 +41,9 @@ export default createStore({
         sessionList(state, v) {
             state.sessionList = v;
         },
+        changeSessionInList(state, v) {
+            state.sessionList[v.idx] = v.session;
+        },
         sessionStatus(state, {idx, status}) {
             state.sessionList[idx].status = status;
         },
@@ -47,12 +51,16 @@ export default createStore({
         session(state, v) {
             state.session = v;
         },
+        sessionIdx(state, v) {
+            state.sessionIdx = v;
+        },
+
         addSessionInList(state, v) {
             if (!!v) state.sessionList.unshift(v);
         },
-        isNewSession(state, v) {
-            state.isNewSession = v;
-        },
+        // isNewSession(state, v) {
+        //     state.isNewSession = v;
+        // },
         mobileMenuActive(state, v) {
             state.mobileMenuTransition = true;
             state.mobileMenuActive = v;
@@ -82,6 +90,17 @@ export default createStore({
         },
     }, actions: {
         createNewSession({commit, state}, p) {
+            let preparePositions = (node) => {
+                let result = {};
+                const getNode = (node) => {
+                    if (node.type === "loopList" && node.attrs.loopCount.value > 0) result[node.forKey] = 0;
+                    if (node.list.length > 0) node.list.forEach((v) => {
+                        getNode(v)
+                    });
+                };
+                getNode(node);
+                return result;
+            };
             let newSession = {
                 header: {
                     sessionTitle: 'Новая сессия. ' + p.header.processTitle,
@@ -96,8 +115,9 @@ export default createStore({
                     key: 'root',
                     type: p.rootNode.type,
                     counter: -1,
-                    maxCount:  0,
+                    maxCount: 0,
                 }],
+                positions: preparePositions(p.rootNode),
                 history: []
             };
             commit('addSessionInList', newSession);

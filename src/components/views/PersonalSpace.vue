@@ -59,6 +59,7 @@ export default {
   },
   computed: {
     ...mapState(['sessionList']),
+    ...mapState(['session']),
 
     rows() {
       if (this.sessionList === null || this.sessionList.length === 0) return [];
@@ -86,8 +87,41 @@ export default {
       console.log(action, idxs);
       switch (action) {
         case 'changeStatus': {
+          let oldStatus = this.sessionList[idxs[0]].status;
           let newStatus = '';
           this.currentIdx = idxs[0];
+          switch (oldStatus) {
+            case 'new': {
+              this.sessionList[idxs[0]].status = 'inProgress';
+              this.currentSession = this.sessionList[idxs[0]];
+              this.$store.commit('session', this.currentSession);
+              this.$store.commit('sessionIdx', idxs[0]);
+            }
+            break;
+            case 'paused': {
+              this.sessionList[idxs[0]].status = 'inProgress';
+              this.currentSession = this.sessionList[idxs[0]];
+              this.$store.commit('session', this.currentSession);
+              this.$store.commit('sessionIdx', idxs[0]);
+
+            }
+            break;
+            case 'inProgress': {
+              this.sessionList[idxs[0]].status = 'paused';
+
+              this.currentSession = this.session;
+              this.currentSession.status = 'paused';
+              this.$store.commit('changeSessionInList', {idx: idxs[0], session: this.currentSession});
+              //убрать текущую сессию
+              this.sessionList[idxs[0]].status = 'paused';
+              this.$store.commit('session', null);
+            }
+            break;
+            default: {}
+          }
+
+
+
           if (this.sessionList[this.currentIdx].status === 'new') {
             this.currentSession = this.sessionList[idxs[0]];
             this.$store.commit('session', this.currentSession);

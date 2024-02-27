@@ -206,6 +206,7 @@ export default {
     },
     "node.type"(v, old) {
       console.log(`Node Type Changed !! (${old} ==> ${v})`);
+      this.node.forKey = this.node.forKey.replace(old, this.node.type);
       if (old === 'quest') {
         this.node.list.push(this.createNodeFunc('quest', this.node.forKey));
         this.node.list[0].attrs.quest.value = this.node.attrs.quest.value;
