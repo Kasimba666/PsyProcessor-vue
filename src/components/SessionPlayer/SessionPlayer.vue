@@ -53,6 +53,7 @@
                 </div>
                 <pre> {{ !!this.session ? this.session.stack : '' }}</pre>
                 <pre>Сдвиг: {{ !!this.session ? this.session.positions : '' }}</pre>
+                <pre>Переменные: {{ !!this.session ? this.session.vars : '' }}</pre>
             </div>
         </div>
     </template>
@@ -118,6 +119,12 @@ export default {
         },
         onClickNext() {
             //обработать ответ пользователя
+          //положить ответ в переменную $last
+          this.session.vars['last'] = this.answer;
+          //если у вопроса есть была переменная, поместить ответ туда
+
+
+
             let rawQuest = this.nextQuest();
             //вытащить имя переменной из вопроса
             let startPos = rawQuest.indexOf(this.startSubstr);

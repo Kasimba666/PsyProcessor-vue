@@ -101,6 +101,13 @@ export default createStore({
                 getNode(node);
                 return result;
             };
+            let prepareVars = (vars) => {
+                let result = {};
+                vars.forEach((v) => {
+                    result[v.name] = '';
+                });
+                return result;
+            };
             let newSession = {
                 header: {
                     sessionTitle: 'Новая сессия. ' + p.header.processTitle,
@@ -118,6 +125,7 @@ export default createStore({
                     maxCount: 0,
                 }],
                 positions: preparePositions(p.rootNode),
+                vars: prepareVars(p.vars),
                 history: []
             };
             commit('addSessionInList', newSession);
