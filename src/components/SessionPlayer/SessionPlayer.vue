@@ -3,12 +3,13 @@
         <div class="SessionPlayer">
             <div class="main">
                 <div class="history">
-                    История вопросов и ответов
+                    История вопросов и ответов:
+                    <pre>{{ session.history }} </pre>
                 </div>
 
-                <div class="quest"
-                     placeholder="Вопрос и поощрение">
-                    {{ quest }}
+                <div class="quest-zone">
+                    <div class="confirm" :class="{show: showConfirm}">{{ confirmHTML }}</div>
+                    <div class="quest">{{ questHTML }}</div>
                 </div>
                 <div class="answer">
                     <b-form-textarea
@@ -71,6 +72,7 @@ export default {
         return {
             quest: '',
             answer: '',
+            showConfirm: false,
             stepCounter: 0,
             startSubstr: '{{$',
             endSubstr: '}}',
@@ -90,6 +92,12 @@ export default {
             getNode(this.session.process.rootNode);
             return result;
         },
+        questHTML() {
+            return this.session.q.handledQuest;
+        },
+        confirmHTML() {
+            return 'Ок, отлично!'
+        }
     },
     methods: {
         getRandomElementWithProbabilities(probabilitiesArray) {
@@ -117,29 +125,55 @@ export default {
             }];
             if (!!this.session.positions) for (let key in this.session.positions) this.session.positions[key] = 0;
         },
+
+        getVarsFromStr(str) {
+            let varName = '';
+            let startPos = str.indexOf(this.startSubstr);
+            let endPos = str.indexOf(this.endSubstr);
+            if (startPos >= 0 && endPos > startPos) varName = rawQuest.substring(startPos + this.startSubstr.length, endPos);
+            return varName;
+        },
+        getQuestWithVarValues(str, vars) {
+            let result = str;
+            for (let key in vars) result = result.replace(key, vars[key]);
+            return result;
+        },
         onClickNext() {
             //обработать ответ пользователя
-          //положить ответ в переменную $last
-          this.session.vars['last'] = this.answer;
-          //если у вопроса есть была переменная, поместить ответ туда
 
+            //вывести подтверждение
+            this.showConfirm = true;
+            setTimeout(() => {
+                this.showConfirm = false;
+            }, 3000);
 
+            //поместить вопрос и ответ в Историю
+            this.session.history.push({q: this.session.q.handledQuest, dtQ: this.session.q.dt, a: this.answer, dtA: new Date().toISOString()});
 
-            let rawQuest = this.nextQuest();
-            //вытащить имя переменной из вопроса
-            let startPos = rawQuest.indexOf(this.startSubstr);
-            let endPos = rawQuest.indexOf(this.endSubstr);
-            let varName = 'No Var';
-            if (startPos >= 0 && endPos > startPos) varName = rawQuest.substring(startPos + this.startSubstr.length, endPos);
-            console.log(varName);
+            //положить ответ в переменные, указанные в вопросе
+            for (let key in this.session.q.vars) this.session.vars[key] =  this.answer;
+
+            //очистить область ответов
+            this.answer = '';
+
+            //подготовить следущий вопрос
+            this.session.q.rawQuest = this.nextQuest();
+
+            //вытащить имена переменных из текста вопроса
+            let varNames = this.getVarsFromStr(this.session.q.rawQuest);
+            console.log(varNames);
+
 
             //подставить значение переменной в вопрос
             this.quest = rawQuest;
 
-            //поместить вопрос и ответ в Историю
-            //очистить область ответов
-            this.answer = '';
+            //
 
+
+
+            //задать вопрос
+            //положить ответы в переменные, указанные  Out
+            //
         },
         onClickFinishCycle() {
             if (this.session.stack.length > 0) this.session.stack.shift();

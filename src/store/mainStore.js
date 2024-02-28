@@ -126,6 +126,7 @@ export default createStore({
                 }],
                 positions: preparePositions(p.rootNode),
                 vars: prepareVars(p.vars),
+                q: {rawQuest: '', vars: {}, handledQuest: '', aiHandledQuest: '', dt: ''},
                 history: []
             };
             commit('addSessionInList', newSession);
