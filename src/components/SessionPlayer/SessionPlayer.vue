@@ -150,14 +150,14 @@ export default {
             //поместить вопрос и ответ в Историю
             this.session.history.push({q: this.session.q.handledQuest, dtQ: this.session.q.dt, a: this.answer, dtA: new Date().toISOString()});
 
-            //положить ответ в переменные, указанные в вопросе
+            //положить ответ в переменные, указанные в предыдущем вопросе
             for (let key in this.session.q.vars) this.session.vars[key] =  this.answer;
 
             //очистить область ответов
             this.answer = '';
 
             //подготовить следущий вопрос
-            this.session.q.rawQuest = this.nextQuest();
+            this.session.q.rawQuest = this.nextQuest().q;
 
             //вытащить имена переменных из текста вопроса
             let varNames = this.getVarsFromStr(this.session.q.rawQuest);
