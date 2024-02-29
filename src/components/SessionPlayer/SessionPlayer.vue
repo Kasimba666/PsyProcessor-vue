@@ -131,7 +131,7 @@ export default {
             let startPos = str.indexOf(this.startSubstr);
             let endPos = str.indexOf(this.endSubstr);
             if (startPos >= 0 && endPos > startPos) varName = rawQuest.substring(startPos + this.startSubstr.length, endPos);
-            return varName;
+            return [varName];
         },
         getQuestWithVarValues(str, vars) {
             let result = str;
@@ -151,28 +151,31 @@ export default {
             this.session.history.push({q: this.session.q.handledQuest, dtQ: this.session.q.dt, a: this.answer, dtA: new Date().toISOString()});
 
             //положить ответ в переменные, указанные в предыдущем вопросе
-            for (let key in this.session.q.vars) this.session.vars[key] =  this.answer;
+            this.session.q.varsPreviousQuest.forEach((v)=>this.session.vars[v] =  this.answer);
 
             //очистить область ответов
             this.answer = '';
 
             //подготовить следущий вопрос
-            this.session.q.rawQuest = this.nextQuest().q;
+            let response = this.nextQuest();
+            this.session.q.rawQuest = response.rawQuest;
 
             //вытащить имена переменных из текста вопроса
             let varNames = this.getVarsFromStr(this.session.q.rawQuest);
             console.log(varNames);
 
 
-            //подставить значение переменной в вопрос
-            this.quest = rawQuest;
-
+            //подставить значения переменных в вопрос
+            //сделать map
+            this.session.q.handledQuest = this.getQuestWithVarValues(this.session.q.rawQuest, this.session.q.varsCurrentQuest);
+            this.quest =  this.session.q.handledQuest;
             //
 
 
 
             //задать вопрос
-            //положить ответы в переменные, указанные  Out
+            //положить переменные, указанные в Out, в объект q
+
             //
         },
         onClickFinishCycle() {
@@ -227,7 +230,7 @@ export default {
                                 //проверить, надо ли сохранять ответ в переменной, если да, то послать имя переменной
                                 let varName = this.mapKeyNodes[curr.key].list[probIdx].attrs.out.value !== '';
                                 result = {
-                                    q: this.mapKeyNodes[curr.key].list[probIdx].attrs.quest.value, varName: varName
+                                    rawQuest: this.mapKeyNodes[curr.key].list[probIdx].attrs.quest.value, arrVarNames: [varName]
                                 };
                             }
                                 break;
