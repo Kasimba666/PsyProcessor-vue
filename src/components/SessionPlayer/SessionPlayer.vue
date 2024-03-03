@@ -75,7 +75,7 @@ export default {
             answer: '',
             showConfirm: false,
             stepCounter: 0,
-            startSubstr: '{{$',
+            startSubstr: '{{',
             endSubstr: '}}',
         }
     },
@@ -118,13 +118,29 @@ export default {
 
         onClickRenew() {
             this.session.status = 'inProgress';
+            //очистить стек
             this.session.stack = [{
                 key: 'root',
                 type: this.session.process.rootNode.type,
                 counter: -1,
                 maxCount: 0,
             }];
+            //очистить позиции в циклах
             if (!!this.session.positions) for (let key in this.session.positions) this.session.positions[key] = 0;
+            //очистить текущее состояние вопроса и ответа
+            this.session.q = {
+                rawQuest: 'Начало процесса',
+                varsCurrentQuest: [],
+                varsPreviousQuest: ['$last'],
+                handledQuest: '',
+                aiHandledQuest: '',
+                dt: ''
+            },
+
+                //очистить историю
+                this.session.history = [];
+            //очистить значения переменных
+            for (let key in this.session.vars) this.session.vars[key] = '';
         },
 
         getVarsFromStr(str) {
@@ -158,6 +174,7 @@ export default {
             });
 
             //положить ответ в переменные, указанные в предыдущем вопросе
+            console.log('Переменные из предыдущего вопроса: ', this.session.q.varsPreviousQuest);
             this.session.q.varsPreviousQuest.forEach((v) => this.session.vars[v] = this.answer);
 
             //очистить область ответов
@@ -165,20 +182,25 @@ export default {
 
             //подготовить следущий вопрос
             let response = this.nextQuest();
-            console.log('response', response);
             this.session.q.rawQuest = response.rawQuest;
 
             //вытащить имена переменных из текста вопроса
-            console.log('this.session.q.rawQuest', this.session.q.rawQuest);
-            let varNames = this.getVarsFromStr(this.session.q.rawQuest);
-
+            this.session.q.varsCurrentQuest = this.getVarsFromStr(this.session.q.rawQuest);
+            console.log('Имена переменных из текста текущего вопроса varNames:', this.session.q.varsCurrentQuest);
 
             //подставить значения переменных в вопрос
             //сделать объект с ключами-именами переменных и их значениями
-            let objVarValues = this.session.q.varsCurrentQuest.reduce((s, v) => {
-                return s[v] = this.session.vars[v]
-            }, {});
-            console.log(objVarValues);
+            let objVarValues = {};
+            this.session.q.varsCurrentQuest.forEach((v) => {
+                objVarValues[v] = this.session.vars[v]
+            });
+
+            // let objVarValues = this.session.q.varsCurrentQuest.reduce((s, v) => {
+            //     return s[v] = this.session.vars[v]
+            // }, {});
+
+            console.log('objVarValues:', objVarValues);
+
             this.session.q.handledQuest = this.getQuestWithVarValues(this.session.q.rawQuest, objVarValues);
             this.quest = this.session.q.handledQuest;
             //Положить дату и время формирования вопроса в q
@@ -186,6 +208,7 @@ export default {
             //задать вопрос
             //положить переменные, указанные в Out, в объект q
             this.session.q.varsPreviousQuest = response.arrVarNames;
+
             //
         },
         onClickFinishCycle() {
@@ -201,7 +224,6 @@ export default {
                 do
                     response = this.nextElement();
                 while (response.rawQuest === '');
-                console.log('nextQuest response', response);
                 return response;
             }
         },
@@ -221,8 +243,15 @@ export default {
                     case 'quest': {
                         switch (curr.type) {
                             case 'loopList': {
+                                //проверить, надо ли сохранять ответ в переменной, если да, то послать имя переменной
+                                let varNames = [];
+                                if (this.mapKeyNodes[curr.key].list[(curr.counter + shift) % childrenAmount].attrs.out.value !== null && this.mapKeyNodes[curr.key].list[(curr.counter + shift) % childrenAmount].attrs.out.value !== '') {
+                                    varNames = [this.mapKeyNodes[curr.key].list[(curr.counter + shift) % childrenAmount].attrs.out.value]
+                                }
+
                                 result = {
                                     rawQuest: this.mapKeyNodes[curr.key].list[(curr.counter + shift) % childrenAmount].attrs.quest.value,
+                                    arrVarNames: [varNames]
                                 };
                             }
                                 break;
@@ -235,10 +264,13 @@ export default {
                                 });
                                 let probIdx = this.getRandomElementWithProbabilities(arrProbs);
                                 //проверить, надо ли сохранять ответ в переменной, если да, то послать имя переменной
-                                let varName = this.mapKeyNodes[curr.key].list[probIdx].attrs.out.value !== '';
+                                let varNames = [];
+                                if (this.mapKeyNodes[curr.key].list[probIdx].attrs.out.value !== null && this.mapKeyNodes[curr.key].list[probIdx].attrs.out.value !== '') {
+                                    varNames = [this.mapKeyNodes[curr.key].list[probIdx].attrs.out.value]
+                                }
                                 result = {
                                     rawQuest: this.mapKeyNodes[curr.key].list[probIdx].attrs.quest.value,
-                                    arrVarNames: [varName]
+                                    arrVarNames: [varNames]
                                 };
                             }
                                 break;
@@ -334,7 +366,7 @@ export default {
       }
     }
 
-    .finish, .pause, .renew {
+    .finish, .pause, .renew, .quest-zone {
       width: 100%;
       border: 1px solid gray;
       text-align: center;

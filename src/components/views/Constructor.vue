@@ -1,4 +1,4 @@
-<template>
+-++++++++++++++++++++++++++++++++++++<template>
   <div class="Constructor">
     <div class="container">
       <div class="row">
@@ -44,7 +44,7 @@ export default {
         type: 'process',
         vars: [
           {name: '$topic', value: '',},
-          {name: '$last', value: [null],},
+          {name: '$last', value: '',},
         ],
         rootNode: {
           type: 'loopList',
@@ -133,3 +133,4 @@ export default {
 </style>
 
 "
+*

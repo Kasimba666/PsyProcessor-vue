@@ -12,3 +12,9 @@
 .pos-rel {
     position: relative;
 }
+
+input {
+    &::placeholder {
+        color: hsl(0, 0%, 80%);
+    }
+}
