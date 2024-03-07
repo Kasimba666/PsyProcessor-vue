@@ -89,7 +89,6 @@ export default {
             switch (action) {
                 case 'changeStatus': {
                     let oldStatus = this.sessionList[idxs[0]].status;
-                    let newStatus = '';
                     this.currentIdx = idxs[0];
                     switch (oldStatus) {
                         case 'new': {

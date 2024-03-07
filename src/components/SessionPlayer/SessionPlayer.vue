@@ -156,6 +156,7 @@ export default {
             for (let key in vars) result = result.replace(key, vars[key]);
             return result;
         },
+
         onClickNext() {
             //обработать ответ пользователя
 

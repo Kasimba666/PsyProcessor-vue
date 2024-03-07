@@ -88,7 +88,11 @@ export default createStore({
         blur(state, v) {
             state.blur = v;
         },
-    }, actions: {
+    },
+    actions: {
+        setDefaultSession() {
+
+        },
         createNewSession({commit, state}, p) {
             let preparePositions = (node) => {
                 let result = {};
@@ -104,7 +108,7 @@ export default createStore({
             let prepareVars = (vars) => {
                 let result = {};
                 vars.forEach((v) => {
-                    result[v.name] = '';
+                    result[v.name] = v.value;
                 });
                 return result;
             };
@@ -126,6 +130,7 @@ export default createStore({
                 }],
                 positions: preparePositions(p.rootNode),
                 vars: prepareVars(p.vars),
+                listQuestionAnswers: [],
                 q: {rawQuest: 'Начало процесса', varsCurrentQuest: [], varsPreviousQuest: ['$last'], handledQuest: '', aiHandledQuest: '', dt: ''},
                 history: []
             };
