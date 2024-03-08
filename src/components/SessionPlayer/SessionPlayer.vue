@@ -13,11 +13,16 @@
                 </div>
                 <div class="answer">
                     <b-form-textarea
+                            size="sm"
                             v-model="answer"
                             placeholder="Введите ответ"
                             rows="2"
                             max-rows="10"
                     />
+                    <!--                    <textarea-->
+                    <!--                            v-model="answer"-->
+                    <!--                            placeholder="Введите ответ"-->
+                    <!--                    />-->
                 </div>
                 <div class="next">
                     <button class="btn btn-outline-primary btn-next btn-sm"
@@ -55,7 +60,7 @@
                 <pre>Вопрос и ответ: {{ !!this.session ? this.session.q : '' }} </pre>
                 <pre>Стек: {{ !!this.session ? this.session.stack : '' }}</pre>
                 <pre>Сдвиг: {{ !!this.session ? this.session.positions : '' }}</pre>
-                <pre>Переменные: {{ !!this.session ? this.session.vars : '' }}</pre>
+                <pre>Переменные: {{ !!this.session ? this.session.varsByName : '' }}</pre>
             </div>
         </div>
     </template>
@@ -71,6 +76,7 @@ export default {
 
     data() {
         return {
+            questComplete: false,
             quest: '',
             answer: '',
             showConfirm: false,
@@ -94,7 +100,7 @@ export default {
             return result;
         },
         questHTML() {
-            return this.session.q.handledQuest;
+            return this.session.questInfo.handledQuest;
         },
         confirmHTML() {
             return 'Ок, отлично!'
@@ -128,19 +134,19 @@ export default {
             //очистить позиции в циклах
             if (!!this.session.positions) for (let key in this.session.positions) this.session.positions[key] = 0;
             //очистить текущее состояние вопроса и ответа
-            this.session.q = {
-                rawQuest: 'Начало процесса',
-                varsCurrentQuest: [],
-                varsPreviousQuest: ['$last'],
-                handledQuest: '',
-                aiHandledQuest: '',
-                dt: ''
-            },
+            // this.session.q = {
+            //     rawQuest: 'Начало процесса',
+            //     varsCurrentQuest: [],
+            //     varsPreviousQuest: ['$last'],
+            //     handledQuest: '',
+            //     aiHandledQuest: '',
+            //     dt: ''
+            // },
 
                 //очистить историю
                 this.session.history = [];
             //очистить значения переменных
-            for (let key in this.session.vars) this.session.vars[key] = '';
+            for (let key in this.session.varsByName) this.session.varsByName[key] = '';
         },
 
         getVarsFromStr(str) {
@@ -151,12 +157,22 @@ export default {
             if (startPos >= 0 && endPos > startPos) varName = str.substring(startPos + this.startSubstr.length, endPos);
             return [varName];
         },
-        getQuestWithVarValues(str, vars) {
-            let result = str;
-            for (let key in vars) result = result.replace(key, vars[key]);
-            return result;
+        handleQuest() {
+            let result = this.session.questInfo.rawQuest;
+            for (let key in this.session.varsByName) result = result.replace(key, this.session.varsByName[key]);
+            this.session.questInfo.handledQuest = result;
         },
-
+        saveHistoryItem() {
+            this.session.history.push({
+                // rawQuest: '',
+                handledQuest: this.session.questInfo.handledQuest,
+                answer: this.answer,
+                questDt: this.session.questInfo.questDt,
+                answerDt: new Date().toISOString(),
+                diffDt: 0,
+                outVarNames: this.session.questInfo.outVarNames,
+            });
+        },
         onClickNext() {
             //обработать ответ пользователя
 
@@ -166,49 +182,43 @@ export default {
                 this.showConfirm = false;
             }, 3000);
 
-            //поместить вопрос и ответ в Историю
-            this.session.history.push({
-                q: this.session.q.handledQuest,
-                dtQ: this.session.q.dt,
-                a: this.answer,
-                dtA: new Date().toISOString()
-            });
+            this.saveHistoryItem();
+            this.questComplete = false;
+
 
             //положить ответ в переменные, указанные в предыдущем вопросе
-            console.log('Переменные из предыдущего вопроса: ', this.session.q.varsPreviousQuest);
-            this.session.q.varsPreviousQuest.forEach((v) => this.session.vars[v] = this.answer);
+            this.session.varsByName['$last'] = this.answer;
+            this.session.questInfo.outVarNames.forEach((v) => this.session.varsByName[v] = this.answer);
 
             //очистить область ответов
             this.answer = '';
 
             //подготовить следущий вопрос
             let response = this.nextQuest();
-            this.session.q.rawQuest = response.rawQuest;
-
+            this.session.questInfo.rawQuest = response.rawQuest;
+            this.handleQuest();
             //вытащить имена переменных из текста вопроса
-            this.session.q.varsCurrentQuest = this.getVarsFromStr(this.session.q.rawQuest);
-            console.log('Имена переменных из текста текущего вопроса varNames:', this.session.q.varsCurrentQuest);
+            // this.session.q.varsCurrentQuest = this.getVarsFromStr(this.session.q.rawQuest);
+            // console.log('Имена переменных из текста текущего вопроса varNames:', this.session.q.varsCurrentQuest);
 
             //подставить значения переменных в вопрос
             //сделать объект с ключами-именами переменных и их значениями
-            let objVarValues = {};
-            this.session.q.varsCurrentQuest.forEach((v) => {
-                objVarValues[v] = this.session.vars[v]
-            });
+            // let objVarValues = {};
+            // this.session.q.varsCurrentQuest.forEach((v) => {
+            //     objVarValues[v] = this.session.varsByName[v]
+            // });
 
             // let objVarValues = this.session.q.varsCurrentQuest.reduce((s, v) => {
-            //     return s[v] = this.session.vars[v]
+            //     return s[v] = this.session.varsByName[v]
             // }, {});
 
-            console.log('objVarValues:', objVarValues);
+            // console.log('objVarValues:', objVarValues);
 
-            this.session.q.handledQuest = this.getQuestWithVarValues(this.session.q.rawQuest, objVarValues);
-            this.quest = this.session.q.handledQuest;
             //Положить дату и время формирования вопроса в q
-            this.session.q.dt = new Date().toISOString();
+            this.session.questInfo.questDt = new Date().toISOString();
             //задать вопрос
             //положить переменные, указанные в Out, в объект q
-            this.session.q.varsPreviousQuest = response.arrVarNames;
+            this.session.outVarNames = response.outVarNames;
 
             //
         },
@@ -234,7 +244,7 @@ export default {
             let result = {rawQuest: ''};
             let curr = this.session.stack[0];
 
-            curr.counter += 1;
+            curr.counter++;
 
             let childrenAmount = this.mapKeyNodes[curr.key].list.length;
             let shift = (curr.type === 'loopList' && curr.maxCount > 0) ? this.session.positions[curr.key] : 0;
@@ -252,7 +262,7 @@ export default {
 
                                 result = {
                                     rawQuest: this.mapKeyNodes[curr.key].list[(curr.counter + shift) % childrenAmount].attrs.quest.value,
-                                    arrVarNames: [varNames]
+                                    outVarNames: [varNames]
                                 };
                             }
                                 break;
@@ -271,7 +281,7 @@ export default {
                                 }
                                 result = {
                                     rawQuest: this.mapKeyNodes[curr.key].list[probIdx].attrs.quest.value,
-                                    arrVarNames: [varNames]
+                                    outVarNames: [varNames]
                                 };
                             }
                                 break;
@@ -325,6 +335,7 @@ export default {
 .SessionPlayer {
   width: 100%;
   height: auto;
+  font-size: 13px;
 
   .main {
     width: 500px;
@@ -332,26 +343,24 @@ export default {
     display: flex;
     flex-flow: column nowrap;
     justify-content: start;
-    align-items: center;
+    align-items: start;
     gap: 5px;
 
     .history {
       width: 100%;
       border: 1px solid gray;
-      text-align: center;
     }
 
     .quest {
       width: 100%;
       border: 1px solid gray;
-      text-align: center;
+      //text-align: center;
     }
 
     .answer {
       width: 100%;
       height: auto;
       border: 1px solid gray;
-      text-align: center;
       padding: 5px;
     }
 
@@ -359,7 +368,7 @@ export default {
       display: block;
       width: 100%;
       border: 1px solid gray;
-      text-align: center;
+      //text-align: center;
       padding: 5px;
 
       &.disabled {

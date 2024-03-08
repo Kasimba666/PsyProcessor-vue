@@ -129,10 +129,35 @@ export default createStore({
                     maxCount: 0,
                 }],
                 positions: preparePositions(p.rootNode),
-                vars: prepareVars(p.vars),
+                varsByName: prepareVars(p.vars),
                 listQuestionAnswers: [],
-                q: {rawQuest: 'Начало процесса', varsCurrentQuest: [], varsPreviousQuest: ['$last'], handledQuest: '', aiHandledQuest: '', dt: ''},
-                history: []
+                q: {
+                    rawQuest: 'Начало процесса',
+                    varsCurrentQuest: [],
+                    varsPreviousQuest: ['$last'],
+                    handledQuest: '',
+                    aiHandledQuest: '',
+                    dt: ''
+                },
+                questInfo: {
+                    rawQuest: 'Начало процесса',
+                    handledQuest: '',
+                    aiHandledQuest: '',
+                    outVarNames: [],
+                    questDt: '',
+                },
+
+                history: [
+                    {
+                        // rawQuest: '',
+                        handledQuest: '',
+                        answer: '',
+                        questDt: '',
+                        answerDt: '',
+                        diffDt: '',
+                        outVarNames: [],
+                    },
+                ]
             };
             commit('addSessionInList', newSession);
         },
@@ -140,14 +165,16 @@ export default createStore({
         //balance(state) {
         //    return state.walletList.reduce((s, v) => s += v.confirmed_balance * v.currency_price_usd, 0)
         //},
-    }, plugins: [createPersistedState({
-        key: 'ppVuexDataEditableProcess', paths: ['currentEditableProcess']
-    }), createPersistedState({
-        key: 'ppVuexDataProcessList', paths: ['processList']
-    }), createPersistedState({
-        key: 'ppVuexDataSessionList', paths: ['sessionList']
-    }), createPersistedState({
-        key: 'ppVuexDataSession', paths: ['currentSession']
-    }),],
+    },
+    plugins: [createPersistedState({
+        key: 'psyProc', paths: [
+            'currentEditableProcess',
+            'currentEditableProcessIdx',
+            'processList',
+            'currentSession',
+            'sessionIdx',
+            'sessionList',
 
+        ]
+    }),],
 })

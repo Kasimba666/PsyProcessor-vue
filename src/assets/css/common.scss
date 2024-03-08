@@ -13,7 +13,9 @@
     position: relative;
 }
 
-input {
+input, textarea {
+    padding: 5px 10px;
+    font-size: 13px;
     &::placeholder {
         color: hsl(0, 0%, 80%);
     }
