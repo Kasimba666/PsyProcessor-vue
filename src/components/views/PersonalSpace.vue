@@ -94,9 +94,9 @@ export default {
                         case 'new': {
                             this.sessionList[idxs[0]].status = 'inProgress';
                             this.currentSession = this.sessionList[idxs[0]];
-                            this.$store.commit('session', null);
                             this.$store.commit('session', this.currentSession);
                             this.$store.commit('sessionIdx', idxs[0]);
+                            this.$store.commit('sessionFirstQuest', true);
                         }
                             break;
                         case 'paused': {
@@ -123,7 +123,6 @@ export default {
                             this.sessionList[this.sessionIdx].status = 'paused';
                             this.$store.commit('session', null);
                             this.$store.commit('sessionIdx', -1);
-                            this.$store.commit('sessionFirstQuest', true);
 
                         }
                             break;

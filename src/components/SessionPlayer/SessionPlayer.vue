@@ -3,7 +3,7 @@
         <div class="SessionPlayer">
             <div class="main">
                 <div class="history">
-<!--                    История вопросов и ответов:-->
+                    <!--                    История вопросов и ответов:-->
                     <div>{{ session.history }}</div>
                 </div>
 
@@ -86,9 +86,7 @@ export default {
         }
     },
     computed: {
-        // ...mapState(['session', 'sessionFirstQuest']),
-        ...mapState(['session']),
-        ...mapState(['sessionFirstQuest']),
+        ...mapState(['session', 'sessionFirstQuest']),
         mapKeyNodes() {
             if (this.session === null) return null;
             let result = {};
@@ -145,8 +143,8 @@ export default {
             //     dt: ''
             // },
 
-                //очистить историю
-                this.session.history = [];
+            //очистить историю
+            this.session.history = [];
             //очистить значения переменных
             for (let key in this.session.varsByName) this.session.varsByName[key] = '';
         },
@@ -177,19 +175,21 @@ export default {
         },
         onClickNext() {
             //обработать ответ пользователя
-           if (!!this.session.questInfo.handledQuest && !!this.answer) {
-              this.showConfirm = true;
-              setTimeout(() => {
-                this.showConfirm = false;
-              }, 3000);
-              this.saveHistoryItem();
-            };
+            if (!!this.session.questInfo.handledQuest && !!this.answer) {
+                this.showConfirm = true;
+                setTimeout(() => {
+                    this.showConfirm = false;
+                }, 3000);
+                this.saveHistoryItem();
+            }
             this.questComplete = false;
 
 
             //положить ответ в переменные, указанные в предыдущем вопросе
             this.session.varsByName['$last'] = this.answer;
-            this.session.questInfo.outVarNames.forEach((v) => this.session.varsByName[v] = this.answer);
+            this.session.questInfo.outVarNames.forEach((v) => {
+                if (!!v) this.session.varsByName[v] = this.answer}
+            );
 
             //очистить область ответов
             this.answer = '';
@@ -202,7 +202,6 @@ export default {
             //Положить дату и время формирования вопроса в q
             this.session.questInfo.questDt = new Date().toISOString();
             //положить переменные, указанные в Out, в объект q
-            console.log('response.outVarNames: ', response.outVarNames);
             this.session.questInfo.outVarNames = response.outVarNames;
 
             //
@@ -244,10 +243,9 @@ export default {
                                 if (this.mapKeyNodes[curr.key].list[(curr.counter + shift) % childrenAmount].attrs.out.value !== null && this.mapKeyNodes[curr.key].list[(curr.counter + shift) % childrenAmount].attrs.out.value !== '') {
                                     varNames = [this.mapKeyNodes[curr.key].list[(curr.counter + shift) % childrenAmount].attrs.out.value]
                                 }
-
                                 result = {
                                     rawQuest: this.mapKeyNodes[curr.key].list[(curr.counter + shift) % childrenAmount].attrs.quest.value,
-                                    outVarNames: [varNames]
+                                    outVarNames: varNames
                                 };
                             }
                                 break;
@@ -266,7 +264,7 @@ export default {
                                 }
                                 result = {
                                     rawQuest: this.mapKeyNodes[curr.key].list[probIdx].attrs.quest.value,
-                                    outVarNames: [varNames]
+                                    outVarNames: varNames
                                 };
                             }
                                 break;
@@ -312,25 +310,18 @@ export default {
     mounted() {
 
     },
-  watch: {
-    session: {
-      handler(v, old) {
-        if (!old && !!v) this.onClickNext();
-      },
-      deep: true,
-      immediate: true,
+    watch: {
+        sessionFirstQuest: {
+            handler(v) {
+                if (v) {
+                    this.onClickNext();
+                    this.$store.commit('sessionFirstQuest', false);
+                }
+            },
+            deep: false,
+            immediate: true,
+        }
     },
-    // sessionFirstQuest: {
-    //   handler(v, old) {
-    //     if (v && !old) {
-    //       this.onClickNext();
-    //       this.$store.commit('sessionFirstQuest', false);
-    //     };
-    //   },
-    //   deep: false,
-    //   immediate: true,
-    // }
-  },
 }
 </script>
 
@@ -354,18 +345,22 @@ export default {
       width: 100%;
       border: 1px solid gray;
     }
+
     .quest-zone {
       .confirm {
         display: none;
+
         &.show {
           display: block;
         }
       }
+
       .quest {
         width: 100%;
         border: 1px solid gray;
       }
     }
+
     .answer {
       width: 100%;
       height: auto;
