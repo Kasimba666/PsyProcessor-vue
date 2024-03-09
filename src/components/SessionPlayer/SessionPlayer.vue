@@ -3,7 +3,7 @@
         <div class="SessionPlayer">
             <div class="main">
                 <div class="history">
-                    История вопросов и ответов:
+<!--                    История вопросов и ответов:-->
                     <div>{{ session.history }}</div>
                 </div>
 
@@ -86,7 +86,9 @@ export default {
         }
     },
     computed: {
+        // ...mapState(['session', 'sessionFirstQuest']),
         ...mapState(['session']),
+        ...mapState(['sessionFirstQuest']),
         mapKeyNodes() {
             if (this.session === null) return null;
             let result = {};
@@ -175,14 +177,13 @@ export default {
         },
         onClickNext() {
             //обработать ответ пользователя
-
-            //вывести подтверждение
-            this.showConfirm = true;
-            setTimeout(() => {
+           if (!!this.session.questInfo.handledQuest && !!this.answer) {
+              this.showConfirm = true;
+              setTimeout(() => {
                 this.showConfirm = false;
-            }, 3000);
-
-            this.saveHistoryItem();
+              }, 3000);
+              this.saveHistoryItem();
+            };
             this.questComplete = false;
 
 
@@ -197,28 +198,12 @@ export default {
             let response = this.nextQuest();
             this.session.questInfo.rawQuest = response.rawQuest;
             this.handleQuest();
-            //вытащить имена переменных из текста вопроса
-            // this.session.q.varsCurrentQuest = this.getVarsFromStr(this.session.q.rawQuest);
-            // console.log('Имена переменных из текста текущего вопроса varNames:', this.session.q.varsCurrentQuest);
-
-            //подставить значения переменных в вопрос
-            //сделать объект с ключами-именами переменных и их значениями
-            // let objVarValues = {};
-            // this.session.q.varsCurrentQuest.forEach((v) => {
-            //     objVarValues[v] = this.session.varsByName[v]
-            // });
-
-            // let objVarValues = this.session.q.varsCurrentQuest.reduce((s, v) => {
-            //     return s[v] = this.session.varsByName[v]
-            // }, {});
-
-            // console.log('objVarValues:', objVarValues);
 
             //Положить дату и время формирования вопроса в q
             this.session.questInfo.questDt = new Date().toISOString();
-            //задать вопрос
             //положить переменные, указанные в Out, в объект q
-            this.session.outVarNames = response.outVarNames;
+            console.log('response.outVarNames: ', response.outVarNames);
+            this.session.questInfo.outVarNames = response.outVarNames;
 
             //
         },
@@ -327,6 +312,25 @@ export default {
     mounted() {
 
     },
+  watch: {
+    session: {
+      handler(v, old) {
+        if (!old && !!v) this.onClickNext();
+      },
+      deep: true,
+      immediate: true,
+    },
+    // sessionFirstQuest: {
+    //   handler(v, old) {
+    //     if (v && !old) {
+    //       this.onClickNext();
+    //       this.$store.commit('sessionFirstQuest', false);
+    //     };
+    //   },
+    //   deep: false,
+    //   immediate: true,
+    // }
+  },
 }
 </script>
 
@@ -350,13 +354,18 @@ export default {
       width: 100%;
       border: 1px solid gray;
     }
-
-    .quest {
-      width: 100%;
-      border: 1px solid gray;
-      //text-align: center;
+    .quest-zone {
+      .confirm {
+        display: none;
+        &.show {
+          display: block;
+        }
+      }
+      .quest {
+        width: 100%;
+        border: 1px solid gray;
+      }
     }
-
     .answer {
       width: 100%;
       height: auto;

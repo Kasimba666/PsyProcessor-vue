@@ -12,6 +12,7 @@ export default createStore({
         sessionList: [],
         session: null,
         sessionIdx: -1,
+        sessionFirstQuest: false,
         token: null,
         user: null, //curLang: 'en',
         //verbs: verbs['en'],
@@ -50,6 +51,9 @@ export default createStore({
 
         session(state, v) {
             state.session = v;
+        },
+        sessionFirstQuest(state, v) {
+            state.sessionFirstQuest = v;
         },
         sessionIdx(state, v) {
             state.sessionIdx = v;
@@ -148,15 +152,15 @@ export default createStore({
                 },
 
                 history: [
-                    {
-                        // rawQuest: '',
-                        handledQuest: '',
-                        answer: '',
-                        questDt: '',
-                        answerDt: '',
-                        diffDt: '',
-                        outVarNames: [],
-                    },
+                    // {
+                    //     rawQuest: '',
+                    //     handledQuest: '',
+                    //     answer: '',
+                    //     questDt: '',
+                    //     answerDt: '',
+                    //     diffDt: '',
+                    //     outVarNames: [],
+                    // },
                 ]
             };
             commit('addSessionInList', newSession);
@@ -174,6 +178,7 @@ export default createStore({
             'currentSession',
             'sessionIdx',
             'sessionList',
+            'sessionFirstQuest'
 
         ]
     }),],

@@ -42,7 +42,7 @@ export default {
 
         },
         type: 'process',
-        varsByName: [
+        vars: [
           {name: '$topic', value: '',},
           {name: '$last', value: '',},
         ],
