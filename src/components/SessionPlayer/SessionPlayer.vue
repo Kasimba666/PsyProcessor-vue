@@ -1,75 +1,77 @@
 <template>
-    <template v-if="!!session">
-        <div class="SessionPlayer">
-            <div class="main">
-                <div class="history">
-                    <!--                    История вопросов и ответов:-->
-                    <div>{{ session.history }}</div>
-                </div>
+    <div class="SessionPlayer">
+        <div class="main">
+            <div class="history">
+                <!--                    История вопросов и ответов:-->
+                <div>{{ session.history }}</div>
+            </div>
 
-                <div class="quest-zone">
-                    <div class="confirm" :class="{show: showConfirm}">{{ confirmHTML }}</div>
-                    <div class="quest">{{ questHTML }}</div>
-                </div>
-                <div class="answer">
-                    <b-form-textarea
-                            size="sm"
-                            v-model="answer"
-                            placeholder="Введите ответ"
-                            rows="2"
-                            max-rows="10"
-                    />
-                    <!--                    <textarea-->
-                    <!--                            v-model="answer"-->
-                    <!--                            placeholder="Введите ответ"-->
-                    <!--                    />-->
-                </div>
-                <div class="next">
-                    <button class="btn btn-outline-primary btn-next btn-sm"
-                            :disabled="answer===''"
-                            @click="onClickNext">
-                        Далее
-                    </button>
-                </div>
-                <template v-if="!!session && session.stack[0].maxCount === 0">
-                    <div class="finish">
-                        <button class="btn btn-outline-primary btn-next btn-sm"
-                                @click="onClickFinishCycle">
-                            Завершить текущий цикл
-                        </button>
-                    </div>
-                </template>
+            <div class="quest-zone">
+                <div class="confirm" :class="{show: showConfirm}">{{ confirmHTML }}</div>
+                <div class="quest" v-html="questHTML"/>
+            </div>
+            <div class="answer">
+                <b-form-textarea
+                        size="sm"
+                        v-model="answer"
+                        placeholder="Введите ответ"
+                        rows="2"
+                        max-rows="10"
+                        @keyup.enter="onClickNext()"\
+                        ?
+                />
+                <!--                    <textarea-->
+                <!--                            v-model="answer"-->
+                <!--                            placeholder="Введите ответ"-->
+                <!--                    />-->
+            </div>
+            <div class="next">
+                <button class="btn btn-outline-primary btn-next btn-sm"
+                        :disabled="answer===''"
+                        @click="onClickNext()">
+                    Далее
+                </button>
+            </div>
+            <template v-if="!!session && session.stack[0].maxCount === 0">
                 <div class="finish">
                     <button class="btn btn-outline-primary btn-next btn-sm"
-                            @click="onClickFinishSession">
-                        Завершить сессию
+                            @click="onClickFinishCycle">
+                        Завершить текущий цикл
                     </button>
                 </div>
-                <div class="pause">
-                    <button class="btn btn-outline-primary btn-next btn-sm"
-                            @click="onClickPauseSession">
-                        Пауза
-                    </button>
-                </div>
-                <div class="renew">
-                    <button class="btn btn-outline-primary btn-next btn-sm"
-                            @click="onClickRenew">
-                        Подготовить новую сессию
-                    </button>
-                </div>
-                <pre>Вопрос и ответ: {{ !!this.session ? this.session.q : '' }} </pre>
-                <pre>Стек: {{ !!this.session ? this.session.stack : '' }}</pre>
-                <pre>Сдвиг: {{ !!this.session ? this.session.positions : '' }}</pre>
-                <pre>Переменные: {{ !!this.session ? this.session.varsByName : '' }}</pre>
+            </template>
+            <div class="finish">
+                <button class="btn btn-outline-primary btn-next btn-sm"
+                        @click="onClickFinishSession">
+                    Завершить сессию
+                </button>
             </div>
+            <div class="pause">
+                <button class="btn btn-outline-primary btn-next btn-sm"
+                        @click="onClickPauseSession">
+                    Пауза
+                </button>
+            </div>
+            <div class="renew">
+                <button class="btn btn-outline-primary btn-next btn-sm"
+                        @click="onClickRenew">
+                    Подготовить новую сессию
+                </button>
+            </div>
+            <pre>Вопрос и ответ: {{ !!this.session ? this.session.q : '' }} </pre>
+            <pre>Стек: {{ !!this.session ? this.session.stack : '' }}</pre>
+            <pre>Сдвиг: {{ !!this.session ? this.session.positions : '' }}</pre>
+            <pre>Переменные: {{ !!this.session ? this.session.varsByName : '' }}</pre>
         </div>
-    </template>
+    </div>
 </template>
 
 <script>
 
 import {mapState} from "vuex";
 
+const startSubstr = '{{';
+const endSubstr = '}}';
 export default {
     name: "SessionPlayer",
     components: {},
@@ -81,8 +83,7 @@ export default {
             answer: '',
             showConfirm: false,
             stepCounter: 0,
-            startSubstr: '{{',
-            endSubstr: '}}',
+
         }
     },
     computed: {
@@ -100,7 +101,12 @@ export default {
             return result;
         },
         questHTML() {
-            return this.session.questInfo.handledQuest;
+            let result = this.session.questInfo.handledQuest
+                .replaceAll(startSubstr, '<span class="inserted-text">')
+                .replaceAll(endSubstr, '</span>');
+
+
+            return result;
         },
         confirmHTML() {
             return 'Ок, отлично!'
@@ -158,9 +164,18 @@ export default {
             return [varName];
         },
         handleQuest() {
+            let response = this.nextQuest();
+
+            this.session.questInfo.rawQuest = response.rawQuest;
+
             let result = this.session.questInfo.rawQuest;
             for (let key in this.session.varsByName) result = result.replace(key, this.session.varsByName[key]);
             this.session.questInfo.handledQuest = result;
+            //Положить дату и время формирования вопроса в qshowConfirmation
+            this.session.questInfo.questDt = new Date().toISOString();
+            //положить переменные, указанные в Out, в объект q
+            this.session.questInfo.outVarNames = response.outVarNames;
+
         },
         saveHistoryItem() {
             this.session.history.push({
@@ -173,38 +188,40 @@ export default {
                 outVarNames: this.session.questInfo.outVarNames,
             });
         },
-        onClickNext() {
-            //обработать ответ пользователя
-            if (!!this.session.questInfo.handledQuest && !!this.answer) {
-                this.showConfirm = true;
-                setTimeout(() => {
-                    this.showConfirm = false;
-                }, 3000);
+        showConfirmation() {
+            this.showConfirm = true;
+            setTimeout(() => {
+                this.showConfirm = false;
+            }, 3000);
+        },
+        onClickNext(newSession=false, incrementCursor=true) {
+            console.log('newSession', newSession);
+            if (!newSession) {
+                //обработать ответ пользователя
+                this.answer = this.answer.trim();
+
+                if (!this.session.questInfo.handledQuest || !this.answer) {
+                    return;
+                }
+                this.showConfirmation();
+                this.questComplete = false;
+
+                //положить ответ в переменные, указанные в предыдущем вопросе
+                this.session.varsByName['$last'] = this.answer;
+                this.session.questInfo.outVarNames.forEach((v) => {
+                        if (!!v) this.session.varsByName[v] = this.answer
+                    }
+                );
+
                 this.saveHistoryItem();
+
+                //очистить область ответов
+                this.answer = '';
             }
-            this.questComplete = false;
-
-
-            //положить ответ в переменные, указанные в предыдущем вопросе
-            this.session.varsByName['$last'] = this.answer;
-            this.session.questInfo.outVarNames.forEach((v) => {
-                if (!!v) this.session.varsByName[v] = this.answer}
-            );
-
-            //очистить область ответов
-            this.answer = '';
-
             //подготовить следущий вопрос
-            let response = this.nextQuest();
-            this.session.questInfo.rawQuest = response.rawQuest;
             this.handleQuest();
 
-            //Положить дату и время формирования вопроса в q
-            this.session.questInfo.questDt = new Date().toISOString();
-            //положить переменные, указанные в Out, в объект q
-            this.session.questInfo.outVarNames = response.outVarNames;
-
-            //
+            this.questComplete = true;
         },
         onClickFinishCycle() {
             if (this.session.stack.length > 0) this.session.stack.shift();
@@ -214,7 +231,7 @@ export default {
         },
 
         nextQuest() {
-            if (this.session.status === 'inProgress') {
+            if (true || this.session.status === 'inProgress') {
                 let response = {};
                 do
                     response = this.nextElement();
@@ -309,19 +326,25 @@ export default {
     },
     mounted() {
 
-    },
-    watch: {
-        sessionFirstQuest: {
-            handler(v) {
-                if (v) {
-                    this.onClickNext();
-                    this.$store.commit('sessionFirstQuest', false);
-                }
-            },
-            deep: false,
-            immediate: true,
+        if (this.session.status === 'new') {
+            console.log('mounted');
+            // debugger;
+            this.onClickNext(true);
+            this.session.status = 'inProgress';
+            // this.$store.commit('sessionFirstQuest', false);
         }
     },
+    // watch: {
+    //     sessionFirstQuest: {
+    //         handler(v) {
+    //             if (v) {
+    //
+    //             }
+    //         },
+    //         deep: false,
+    //         immediate: true,
+    //     }
+    // },
 }
 </script>
 
@@ -331,6 +354,12 @@ export default {
   width: 100%;
   height: auto;
   font-size: 13px;
+
+  .inserted-text {
+    color: hsl(199, 94%, 20%);
+    text-shadow: 0 0 hsl(199, 94%, 20%);
+
+  }
 
   .main {
     width: 500px;

@@ -92,11 +92,12 @@ export default {
                     this.currentIdx = idxs[0];
                     switch (oldStatus) {
                         case 'new': {
-                            this.sessionList[idxs[0]].status = 'inProgress';
-                            this.currentSession = this.sessionList[idxs[0]];
+                            // debugger;
+                            this.currentSession = JSON.parse(JSON.stringify(this.sessionList[idxs[0]]));
                             this.$store.commit('session', this.currentSession);
                             this.$store.commit('sessionIdx', idxs[0]);
-                            this.$store.commit('sessionFirstQuest', true);
+                            // this.$store.commit('sessionFirstQuest', true);
+                            // this.sessionList[idxs[0]].status = 'inProgress';
                         }
                             break;
                         case 'paused': {

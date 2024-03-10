@@ -4,10 +4,13 @@
             <div class="row">
                 <div class="col-12 mt-40">
                     <h2>Session</h2>
+                    <button
+                    @click="$store.commit('session', null)">
+                        Удалить сессию
+                    </button>
                     <hr/>
-                    <input type="text" v-model="model"/>
-                    <SessionPlayer
-                    />
+<!--                    <input type="text" v-model="model"/>-->
+                    <SessionPlayer v-if="!!session" />
                 </div>
             </div>
         </div>
@@ -31,15 +34,17 @@
             }
         },
         computed: {
-            ...mapState(['testData']),
-            model:{
-                get(){
-                    return this.testData;
-                },
-                set(v){
-                    this.$store.commit('testData',v);
-                },
-            },
+            ...mapState(['session']),
+
+            // ...mapState(['testData']),
+            // model:{
+            //     get(){
+            //         return this.testData;
+            //     },
+            //     set(v){
+            //         this.$store.commit('testData',v);
+            //     },
+            // },
         },
         methods: {
            createHistoryItem() {
