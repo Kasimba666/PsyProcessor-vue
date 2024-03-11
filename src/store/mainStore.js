@@ -1,5 +1,6 @@
 import {createStore} from "vuex";
 import createPersistedState from 'vuex-persistedstate';
+import {v4} from "uuid";
 
 export default createStore({
     state: {
@@ -9,9 +10,11 @@ export default createStore({
         processList: [],
         currentEditableProcess: null,
         currentEditableProcessIdx: -1,
+        currentEditableProcessID: null,
         sessionList: [],
         session: null,
         sessionIdx: -1,
+        sessionID: null,
         sessionFirstQuest: false,
         token: null,
         user: null, //curLang: 'en',
@@ -26,12 +29,12 @@ export default createStore({
             state.processList = v;
         },
         addProcessesInList(state, arr) {
-            console.log(arr);
             if (!!arr) arr.forEach((v) => state.processList.unshift(v));
         },
-        changeProcessInList(state, v) {
+        changeProcessInListByIdx(state, v) {
             state.processList[v.idx] = v.process;
         },
+
         currentEditableProcess(state, v) {
             state.currentEditableProcess = v;
         },
@@ -42,29 +45,37 @@ export default createStore({
         sessionList(state, v) {
             state.sessionList = v;
         },
-        changeSessionInList(state, v) {
+        changeSessionInListByIdx(state, v) {
             state.sessionList[v.idx] = v.session;
         },
-        sessionStatus(state, {idx, status}) {
+        changeSessionInListByID(state, v) {
+            state.sessionList.filter((vv) => vv.id === v.id)[0] = v.session;
+        },
+        changeSessionStatusByIdx(state, {idx, status}) {
             state.sessionList[idx].status = status;
+        },
+        removeSessionInListByID(state, v) {
+            state.sessionList = state.sessionList.filter((vv) => vv.id !== v);
         },
 
         session(state, v) {
             state.session = v;
         },
-        sessionFirstQuest(state, v) {
-            state.sessionFirstQuest = v;
-        },
         sessionIdx(state, v) {
             state.sessionIdx = v;
+        },
+        sessionID(state, v) {
+            state.sessionID = v;
         },
 
         addSessionInList(state, v) {
             if (!!v) state.sessionList.unshift(v);
         },
-        // isNewSession(state, v) {
-        //     state.isNewSession = v;
-        // },
+        changeSessionNameByID(state, v) {
+            state.sessionList.filter((vv) => vv.id === v.id)[0].header.sessionTitle = v.name;
+        },
+
+
         mobileMenuActive(state, v) {
             state.mobileMenuTransition = true;
             state.mobileMenuActive = v;
@@ -116,7 +127,11 @@ export default createStore({
                 });
                 return result;
             };
+            let generateID = () => {
+                return v4();
+            };
             let newSession = {
+                id: generateID(),
                 header: {
                     sessionTitle: 'Новая сессия. ' + p.header.processTitle,
                     createdDt: (new Date()).toISOString(),

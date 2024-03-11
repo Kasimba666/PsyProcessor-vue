@@ -11,19 +11,20 @@
                 <div class="quest" v-html="questHTML"/>
             </div>
             <div class="answer">
-                <b-form-textarea
-                        size="sm"
+<!--                <b-form-textarea-->
+<!--                        size="sm"-->
+<!--                        v-model="answer"-->
+<!--                        placeholder="Введите ответ"-->
+<!--                        rows="2"-->
+<!--                        max-rows="10"-->
+<!--                        @keyup.enter="onClickNext()"-->
+<!--                />-->
+                <textarea
+                        class="w-100"
                         v-model="answer"
                         placeholder="Введите ответ"
-                        rows="2"
-                        max-rows="10"
-                        @keyup.enter="onClickNext()"\
-                        ?
+                        @keyup.enter="onClickNext()"
                 />
-                <!--                    <textarea-->
-                <!--                            v-model="answer"-->
-                <!--                            placeholder="Введите ответ"-->
-                <!--                    />-->
             </div>
             <div class="next">
                 <button class="btn btn-outline-primary btn-next btn-sm"
@@ -87,7 +88,7 @@ export default {
         }
     },
     computed: {
-        ...mapState(['session', 'sessionFirstQuest']),
+        ...mapState(['session',]),
         mapKeyNodes() {
             if (this.session === null) return null;
             let result = {};
@@ -194,7 +195,7 @@ export default {
                 this.showConfirm = false;
             }, 3000);
         },
-        onClickNext(newSession=false, incrementCursor=true) {
+        onClickNext(newSession = false, incrementCursor = true) {
             console.log('newSession', newSession);
             if (!newSession) {
                 //обработать ответ пользователя

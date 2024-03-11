@@ -84,7 +84,7 @@ export default {
       let forSave = JSON.parse(JSON.stringify(this.process));
       if (this.currentEditableProcessIdx !== -1) {
         //изменить в списке по индексу
-        this.$store.commit('changeProcessInList', {idx: this.currentEditableProcessIdx, process: forSave});
+        this.$store.commit('changeProcessInListByIdx', {idx: this.currentEditableProcessIdx, process: forSave});
       } else {
         //добавить в список
         this.$store.commit('addProcessesInList', [forSave]);

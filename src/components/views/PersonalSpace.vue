@@ -48,6 +48,7 @@ export default {
             newSessionName: '',
             showModalName: false,
             currentIdx: null,
+            currentID: null,
             currentSession: null,
             fields: [
                 {key: 'sessionTitle', label: 'Наименование'},
@@ -58,9 +59,7 @@ export default {
         }
     },
     computed: {
-        ...mapState(['sessionList']),
-        ...mapState(['session']),
-        ...mapState(['sessionIdx']),
+        ...mapState(['sessionList', 'session', 'sessionIdx', 'sessionID']),
 
         rows() {
             if (this.sessionList === null || this.sessionList.length === 0) return [];
@@ -86,37 +85,39 @@ export default {
         },
         onDoAction(action, idxs) {
             console.log(action, idxs);
+            this.currentIdx = idxs[0];
+            this.currentID = this.sessionList[this.currentIdx].id;
             switch (action) {
                 case 'changeStatus': {
-                    let oldStatus = this.sessionList[idxs[0]].status;
-                    this.currentIdx = idxs[0];
+                    let oldStatus = this.sessionList[this.currentIdx].status;
+
                     switch (oldStatus) {
                         case 'new': {
                             // debugger;
-                            this.currentSession = JSON.parse(JSON.stringify(this.sessionList[idxs[0]]));
+                            this.currentSession = JSON.parse(JSON.stringify(this.sessionList[this.currentIdx]));
                             this.$store.commit('session', this.currentSession);
-                            this.$store.commit('sessionIdx', idxs[0]);
+                            this.$store.commit('sessionIdx', this.currentIdx);
                             // this.$store.commit('sessionFirstQuest', true);
                             // this.sessionList[idxs[0]].status = 'inProgress';
                         }
                             break;
                         case 'paused': {
-                            this.sessionList[idxs[0]].status = 'inProgress';
-                            this.currentSession = this.sessionList[idxs[0]];
+                            this.sessionList[this.currentIdx].status = 'inProgress';
+                            this.currentSession = this.sessionList[this.currentIdx];
                             this.$store.commit('session', this.currentSession);
-                            this.$store.commit('sessionIdx', idxs[0]);
+                            this.$store.commit('sessionIdx', this.currentIdx);
 
                         }
                             break;
                         case 'inProgress': {
                             if (!this.session) {
-                                this.sessionList[idxs[0]].status = 'paused';
+                                this.sessionList[this.currentIdx].status = 'paused';
                                 return
                             }
-                            this.sessionList[idxs[0]].status = 'paused';
+                            this.sessionList[this.currentIdx].status = 'paused';
                             this.currentSession = this.session;
                             this.currentSession.status = 'paused';
-                            this.$store.commit('changeSessionInList', {
+                            this.$store.commit('changeSessionInListByIdx', {
                                 idx: this.sessionIdx,
                                 session: this.currentSession
                             });
@@ -131,22 +132,17 @@ export default {
                         }
                     }
 
-                    // this.$store.commit('sessionStatus', {idx: idxs[0], status: newStatus});
+                    // this.$store.commit('changeSessionStatusByIdx', {idx: idxs[0], status: newStatus});
                 }
                     return
                 case 'remove': {
-                    if (idxs.length > 0) {
-                        idxs.reverse().forEach(v => {
-                            this.sessionList.splice(v, 1)
-                        });
-                        this.$store.commit('sessionList', this.sessionList);
-                    }
+                    if (this.currentIdx !== -1 && !!this.currentID)  this.$store.commit('removeSessionInListByID', this.currentID);
+
                 }
                     return
                 case 'changeName': {
-                    if (idxs.length > 0) {
-                        this.newSessionName = this.sessionList[idxs[0]].header.sessionTitle;
-                        this.currentIdx = idxs[0];
+                    if (this.currentIdx !== -1 && !!this.currentID) {
+                        this.newSessionName = this.sessionList[this.currentIdx].header.sessionTitle;
                         this.showModalName = true;
                     }
                 }
@@ -156,8 +152,10 @@ export default {
             }
         },
         onOkChangeName() {
-            this.sessionList[!!this.currentIdx ? this.currentIdx : 0].header.sessionTitle = this.newSessionName;
-            this.$store.commit('sessionList', this.sessionList);
+            // this.sessionList[!!this.currentIdx ? this.currentIdx : 0].header.sessionTitle = this.newSessionName;
+            // this.$store.commit('sessionList', this.sessionList);
+
+            this.$store.commit('changeSessionNameByID', {id: this.currentID, name: this.newSessionName});
         },
 
     },

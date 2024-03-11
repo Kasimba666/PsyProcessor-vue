@@ -3,14 +3,15 @@
         <div class="container">
             <div class="row">
                 <div class="col-12 mt-40">
-                    <h2>Session</h2>
+                    <h2>Session:</h2>
+                    {{!!session ? session.header.name : ''}}
                     <button
                     @click="$store.commit('session', null)">
                         Удалить сессию
                     </button>
                     <hr/>
 <!--                    <input type="text" v-model="model"/>-->
-                    <SessionPlayer v-if="!!session" />
+                    <SessionPlayer v-if="!!session" :key="session.id"/>
                 </div>
             </div>
         </div>
