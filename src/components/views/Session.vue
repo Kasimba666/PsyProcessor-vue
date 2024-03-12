@@ -2,8 +2,8 @@
   <div class="session">
     <div class="container">
       <div class="row">
-        <div class="col-12 mt-40">
-          <h2>Session:</h2>
+        <div class="col-12">
+          <h4>Session:</h4>
           {{ !!session ? session.header.sessionTitle : '' }}
           <hr/>
           <button
@@ -11,7 +11,6 @@
             Удалить сессию
           </button>
           <hr/>
-          <!--                    <input type="text" v-model="model"/>-->
           <SessionPlayer v-if="!!session" :key="session.id"/>
         </div>
       </div>

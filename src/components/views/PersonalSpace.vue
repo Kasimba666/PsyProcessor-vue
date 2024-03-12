@@ -104,7 +104,7 @@ export default {
                             this.currentSession = this.sessionList[this.currentIdx];
                             this.$store.commit('session', this.currentSession);
                             this.$store.commit('sessionIdx', this.currentIdx);
-
+                            this.$store.commit('sessionID', this.currentID);
                         }
                             break;
                         case 'inProgress': {
@@ -138,7 +138,7 @@ export default {
                 }
                     return
                 case 'remove': {
-                    if (this.currentIdx !== -1 && !!this.currentID)  this.$store.commit('removeSessionInListByID', this.currentID);
+                    if (this.currentIdx !== -1 && !!this.currentID) this.$store.commit('removeSessionInListByID', this.currentID);
 
                 }
                     return

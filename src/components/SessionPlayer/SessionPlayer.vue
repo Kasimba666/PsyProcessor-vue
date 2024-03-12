@@ -3,7 +3,12 @@
         <div class="main">
             <div class="history">
                 <!--                    История вопросов и ответов:-->
-                <div>{{ session.history }}</div>
+                <div
+                        v-for="(v, i) in session.history"
+                        :key="i"
+                >
+                    {{ session.history[i].handledQuest }} - {{ session.history[i].answer }}
+                </div>
             </div>
 
             <div class="quest-zone">
@@ -11,14 +16,6 @@
                 <div class="quest" v-html="questHTML"/>
             </div>
             <div class="answer">
-<!--                <b-form-textarea-->
-<!--                        size="sm"-->
-<!--                        v-model="answer"-->
-<!--                        placeholder="Введите ответ"-->
-<!--                        rows="2"-->
-<!--                        max-rows="10"-->
-<!--                        @keyup.enter="onClickNext()"-->
-<!--                />-->
                 <textarea
                         class="w-100"
                         v-model="answer"
@@ -32,31 +29,31 @@
                         @click="onClickNext()">
                     Далее
                 </button>
+                <button class="btn btn-outline-primary btn-next btn-sm"
+                        @click="onClickPauseSession">
+                    Пауза
+                </button>
+
             </div>
-            <template v-if="!!session && session.stack[0].maxCount === 0">
-                <div class="finish">
-                    <button class="btn btn-outline-primary btn-next btn-sm"
-                            @click="onClickFinishCycle">
-                        Завершить текущий цикл
-                    </button>
-                </div>
-            </template>
             <div class="finish">
+                <button
+                        v-if="!!session && session.stack.length > 0 && session.stack[0].maxCount === 0"
+                        class="btn btn-outline-primary btn-next btn-sm"
+                        @click="onClickFinishCycle">
+                    Завершить текущий цикл
+                </button>
                 <button class="btn btn-outline-primary btn-next btn-sm"
                         @click="onClickFinishSession">
                     Завершить сессию
                 </button>
             </div>
-            <div class="pause">
-                <button class="btn btn-outline-primary btn-next btn-sm"
-                        @click="onClickPauseSession">
-                    Пауза
-                </button>
-            </div>
-            <pre>Вопрос и ответ: {{ !!this.session ? this.session.questInfo : '' }} </pre>
-            <pre>Стек: {{ !!this.session ? this.session.stack : '' }}</pre>
-            <pre>Сдвиг: {{ !!this.session ? this.session.positions : '' }}</pre>
-            <pre>Переменные: {{ !!this.session ? this.session.varsByName : '' }}</pre>
+<!--{{!!currSession ? currSession : ''}}-->
+<!--{{!!sessionID ? sessionID : ''}}-->
+
+<!--            <pre>Вопрос и ответ: {{ !!this.session ? this.session.questInfo : '' }} </pre>-->
+<!--            <pre>Стек: {{ !!this.session ? this.session.stack : '' }}</pre>-->
+<!--            <pre>Сдвиг: {{ !!this.session ? this.session.positions : '' }}</pre>-->
+<!--            <pre>Переменные: {{ !!this.session ? this.session.varsByName : '' }}</pre>-->
         </div>
     </div>
 </template>
@@ -82,7 +79,9 @@ export default {
         }
     },
     computed: {
-        ...mapState(['session', ]),
+        ...mapState(['session', 'sessionID']),
+        ...mapState({currSession: state => state.sessionList.filter((v)=>v.id === state.sessionID)[0]}),
+
         mapKeyNodes() {
             if (this.session === null) return null;
             let result = {};
@@ -154,6 +153,11 @@ export default {
                 this.showConfirm = false;
             }, 3000);
         },
+
+        setCurrSessionInList() {
+
+        },
+
         onClickNext(newSession = false, incrementCursor = true) {
             console.log('newSession', newSession);
             if (!newSession) {
@@ -200,6 +204,7 @@ export default {
             }
         },
         nextElement() {
+            console.log('stack.length:', this.session.stack.length);
             if (this.session.stack.length === 0) return {rawQuest: 'Стек пуст'}
 
             let result = {rawQuest: ''};
@@ -287,11 +292,8 @@ export default {
     mounted() {
 
         if (this.session.status === 'new') {
-            console.log('mounted');
-            // debugger;
             this.onClickNext(true);
             this.session.status = 'inProgress';
-            // this.$store.commit('sessionFirstQuest', false);
         }
     },
     // watch: {
@@ -332,10 +334,18 @@ export default {
 
     .history {
       width: 100%;
+      height: 200px;
+      padding: 5px;
       border: 1px solid gray;
+      overflow: scroll;
     }
 
     .quest-zone {
+      width: 100%;
+      border: 1px solid gray;
+      text-align: start;
+      margin-top: 10px;
+
       .confirm {
         display: none;
 
@@ -346,43 +356,49 @@ export default {
 
       .quest {
         width: 100%;
+          padding: 5px;
         border: 1px solid gray;
       }
-    }
 
-    .answer {
-      width: 100%;
-      height: auto;
-      border: 1px solid gray;
-      padding: 5px;
     }
+      .answer {
+          width: 100%;
+          height: auto;
+          border: 1px solid gray;
+          padding: 5px;
+      }
+
 
     .next {
       display: block;
       width: 100%;
       border: 1px solid gray;
-      //text-align: center;
+      display: flex;
+      justify-content: start;
+      align-items: start;
+      gap: 10px;
       padding: 5px;
+      margin-top: 20px;
 
       &.disabled {
         display: none;
       }
     }
 
-    .finish, .pause, .renew, .quest-zone {
+    .finish {
       width: 100%;
       border: 1px solid gray;
-      text-align: center;
+      display: flex;
+      justify-content: start;
+      align-items: start;
+      gap: 10px;
       padding: 5px;
     }
-
-
   }
 
   .btn-next {
     height: auto;
-
-    width: 100%;
+    width: 200px;
     color: black;
     background-color: transparent;
     border: 1px solid hsl(50, 30%, 75%);
