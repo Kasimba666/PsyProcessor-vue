@@ -11,6 +11,7 @@ export default createStore({
         currentEditableProcess: null,
         currentEditableProcessIdx: -1,
         currentEditableProcessID: null,
+        answer: '',
         sessionList: [],
         session: null,
         sessionIdx: -1,
@@ -59,6 +60,9 @@ export default createStore({
         },
 
         session(state, v) {
+            state.session = v;
+        },
+        answer(state, v) {
             state.session = v;
         },
         sessionIdx(state, v) {
@@ -150,16 +154,16 @@ export default createStore({
                 positions: preparePositions(p.rootNode),
                 varsByName: prepareVars(p.vars),
                 listQuestionAnswers: [],
-                q: {
-                    rawQuest: 'Начало процесса',
-                    varsCurrentQuest: [],
-                    varsPreviousQuest: ['$last'],
-                    handledQuest: '',
-                    aiHandledQuest: '',
-                    dt: ''
-                },
+                // q: {
+                //     rawQuest: 'Начало процесса',
+                //     varsCurrentQuest: [],
+                //     varsPreviousQuest: ['$last'],
+                //     handledQuest: '',
+                //     aiHandledQuest: '',
+                //     dt: ''
+                // },
                 questInfo: {
-                    rawQuest: 'Начало процесса',
+                    rawQuest: '',
                     handledQuest: '',
                     aiHandledQuest: '',
                     outVarNames: [],
@@ -167,15 +171,7 @@ export default createStore({
                 },
 
                 history: [
-                    // {
-                    //     rawQuest: '',
-                    //     handledQuest: '',
-                    //     answer: '',
-                    //     questDt: '',
-                    //     answerDt: '',
-                    //     diffDt: '',
-                    //     outVarNames: [],
-                    // },
+
                 ]
             };
             commit('addSessionInList', newSession);
@@ -190,10 +186,11 @@ export default createStore({
             'currentEditableProcess',
             'currentEditableProcessIdx',
             'processList',
-            'currentSession',
+            'session',
             'sessionIdx',
+            'sessionID',
             'sessionList',
-            'sessionFirstQuest'
+            'answer'
 
         ]
     }),],

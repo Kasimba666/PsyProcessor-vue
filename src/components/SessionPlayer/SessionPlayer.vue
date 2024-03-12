@@ -53,13 +53,7 @@
                     Пауза
                 </button>
             </div>
-            <div class="renew">
-                <button class="btn btn-outline-primary btn-next btn-sm"
-                        @click="onClickRenew">
-                    Подготовить новую сессию
-                </button>
-            </div>
-            <pre>Вопрос и ответ: {{ !!this.session ? this.session.q : '' }} </pre>
+            <pre>Вопрос и ответ: {{ !!this.session ? this.session.questInfo : '' }} </pre>
             <pre>Стек: {{ !!this.session ? this.session.stack : '' }}</pre>
             <pre>Сдвиг: {{ !!this.session ? this.session.positions : '' }}</pre>
             <pre>Переменные: {{ !!this.session ? this.session.varsByName : '' }}</pre>
@@ -88,7 +82,7 @@ export default {
         }
     },
     computed: {
-        ...mapState(['session',]),
+        ...mapState(['session', ]),
         mapKeyNodes() {
             if (this.session === null) return null;
             let result = {};
@@ -129,41 +123,6 @@ export default {
             }
         },
 
-        onClickRenew() {
-            this.session.status = 'inProgress';
-            //очистить стек
-            this.session.stack = [{
-                key: 'root',
-                type: this.session.process.rootNode.type,
-                counter: -1,
-                maxCount: 0,
-            }];
-            //очистить позиции в циклах
-            if (!!this.session.positions) for (let key in this.session.positions) this.session.positions[key] = 0;
-            //очистить текущее состояние вопроса и ответа
-            // this.session.q = {
-            //     rawQuest: 'Начало процесса',
-            //     varsCurrentQuest: [],
-            //     varsPreviousQuest: ['$last'],
-            //     handledQuest: '',
-            //     aiHandledQuest: '',
-            //     dt: ''
-            // },
-
-            //очистить историю
-            this.session.history = [];
-            //очистить значения переменных
-            for (let key in this.session.varsByName) this.session.varsByName[key] = '';
-        },
-
-        getVarsFromStr(str) {
-            if (str === '') return '';
-            let varName = '';
-            let startPos = str.indexOf(this.startSubstr);
-            let endPos = str.indexOf(this.endSubstr);
-            if (startPos >= 0 && endPos > startPos) varName = str.substring(startPos + this.startSubstr.length, endPos);
-            return [varName];
-        },
         handleQuest() {
             let response = this.nextQuest();
 

@@ -90,15 +90,13 @@ export default {
             switch (action) {
                 case 'changeStatus': {
                     let oldStatus = this.sessionList[this.currentIdx].status;
-
                     switch (oldStatus) {
                         case 'new': {
-                            // debugger;
                             this.currentSession = JSON.parse(JSON.stringify(this.sessionList[this.currentIdx]));
                             this.$store.commit('session', this.currentSession);
                             this.$store.commit('sessionIdx', this.currentIdx);
-                            // this.$store.commit('sessionFirstQuest', true);
-                            // this.sessionList[idxs[0]].status = 'inProgress';
+                            this.$store.commit('sessionID', this.currentID);
+                            this.sessionList[this.currentIdx].status = 'inProgress';
                         }
                             break;
                         case 'paused': {
@@ -117,8 +115,12 @@ export default {
                             this.sessionList[this.currentIdx].status = 'paused';
                             this.currentSession = this.session;
                             this.currentSession.status = 'paused';
-                            this.$store.commit('changeSessionInListByIdx', {
-                                idx: this.sessionIdx,
+                            // this.$store.commit('changeSessionInListByIdx', {
+                            //     idx: this.sessionIdx,
+                            //     session: this.currentSession
+                            // });
+                            this.$store.commit('changeSessionInListByID', {
+                                id: this.sessionID,
                                 session: this.currentSession
                             });
                             //убрать текущую сессию
