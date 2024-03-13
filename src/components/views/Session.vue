@@ -7,11 +7,14 @@
           {{ !!session ? session.header.sessionTitle : '' }}
           <hr/>
           <button
-              @click="$store.commit('session', null)">
+              @click="$store.commit('sessionID', null)">
             Удалить сессию
           </button>
           <hr/>
-          <SessionPlayer v-if="!!session" :key="session.id"/>
+          <SessionPlayer
+              v-if="!!session" :key="session.id"
+              :sessionID = sessionID
+          />
         </div>
       </div>
     </div>
@@ -29,12 +32,14 @@ export default {
   layout: 'default',
   name: "session",
   components: {SessionPlayer},
+  props: ['sessionID'],
 
   data() {
     return {}
   },
   computed: {
-    ...mapState(['session']),
+    ...mapState(['sessionID']),
+    ...mapState({session: state => state.sessionList.filter((v) => v.id === state.sessionID)[0]}),
 
   },
   methods: {},

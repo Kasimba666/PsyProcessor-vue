@@ -12,6 +12,7 @@
             <div class="row">
                 <div class="col-12">
                     <router-view
+                        :sessionID = currentID
                     />
                 </div>
             </div>
@@ -92,18 +93,15 @@ export default {
                     let oldStatus = this.sessionList[this.currentIdx].status;
                     switch (oldStatus) {
                         case 'new': {
+                            this.sessionList[this.currentIdx].status = 'new';
                             this.currentSession = JSON.parse(JSON.stringify(this.sessionList[this.currentIdx]));
-                            this.$store.commit('session', this.currentSession);
-                            this.$store.commit('sessionIdx', this.currentIdx);
                             this.$store.commit('sessionID', this.currentID);
-                            this.sessionList[this.currentIdx].status = 'inProgress';
                         }
+
                             break;
                         case 'paused': {
                             this.sessionList[this.currentIdx].status = 'inProgress';
                             this.currentSession = this.sessionList[this.currentIdx];
-                            this.$store.commit('session', this.currentSession);
-                            this.$store.commit('sessionIdx', this.currentIdx);
                             this.$store.commit('sessionID', this.currentID);
                         }
                             break;
@@ -125,8 +123,7 @@ export default {
                             });
                             //убрать текущую сессию
                             this.sessionList[this.sessionIdx].status = 'paused';
-                            this.$store.commit('session', null);
-                            this.$store.commit('sessionIdx', -1);
+
 
                         }
                             break;

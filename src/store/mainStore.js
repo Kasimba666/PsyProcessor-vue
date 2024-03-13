@@ -153,15 +153,6 @@ export default createStore({
                 }],
                 positions: preparePositions(p.rootNode),
                 varsByName: prepareVars(p.vars),
-                listQuestionAnswers: [],
-                // q: {
-                //     rawQuest: 'Начало процесса',
-                //     varsCurrentQuest: [],
-                //     varsPreviousQuest: ['$last'],
-                //     handledQuest: '',
-                //     aiHandledQuest: '',
-                //     dt: ''
-                // },
                 questInfo: {
                     rawQuest: '',
                     handledQuest: '',
