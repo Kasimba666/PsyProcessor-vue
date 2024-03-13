@@ -161,17 +161,25 @@ export default createStore({
                     questDt: '',
                 },
 
-                history: [
-
-                ]
+                history: []
             };
             commit('addSessionInList', newSession);
         },
-    }, getters: {
-        //balance(state) {
-        //    return state.walletList.reduce((s, v) => s += v.confirmed_balance * v.currency_price_usd, 0)
-        //},
     },
+    getters: {
+        sessionsByID(state) {
+            return state.sessionList.reduce((s, v)=>{
+                s[v.id] = v;
+                return s;
+            }, {});
+        },
+        processesByID(state) {
+            return state.processList.reduce((s, v)=>{
+                s[v.id] = v;
+            }, {});
+        },
+    },
+
     plugins: [createPersistedState({
         key: 'psyProc', paths: [
             'currentEditableProcess',

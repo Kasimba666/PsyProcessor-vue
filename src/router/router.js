@@ -1,42 +1,42 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import Home from "@/components/views/Home.vue";
-import PersonalSpace from "@/components/views/PersonalSpace.vue";
-import ProcessList from "@/components/views/ProcessList.vue";
-import Constructor from "@/components/views/Constructor.vue";
-import Session from "@/components/views/Session.vue";
+import PgHome from "@/components/views/PgHome.vue";
+import PgPersonalSpace from "@/components/views/PgPersonalSpace.vue";
+import PgProcessList from "@/components/views/PgProcessList.vue";
+import PgConstructor from "@/components/views/PgConstructor.vue";
+import PgSession from "@/components/views/PgSession.vue";
 
 const routes = [
     {
-        name: 'Home',
+        name: 'PgHome',
         path: '/home',
-        component: Home,
+        component: PgHome,
     },
     {
         path: '/',
-        redirect: {name: 'Home'},
+        redirect: {name: 'PgHome'},
     },
     {
-        name: 'PersonalSpace',
+        name: 'PgPersonalSpace',
         path: '/user-space',
-        component: PersonalSpace,
+        component: PgPersonalSpace,
         // redirect: {name: 'Session'},
         children: [
             {
-                name: 'Session',
-                path: 'session',
-                component: Session,
+                name: 'PgSession',
+                path: 'session/:id?',
+                component: PgSession,
             },
         ],
     },
     {
-        name: 'ProcessList',
+        name: 'PgProcessList',
         path: '/procs',
-        component: ProcessList,
+        component: PgProcessList,
     },
     {
-        name: 'Constructor',
+        name: 'PgConstructor',
         path: '/constructor',
-        component: Constructor,
+        component: PgConstructor,
     },
 ]
 

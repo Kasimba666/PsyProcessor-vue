@@ -38,10 +38,10 @@
 import ppSessionList from "@/components/PpUserSpace/ppSessionList.vue";
 import ppUserMenu from "@/components/PpUserSpace/ppUserMenu.vue";
 import {mapState} from "vuex";
-import SessionPlayer from "@/components/SessionPlayer/SessionPlayer.vue";
+import SessionPlayer from "@/components/SessionPlayer/ppSessionPlayer.vue";
 
 export default {
-    name: "PersonalSpace",
+    name: "PgPersonalSpace",
     components: {SessionPlayer, ppUserMenu, ppSessionList},
     props: [],
     data() {
@@ -84,6 +84,9 @@ export default {
             result[16] = '-';
             return result.join('');
         },
+        allInProgressToPausedExceptThis(id) {
+            this.sessionList.forEach((v)=>{if (v.id !== id && v.status === 'inProgress') v.status = 'paused'})
+        },
         onDoAction(action, idxs) {
             console.log(action, idxs);
             this.currentIdx = idxs[0];
@@ -92,46 +95,20 @@ export default {
                 case 'changeStatus': {
                     let oldStatus = this.sessionList[this.currentIdx].status;
                     switch (oldStatus) {
-                        case 'new': {
-                            this.sessionList[this.currentIdx].status = 'new';
-                            this.currentSession = JSON.parse(JSON.stringify(this.sessionList[this.currentIdx]));
-                            this.$store.commit('sessionID', this.currentID);
-                        }
-
-                            break;
+                        case 'new':
                         case 'paused': {
-                            this.sessionList[this.currentIdx].status = 'inProgress';
-                            this.currentSession = this.sessionList[this.currentIdx];
-                            this.$store.commit('sessionID', this.currentID);
+                            this.allInProgressToPausedExceptThis(this.currentID);
+                            this.$router.push({name: 'PgSession', params: {id: this.currentID}});
                         }
                             break;
                         case 'inProgress': {
-                            if (!this.session) {
-                                this.sessionList[this.currentIdx].status = 'paused';
-                                return
-                            }
                             this.sessionList[this.currentIdx].status = 'paused';
-                            this.currentSession = this.session;
-                            this.currentSession.status = 'paused';
-                            // this.$store.commit('changeSessionInListByIdx', {
-                            //     idx: this.sessionIdx,
-                            //     session: this.currentSession
-                            // });
-                            this.$store.commit('changeSessionInListByID', {
-                                id: this.sessionID,
-                                session: this.currentSession
-                            });
-                            //убрать текущую сессию
-                            this.sessionList[this.sessionIdx].status = 'paused';
-
 
                         }
                             break;
                         default: {
                         }
                     }
-
-                    // this.$store.commit('changeSessionStatusByIdx', {idx: idxs[0], status: newStatus});
                 }
                     return
                 case 'remove': {
@@ -151,9 +128,6 @@ export default {
             }
         },
         onOkChangeName() {
-            // this.sessionList[!!this.currentIdx ? this.currentIdx : 0].header.sessionTitle = this.newSessionName;
-            // this.$store.commit('sessionList', this.sessionList);
-
             this.$store.commit('changeSessionNameByID', {id: this.currentID, name: this.newSessionName});
         },
 

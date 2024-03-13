@@ -21,15 +21,19 @@
 import PpConstructor from "@/components/PpConstructor/PpConstructor.vue";
 import {mapState} from "vuex";
 import {reactive} from "vue";
-
+import {v4} from "uuid";
+let generateID = () => {
+    return v4();
+};
 export default {
-  name: "Constructor",
+  name: "PgConstructor",
   components: {PpConstructor},
   props: [],
   data() {
     return {
       isNew: Boolean,
       process: reactive({
+        id: generateID(),
         header: {
           processTitle: "Новый процесс",
           version: "0.0.1",
@@ -89,7 +93,7 @@ export default {
         //добавить в список
         this.$store.commit('addProcessesInList', [forSave]);
       }
-      this.$router.push({name: 'ProcessList'});
+      this.$router.push({name: 'PgProcessList'});
     },
   },
   mounted() {

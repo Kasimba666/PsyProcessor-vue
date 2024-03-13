@@ -63,7 +63,7 @@ export default {
       switch (action) {
         case 'create': {
           this.$store.commit('currentEditableProcessIdx', -1);
-          this.$router.push({name: 'Constructor'});
+          this.$router.push({name: 'PgConstructor'});
         }
           return;
         case 'change': {
@@ -71,7 +71,7 @@ export default {
             let forEdit = JSON.parse(JSON.stringify(this.processList[idxs[0]]));
             this.$store.commit('currentEditableProcess', forEdit);
             this.$store.commit('currentEditableProcessIdx', idxs[0]);
-            this.$router.push({name: 'Constructor'});
+            this.$router.push({name: 'PgConstructor'});
           }
         }
           return;
@@ -136,7 +136,7 @@ export default {
         case 'start': {
           this.$store.dispatch('createNewSession', this.processList[idxs[0]]);
           // this.$store.commit('isNewSession', true);
-          this.$router.push({name: 'Session'});
+          this.$router.push({name: 'PgSession'});
         }
           return;
         default: {
