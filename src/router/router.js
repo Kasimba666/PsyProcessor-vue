@@ -4,6 +4,7 @@ import PgPersonalSpace from "@/components/views/PgPersonalSpace.vue";
 import PgProcessList from "@/components/views/PgProcessList.vue";
 import PgConstructor from "@/components/views/PgConstructor.vue";
 import PgSession from "@/components/views/PgSession.vue";
+import Pg404 from "../components/views/Pg404.vue";
 
 const routes = [
     {
@@ -38,11 +39,26 @@ const routes = [
         path: '/constructor',
         component: PgConstructor,
     },
+    {
+        name: 'Pg404',
+        path: '/404',
+        component: Pg404,
+    },
 ]
 
 const router = createRouter({
     routes,
     history: createWebHistory(import.meta.env.BASE_URL),
+});
+
+router.beforeEach((from, to) => {
+    console.log('from', from.path.toString());
+    console.log('to', to.path.toString());
+
+    if (true) {
+        return ({name: 'Pg404'});
+        // next({name: 'Pg404', params: {errorMessage: 'Ошибка'}});
+    }
 });
 
 export default router;

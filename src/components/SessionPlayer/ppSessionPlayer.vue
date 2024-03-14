@@ -2,7 +2,6 @@
     <div class="SessionPlayer">
         <div class="main">
             <div class="history">
-                <!--                    История вопросов и ответов:-->
                 <div
                         v-for="(v, i) in session.history"
                         :key="i"
