@@ -41,7 +41,7 @@ const routes = [
     },
     {
         name: 'Pg404',
-        path: '/404',
+        path: '/:pathMatch(.*)*',
         component: Pg404,
     },
 ]
@@ -55,10 +55,9 @@ router.beforeEach((from, to) => {
     console.log('from', from.path.toString());
     console.log('to', to.path.toString());
 
-    if (true) {
-        return ({name: 'Pg404'});
-        // next({name: 'Pg404', params: {errorMessage: 'Ошибка'}});
-    }
+    // if (true) {
+    //     return ({name: 'Pg404'});
+    // }
 });
 
 export default router;

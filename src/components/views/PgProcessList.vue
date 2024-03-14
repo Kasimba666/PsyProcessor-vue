@@ -129,7 +129,7 @@ export default {
           idxs.forEach((v) => {
             arr.push(this.processList[v]);
           });
-          this.saveJSONFile(arr, arr[0].header.processTitle + ' ' + this.dtFormatCustom(arr[0].header.changedDt))
+          this.saveJSONFile(arr, arr[0].header.processTitle + ' ' + this.dtFormatCustom(arr[0].header.changedDt));
         }
           return;
 

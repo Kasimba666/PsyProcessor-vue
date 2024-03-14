@@ -60,7 +60,7 @@ export default {
         }
     },
     computed: {
-        ...mapState(['sessionList', 'session', 'sessionIdx', 'sessionID']),
+        ...mapState(['sessionList']),
 
         rows() {
             if (this.sessionList === null || this.sessionList.length === 0) return [];
@@ -77,6 +77,38 @@ export default {
 
     },
     methods: {
+        saveJSONFile: function (object, filename) {
+            const json = JSON.stringify(object, null, 2); // Преобразуем объект в строку JSON
+            const blob = new Blob([json], {type: "application/json"}); // Создаем Blob из строки JSON
+            const url = URL.createObjectURL(blob); // Создаем URL для Blob
+
+            const a = document.createElement("a"); // Создаем элемент <a>
+            a.href = url;
+            a.download = filename + ".json"; // Устанавливаем имя файла
+            a.click();// "Жмем" на <a>, чтобы начать скачивание
+
+            URL.revokeObjectURL(url); // Очищаем URL после скачивания
+        },
+        //функция возвращает Promise
+        loadJSON(file) {
+            let reader = new FileReader();
+            const result = new Promise((resolve, reject) => {
+                reader.onload = () => {
+                    try {
+                        let content = JSON.parse(reader.result);
+                        this.file = {content: content, name: file.name};
+                        resolve({content: content, name: file.name});
+
+                    } catch (e) {
+                        console.log('onload error:', e);
+                        reject(e);
+                    }
+                };
+            });
+            reader.readAsText(file);
+            return result;
+
+        },
         dtFormatCustom(dtISO) {
             let result = dtISO.substring(0, 19).split('');
             result[10] = '-';
@@ -123,6 +155,33 @@ export default {
                     }
                 }
                     return
+                case 'load': {
+                    let reader = new FileReader();
+                    const promise = new Promise((resolve, reject) => {
+                        reader.onload = () => {
+                            try {
+                                let content = JSON.parse(reader.result);
+                                this.file = {content: content, name: file.name};
+                                resolve({content: content, name: file.name});
+
+                            } catch (e) {
+                                reject(e);
+                            }
+                        };
+                    });
+                    reader.readAsText(file);
+                    promise.then((data) => {
+                        this.$store.commit('addSessionInListc', data.content);
+                    }).catch(e => {
+                        console.log('onload error:', e);
+                    });
+                }
+                return
+                case 'save': {
+                    let session = this.sessionList[this.currentIdx];
+                    this.saveJSONFile(session, session.header.sessionTitle + ' ' + this.dtFormatCustom(session.header.changedDt));
+                }
+                return
                 default: {
                 }
             }

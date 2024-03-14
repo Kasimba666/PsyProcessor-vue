@@ -74,8 +74,8 @@
         Дублировать
       </button>
       <button class="btn btn-outline-primary btn-next btn-sm">
-        <label class="add-item" for="id-input-file-2" style="margin-bottom: 0">
-          <input type="file" class="d-none" id="id-input-file-2"
+        <label class="add-item" for="id-input-file" style="margin-bottom: 0">
+          <input type="file" class="d-none" id="id-input-file"
                  value=""
                  :accept="'.'+'json'"
                  @change.prevent="loadProcesses($event)">

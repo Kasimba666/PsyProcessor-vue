@@ -40,13 +40,18 @@
                     @click="remove(currentIdx)">
                 Удалить
             </button>
-            <button class="btn btn-outline-primary btn-next btn-sm"
-                    @click="loadSession(currentIdx)">
-                Загрузить
+            <button class="btn btn-outline-primary btn-next btn-sm">
+                <label class="add-item" for="id-input-file" style="margin-bottom: 0">
+                    <input type="file" class="d-none" id="id-input-file"
+                           value=""
+                           :accept="'.'+'json'"
+                           @change.prevent="loadSession($event)">
+                    Загрузить
+                </label>
             </button>
             <button class="btn btn-outline-primary btn-next btn-sm"
                     @click="saveSession(currentIdx)">
-                Сохранить
+                Выгрузить
             </button>
         </div>
 
@@ -83,7 +88,8 @@ export default {
             if (!!v || v === 0) this.$emit('doAction', 'save', [v]);
         },
         loadSession(v) {
-            if (!!v || v === 0) this.$emit('doAction', 'load', [v]);
+            let file = e.target.files[0];
+            this.$emit('doAction', 'load', null, file);
         },
         showStatus(v) {
             switch (v) {
