@@ -1,112 +1,112 @@
 <template>
-    <div class="ppSessionList">
-        <div class="table-custom">
-            <div class="table-head">
-                <div class="table-cell cell-title" :class="{right: (i === fields.length-1)}"
-                     v-for="(field, i) of fields" :key="i">
-                    {{ field.label }}
-                </div>
-                <div class="table-button">
-                </div>
-            </div>
-            <div class="table-row"
-                 :class="{last: (r === rows.length-1)}"
-                 v-if="!!rows && rows.length  >0"
-                 v-for="(row, r) of rows" :key="r"
-                 :style="{backgroundColor: (r%2 === 1) ? 'hsl(0, 0%, 83%, 0.3)' : 'none'}"
-                 @click="onRowClicked(r)">
-                <div :class="{current: r===currentIdx}">
-                </div>
-                <div class="table-cell cell-row" :class="{right: (f === fields.length-1)}"
-                     v-if="!!fields && fields.length>0"
-                     v-for="(field, f) of fields" :key="f"
-                >
-                    {{ Array.isArray(row[field.key]) ? row[field.key].join(', ') : row[field.key] }}
-                </div>
-                <div class="table-button">
-                    <button class="btn btn-outline-primary btn-next btn-sm"
-                            @click="changeStatus(r)">
-                        {{ showStatus(row.status) }}
-                    </button>
-                </div>
-            </div>
+  <div class="ppSessionList">
+    <div class="table-custom">
+      <div class="table-head">
+        <div class="table-cell cell-title" :class="{right: (i === fields.length-1)}"
+             v-for="(field, i) of fields" :key="i">
+          {{ field.label }}
         </div>
-        <div class="session-list-control">
-            <button class="btn btn-outline-primary btn-next btn-sm"
-                    @click="changeName(currentIdx)">
-                Изменить название
-            </button>
-            <button class="btn btn-outline-primary btn-next btn-sm"
-                    @click="remove(currentIdx)">
-                Удалить
-            </button>
-            <button class="btn btn-outline-primary btn-next btn-sm">
-                <label class="add-item" for="id-input-file" style="margin-bottom: 0">
-                    <input type="file" class="d-none" id="id-input-file"
-                           value=""
-                           :accept="'.'+'json'"
-                           @change.prevent="loadSession($event)">
-                    Загрузить
-                </label>
-            </button>
-            <button class="btn btn-outline-primary btn-next btn-sm"
-                    @click="saveSession(currentIdx)">
-                Выгрузить
-            </button>
+        <div class="table-button">
         </div>
-
+      </div>
+      <div class="table-row"
+           :class="{last: (r === rows.length-1)}"
+           v-if="!!rows && rows.length  >0"
+           v-for="(row, r) of rows" :key="r"
+           :style="{backgroundColor: (r%2 === 1) ? 'hsl(0, 0%, 83%, 0.3)' : 'none'}"
+           @click="onRowClicked(r)">
+        <div :class="{current: r===currentIdx}">
+        </div>
+        <div class="table-cell cell-row" :class="{right: (f === fields.length-1)}"
+             v-if="!!fields && fields.length>0"
+             v-for="(field, f) of fields" :key="f"
+        >
+          {{ Array.isArray(row[field.key]) ? row[field.key].join(', ') : row[field.key] }}
+        </div>
+        <div class="table-button">
+          <button class="btn btn-outline-primary btn-next btn-sm"
+                  @click="changeStatus(r)">
+            {{ showStatus(row.status) }}
+          </button>
+        </div>
+      </div>
     </div>
+    <div class="session-list-control">
+      <button class="btn btn-outline-primary btn-next btn-sm"
+              @click="changeName(currentIdx)">
+        Изменить название
+      </button>
+      <button class="btn btn-outline-primary btn-next btn-sm"
+              @click="remove(currentIdx)">
+        Удалить
+      </button>
+      <button class="btn btn-outline-primary btn-next btn-sm">
+        <label class="add-item" for="id-input-file" style="margin-bottom: 0">
+          <input type="file" class="d-none" id="id-input-file"
+                 value=""
+                 :accept="'.'+'json'"
+                 @change.prevent="loadSession($event)">
+          Загрузить
+        </label>
+      </button>
+      <button class="btn btn-outline-primary btn-next btn-sm"
+              @click="saveSession(currentIdx)">
+        Выгрузить
+      </button>
+    </div>
+
+  </div>
 </template>
 
 <script>
 
 export default {
-    name: "ppSessionList",
-    components: {},
-    props: ['rows', 'fields'],
-    data() {
-        return {
-            currentIdx: null,
-            currentID: null,
+  name: "ppSessionList",
+  components: {},
+  props: ['rows', 'fields'],
+  data() {
+    return {
+      currentIdx: null,
+      currentID: null,
+    }
+  },
+  computed: {},
+  methods: {
+    onRowClicked(v) {
+      this.currentIdx = v;
+    },
+    changeStatus(v) {
+      this.$emit('doAction', 'changeStatus', [v]);
+    },
+    changeName(v) {
+      if (!!v || v === 0) this.$emit('doAction', 'changeName', [v]);
+    },
+    remove(v) {
+      if (!!v || v === 0) this.$emit('doAction', 'remove', [v]);
+    },
+    saveSession(v) {
+      if (!!v || v === 0) this.$emit('doAction', 'save', [v]);
+    },
+    loadSession(e) {
+      let file = e.target.files[0];
+      this.$emit('doAction', 'load', null, file);
+    },
+    showStatus(v) {
+      switch (v) {
+        case 'new':
+          return 'Запустить';
+        case 'paused':
+          return 'Запустить';
+        case 'inProgress':
+          return 'Пауза';
+        default: {
         }
+      }
     },
-    computed: {},
-    methods: {
-        onRowClicked(v) {
-            this.currentIdx = v;
-        },
-        changeStatus(v) {
-            this.$emit('doAction', 'changeStatus', [v]);
-        },
-        changeName(v) {
-            if (!!v || v === 0) this.$emit('doAction', 'changeName', [v]);
-        },
-        remove(v) {
-            if (!!v || v === 0) this.$emit('doAction', 'remove', [v]);
-        },
-        saveSession(v) {
-            if (!!v || v === 0) this.$emit('doAction', 'save', [v]);
-        },
-        loadSession(v) {
-            let file = e.target.files[0];
-            this.$emit('doAction', 'load', null, file);
-        },
-        showStatus(v) {
-            switch (v) {
-                case 'new':
-                    return 'Запустить';
-                case 'paused':
-                    return 'Запустить';
-                case 'inProgress':
-                    return 'Пауза';
-                default: {
-                }
-            }
-        },
-    },
-    mounted() {
+  },
+  mounted() {
 
-    },
+  },
 }
 </script>
 

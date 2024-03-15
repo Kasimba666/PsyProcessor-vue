@@ -59,7 +59,6 @@ export default {
   },
   methods: {
     onDoAction(action, idxs, file) {
-      console.log(action, idxs, file);
       switch (action) {
         case 'create': {
           this.$store.commit('currentEditableProcessIdx', -1);
@@ -135,7 +134,6 @@ export default {
 
         case 'start': {
           this.$store.dispatch('createNewSession', this.processList[idxs[0]]);
-          // this.$store.commit('isNewSession', true);
           this.$router.push({name: 'PgSession'});
         }
           return;

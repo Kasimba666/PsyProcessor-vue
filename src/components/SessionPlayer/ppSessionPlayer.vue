@@ -23,14 +23,14 @@
                 />
             </div>
             <div class="next">
-                <button class="btn btn-outline-primary btn-next btn-sm"
+              <button class="btn btn-outline-primary btn-next btn-sm"
+                      @click="onClickPauseSession">
+                Пауза
+              </button>
+              <button class="btn btn-outline-primary btn-next btn-sm"
                         :disabled="answer===''"
                         @click="onClickNext()">
                     Далее
-                </button>
-                <button class="btn btn-outline-primary btn-next btn-sm"
-                        @click="onClickPauseSession">
-                    Пауза
                 </button>
 
             </div>
@@ -353,10 +353,17 @@ export default {
     .quest-zone {
       width: 100%;
       border: 1px solid gray;
-      text-align: start;
-      margin-top: 10px;
+      display: flex;
+      flex-flow: column nowrap;
+      justify-content: start;
+      align-items: start;
+      gap: 5px;
+      padding: 5px;
 
       .confirm {
+        width: 100%;
+        padding: 5px;
+        border: 1px solid gray;
         display: none;
 
         &.show {
