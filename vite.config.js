@@ -15,7 +15,7 @@ export default defineConfig({
         })],
     server: {
         // https: true,
-        port: 7090
+        port: 9090
     },
 
     resolve: {
