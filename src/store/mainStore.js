@@ -13,10 +13,7 @@ export default createStore({
         currentEditableProcessID: null,
         answer: '',
         sessionList: [],
-        session: null,
-        sessionIdx: -1,
-        sessionID: null,
-        sessionFirstQuest: false,
+
         token: null,
         user: null, //curLang: 'en',
         //verbs: verbs['en'],
@@ -59,18 +56,11 @@ export default createStore({
             state.sessionList = state.sessionList.filter((vv) => vv.id !== v);
         },
 
-        session(state, v) {
-            state.session = v;
-        },
+
         answer(state, v) {
             state.session = v;
         },
-        sessionIdx(state, v) {
-            state.sessionIdx = v;
-        },
-        sessionID(state, v) {
-            state.sessionID = v;
-        },
+
 
         addSessionInList(state, v) {
             if (!!v) state.sessionList.unshift(v);
@@ -185,9 +175,6 @@ export default createStore({
             'currentEditableProcess',
             'currentEditableProcessIdx',
             'processList',
-            'session',
-            'sessionIdx',
-            'sessionID',
             'sessionList',
             'answer'
 

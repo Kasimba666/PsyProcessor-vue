@@ -59,7 +59,7 @@
 
 <script>
 
-import {mapState} from "vuex";
+import {mapGetters, mapState} from "vuex";
 
 const startSubstr = '{{';
 const endSubstr = '}}';
@@ -77,9 +77,12 @@ export default {
         }
     },
     computed: {
+        ...mapGetters(['sessionsByID']),
         session() {
-            return this.$store.getters.sessionsByID[this.sessionID];
+            return this.sessionsByID[this.sessionID];
+            // return this.$store.getters.sessionsByID[this.sessionID];
         },
+
         mapKeyNodes() {
             if (this.session === null) return null;
             let result = {};
@@ -153,7 +156,7 @@ export default {
         },
 
         setCurrSessionInList() {
-            // this.$store.commit('changeSessionInListByID', {id: this.sessionID, session: this.session});
+            this.$store.commit('changeSessionInListByID', {id: this.sessionID, session: this.session});
         },
 
         onClickNext(newSession = false, incrementCursor = true) {
@@ -186,6 +189,7 @@ export default {
             this.questComplete = true;
             //сохранить текущую сессию в общем списке
             this.setCurrSessionInList();
+            // this.$store.commit('answer', '');
 
         },
         onClickFinishCycle() {
@@ -290,7 +294,6 @@ export default {
                     result = {rawQuest: 'Сказочке конец'}
                 }
             }
-            this.$store.commit('session', this.session);
             return result;
         },
 
