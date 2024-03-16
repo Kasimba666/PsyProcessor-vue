@@ -18,6 +18,7 @@
 <script>
 import ppProcessList from "@/components/PpProcesses/ppProcessList.vue";
 import {mapState} from "vuex";
+import {v4 as createUuid} from "uuid";
 
 export default {
   head: {
@@ -78,8 +79,8 @@ export default {
           let forSave = [];
           for (let i = 0; i < idxs.length; i++) {
             forSave.push(JSON.parse(JSON.stringify(this.processList[idxs[i]])));
-
           }
+          forSave.forEach(v=>v.id=createUuid()); // обновляем IDs
           this.$store.commit('addProcessesInList', forSave);
         }
           return;

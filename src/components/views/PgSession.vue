@@ -46,8 +46,8 @@ export default {
     },
     methods: {},
     mounted() {
-        console.log(this.$route);
-        console.log(this.$router);
+        // console.log(this.$route);
+        // console.log(this.$router);
     },
 }
 </script>

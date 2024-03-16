@@ -1,12 +1,13 @@
 <template>
     <div class="SessionPlayer">
-        <div class="main">
-            <div class="history">
+        <div class="sp-main">
+            <div class="history" ref="history">
                 <div
-                        v-for="(v, i) in session.history"
-                        :key="i"
+                  class="history-item"
+                    v-for="(v, i) in session.history"
+                    :key="i"
+                    v-html="session.history[i].handledQuest +' : '+ session.history[i].answer"
                 >
-                    {{ session.history[i].handledQuest }} - {{ session.history[i].answer }}
                 </div>
             </div>
 
@@ -109,7 +110,8 @@ export default {
     },
     methods: {
         getRandomElementWithProbabilities(probabilitiesArray) {
-            const totalProbability = probabilitiesArray.reduce((accumulator, probability) => accumulator + parseFloat(probability), 0); // Суммируем вероятности
+          console.log('probabilitiesArray =>>',probabilitiesArray);
+          const totalProbability = probabilitiesArray.reduce((accumulator, probability) => accumulator + parseFloat(probability), 0); // Суммируем вероятности
 
             if (totalProbability !== 1) throw new Error("Total probability must be equal to 1"); // Проверяем корректность данных
 
@@ -140,19 +142,26 @@ export default {
         saveHistoryItem() {
             this.session.history.push({
                 // rawQuest: '',
-                handledQuest: this.session.questInfo.handledQuest,
+                handledQuest: this.questHTML, //  this.session.questInfo.handledQuest,
                 answer: this.answer,
                 questDt: this.session.questInfo.questDt,
                 answerDt: new Date().toISOString(),
                 diffDt: 0,
                 outVarNames: this.session.questInfo.outVarNames,
             });
+          let hist = this.$refs['history'];
+          this.$nextTick(
+            ()=> hist.scrollTo({left:0, top: hist.scrollHeight, behavior: "smooth"})
+          );
+          console.log('hist.scrollHeight =>>', hist.scrollHeight);
+          console.log('hist =>>', hist);
+          console.dir(hist);
         },
         showConfirmation() {
             this.showConfirm = true;
             setTimeout(() => {
                 this.showConfirm = false;
-            }, 3000);
+            }, 1200);
         },
 
         setCurrSessionInList() {
@@ -242,20 +251,22 @@ export default {
                             }
                                 break;
                             case 'randList': {
-                                let sumRates = this.mapKeyNodes[curr.key].list.reduce((s, v) => {
-                                    return s += v.attrs.rate.value
+                                const node = this.mapKeyNodes[curr.key];
+                                let sumRates = node.list.reduce((s, v) => {
+                                    return s += +v.attrs.rate.value
                                 }, 0);
-                                let arrProbs = this.mapKeyNodes[curr.key].list.map((v) => {
+                                let arrProbs = node.list.map((v) => {
                                     return v.attrs.rate.value / sumRates
                                 });
                                 let probIdx = this.getRandomElementWithProbabilities(arrProbs);
                                 //проверить, надо ли сохранять ответ в переменной, если да, то послать имя переменной
-                                let varNames = [];
-                                if (this.mapKeyNodes[curr.key].list[probIdx].attrs.out.value !== null && this.mapKeyNodes[curr.key].list[probIdx].attrs.out.value !== '') {
-                                    varNames = [this.mapKeyNodes[curr.key].list[probIdx].attrs.out.value]
+                                let varNames = [], varName = node.list[probIdx].attrs.out.value;
+                                // if (varName !== null && varName !== '') {
+                                if (!!varName) {
+                                    varNames.push(varName);
                                 }
                                 result = {
-                                    rawQuest: this.mapKeyNodes[curr.key].list[probIdx].attrs.quest.value,
+                                    rawQuest: node.list[probIdx].attrs.quest.value,
                                     outVarNames: varNames
                                 };
                             }
@@ -331,12 +342,12 @@ export default {
   font-size: 13px;
 
   .inserted-text {
-    color: hsl(199, 94%, 20%);
-    text-shadow: 0 0 hsl(199, 94%, 20%);
-
+    color: hsl(200, 55%, 25%);
+    //text-shadow: 0 0 hsl(199, 94%, 10%);
+    font-weight: 500;
   }
 
-  .main {
+  .sp-main {
     width: 500px;
     height: auto;
     display: flex;
@@ -348,13 +359,21 @@ export default {
     .history {
       width: 100%;
       height: 200px;
-      padding: 5px;
+      padding: 5px 0;
       border: 1px solid gray;
-      overflow: scroll;
+      overflow-y: scroll;
+      .history-item {
+        padding: 1px 8px 3px;
+        border-bottom: 1px solid hsl(0, 0%, 90%);
+        &:nth-child(2n) {
+          background-color: hsla(180, 30%, 50%, .12);
+        }
+      }
     }
 
     .quest-zone {
       width: 100%;
+      height: 43px;
       border: 1px solid gray;
       display: flex;
       flex-flow: column nowrap;
