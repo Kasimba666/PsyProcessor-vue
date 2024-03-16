@@ -5,12 +5,12 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 import Components from 'unplugin-vue-components/vite'
 import {BootstrapVueNextResolver} from 'unplugin-vue-components/resolvers'
 
-// https://vitejs.dev/config/
 export default defineConfig({
     // publicPath: process.env.NODE_ENV === 'production'
     //     ? '/PsyProcessor-vue/'
     //     : '/',
-    base: "/PsyProcessor-vue/",
+    // publicPath: '/PsyProcessor-vue/',
+    base: '/PsyProcessor-vue/',
     plugins: [
         vue(),
         vueJsx(),

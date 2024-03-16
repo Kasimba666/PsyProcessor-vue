@@ -9,16 +9,16 @@ import Pg404 from "../components/views/Pg404.vue";
 const routes = [
     {
         name: 'PgHome',
-        path: '/home',
+        path: '/PsyProcessor-vue/home',
         component: PgHome,
     },
     {
-        path: '/',
+        path: '/PsyProcessor-vue/',
         redirect: {name: 'PgHome'},
     },
     {
         name: 'PgPersonalSpace',
-        path: '/user-space',
+        path: '/PsyProcessor-vue/user-space',
         component: PgPersonalSpace,
         // redirect: {name: 'Session'},
         children: [
@@ -31,25 +31,26 @@ const routes = [
     },
     {
         name: 'PgProcessList',
-        path: '/procs',
+        path: '/PsyProcessor-vue/procs',
         component: PgProcessList,
     },
     {
         name: 'PgConstructor',
-        path: '/constructor',
+        path: '/PsyProcessor-vue/constructor',
         component: PgConstructor,
     },
     {
         name: 'Pg404',
-        path: '/:pathMatch(.*)*',
+        path: '/PsyProcessor-vue/:pathMatch(.*)*',
         component: Pg404,
     },
 ]
 
 const router = createRouter({
     routes,
-    // history: createWebHistory('/PsyProcessor-vue/'),
-    history: createWebHistory(import.meta.env.BASE_URL),
+
+    // history: createWebHistory(),
+    history: createWebHistory(),
 });
 
 router.beforeEach((to, from) => {
