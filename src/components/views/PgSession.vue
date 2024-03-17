@@ -6,10 +6,10 @@
                     <h4>Session:</h4>
                     {{ sessionsByID?.[sessionID]?.header.sessionTitle ?? '' }}
                     <hr/>
-                    <button
-                            @click="$store.commit('sessionID', null)">
-                        Удалить сессию
-                    </button>
+<!--                    <button-->
+<!--                            @click="$store.commit('sessionID', null)">-->
+<!--                        Удалить сессию-->
+<!--                    </button>-->
                     <hr/>
                     <SessionPlayer
                             v-if="!!sessionID"
@@ -56,5 +56,6 @@ export default {
 .PgSession {
   width: 100%;
   height: auto;
+  padding: 30px 0 50px;
 }
 </style>

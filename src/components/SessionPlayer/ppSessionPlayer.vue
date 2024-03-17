@@ -11,11 +11,11 @@
                 </div>
             </div>
 
-            <div class="quest-zone">
+            <div class="quest-zone mt-3">
                 <div class="confirm" :class="{show: showConfirm}">{{ confirmHTML }}</div>
                 <div class="quest" v-html="questHTML"/>
             </div>
-            <div class="answer">
+            <div class="answer mt-2">
                 <textarea
                         class="w-100"
                         v-model="answer"
@@ -109,11 +109,11 @@ export default {
         }
     },
     methods: {
-        getRandomElementWithProbabilities(probabilitiesArray) {
+        getRandomItem(probabilitiesArray) {
           console.log('probabilitiesArray =>>',probabilitiesArray);
           const totalProbability = probabilitiesArray.reduce((accumulator, probability) => accumulator + parseFloat(probability), 0); // Суммируем вероятности
 
-            if (totalProbability !== 1) throw new Error("Total probability must be equal to 1"); // Проверяем корректность данных
+            // if (totalProbability !== 1) throw new Error("Total probability must be equal to 1"); // Проверяем корректность данных
 
             let randomNumber = Math.random() * totalProbability; // Генерируем случайное число от 0 до общих вероятностей
             let cumulativeProbability = 0;
@@ -252,13 +252,13 @@ export default {
                                 break;
                             case 'randList': {
                                 const node = this.mapKeyNodes[curr.key];
-                                let sumRates = node.list.reduce((s, v) => {
-                                    return s += +v.attrs.rate.value
-                                }, 0);
+                                // let sumRates = node.list.reduce((s, v) => {
+                                //     return s += +v.attrs.rate.value
+                                // }, 0);
                                 let arrProbs = node.list.map((v) => {
-                                    return v.attrs.rate.value / sumRates
+                                    return +v.attrs.rate.value; // sumRates
                                 });
-                                let probIdx = this.getRandomElementWithProbabilities(arrProbs);
+                                let probIdx = this.getRandomItem(arrProbs);
                                 //проверить, надо ли сохранять ответ в переменной, если да, то послать имя переменной
                                 let varNames = [], varName = node.list[probIdx].attrs.out.value;
                                 // if (varName !== null && varName !== '') {
@@ -339,7 +339,7 @@ export default {
 .SessionPlayer {
   width: 100%;
   height: auto;
-  font-size: 13px;
+  font-size: 14px;
 
   .inserted-text {
     color: hsl(200, 55%, 25%);
@@ -360,7 +360,8 @@ export default {
       width: 100%;
       height: 200px;
       padding: 5px 0;
-      border: 1px solid gray;
+      border: 1px solid hsl(0, 0%, 80%);
+      border-radius: 6px;
       overflow-y: scroll;
       .history-item {
         padding: 1px 8px 3px;
@@ -373,46 +374,71 @@ export default {
 
     .quest-zone {
       width: 100%;
-      height: 43px;
-      border: 1px solid gray;
+      height: 46px;
+      border: 1px solid hsl(0, 0%, 80%);
+      border-radius: 6px;
       display: flex;
       flex-flow: column nowrap;
       justify-content: start;
       align-items: start;
       gap: 5px;
-      padding: 5px;
+      padding: 3px;
+      font-size: 17px;
+      background-color: hsl(194, 80%, 89%);
 
       .confirm {
         width: 100%;
         padding: 5px;
-        border: 1px solid gray;
+        border: 1px solid hsl(0, 0%, 80%);
+        border-radius: 6px;
         display: none;
+        background-color: hsl(84, 80%, 89%);
 
         &.show {
           display: block;
         }
       }
-
       .quest {
         width: 100%;
         padding: 5px;
-        border: 1px solid gray;
+        border: 1px solid hsl(0, 0%, 80%);
+        border-radius: 6px;
+        background-color: hsl(194, 80%, 95%);
       }
-
     }
 
     .answer {
       width: 100%;
       height: auto;
-      border: 1px solid gray;
-      padding: 5px;
+      padding: 3px;
+      font-size: 16px;
+      background-color: hsl(84, 80%, 90%);
+      border: 1px solid hsl(0, 0%, 80%);
+      border-radius: 6px;
+      &:focus-within {
+        outline: hsl(84, 60%, 55%) auto 1px;
+        outline-offset: 1px;
+      }
+      textarea {
+        margin: 0 !important;
+        display: block;
+        background-color: hsl(84, 80%, 95%);
+        font-size: 15px;
+        border: 1px solid hsl(0, 0%, 80%);
+        border-radius: 6px;
+        &:focus-visible {
+          //outline: hsl(84, 60%, 55%) auto 1px;
+          //outline-offset: 1px;
+          outline: none;
+        }
+      }
     }
 
 
     .next {
-      display: block;
       width: 100%;
-      border: 1px solid gray;
+      border: 1px solid hsl(0, 0%, 80%);
+      border-radius: 6px;
       display: flex;
       justify-content: start;
       align-items: start;
@@ -427,7 +453,8 @@ export default {
 
     .finish {
       width: 100%;
-      border: 1px solid gray;
+      border: 1px solid hsl(0, 0%, 80%);
+      border-radius: 6px;
       display: flex;
       justify-content: start;
       align-items: start;
