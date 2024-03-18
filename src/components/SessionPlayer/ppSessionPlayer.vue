@@ -100,8 +100,6 @@ export default {
             let result = this.session.questInfo.handledQuest
                 .replaceAll(startSubstr, '<span class="inserted-text">')
                 .replaceAll(endSubstr, '</span>');
-
-
             return result;
         },
         confirmHTML() {
@@ -153,9 +151,9 @@ export default {
           this.$nextTick(
             ()=> hist.scrollTo({left:0, top: hist.scrollHeight, behavior: "smooth"})
           );
-          console.log('hist.scrollHeight =>>', hist.scrollHeight);
-          console.log('hist =>>', hist);
-          console.dir(hist);
+          // console.log('hist.scrollHeight =>>', hist.scrollHeight);
+          // console.log('hist =>>', hist);
+          // console.dir(hist);
         },
         showConfirmation() {
             this.showConfirm = true;
@@ -252,16 +250,12 @@ export default {
                                 break;
                             case 'randList': {
                                 const node = this.mapKeyNodes[curr.key];
-                                // let sumRates = node.list.reduce((s, v) => {
-                                //     return s += +v.attrs.rate.value
-                                // }, 0);
                                 let arrProbs = node.list.map((v) => {
-                                    return +v.attrs.rate.value; // sumRates
+                                    return +v.attrs.rate.value;
                                 });
                                 let probIdx = this.getRandomItem(arrProbs);
                                 //проверить, надо ли сохранять ответ в переменной, если да, то послать имя переменной
                                 let varNames = [], varName = node.list[probIdx].attrs.out.value;
-                                // if (varName !== null && varName !== '') {
                                 if (!!varName) {
                                     varNames.push(varName);
                                 }
