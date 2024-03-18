@@ -46,7 +46,7 @@
                @click.stop="childFocus(idx)">
             <input class="rate-input"
                    type="text"
-                   v-model="child.attrs.rate.value"
+                   v-model.number="child.attrs.rate.value"
                    v-number-only
                    @changed="processChanged"
             />

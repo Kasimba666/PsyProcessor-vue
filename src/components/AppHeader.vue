@@ -90,8 +90,8 @@ export default {
       &.router-link-active {
         cursor: default;
         /*color: black;*/
-        color: hsl(50, 99%, 20%);
-        text-shadow: 0 0 0 hsl(50, 99%, 10%);
+        color: hsl(50, 99%, 15%);
+        //text-shadow: 0 0 1px hsl(160, 99%, 70%);
         background-color: white;
         box-shadow: inset 0 -3px 1px -2px hsl(50, 99%, 22%);
         transform: translate3d(0, 2px, 20px);

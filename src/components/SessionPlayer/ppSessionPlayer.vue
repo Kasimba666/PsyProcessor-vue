@@ -1,20 +1,21 @@
 <template>
     <div class="SessionPlayer">
-        <div class="main">
-            <div class="history">
+        <div class="sp-main">
+            <div class="history" ref="history">
                 <div
-                        v-for="(v, i) in session.history"
-                        :key="i"
+                  class="history-item"
+                    v-for="(v, i) in session.history"
+                    :key="i"
+                    v-html="session.history[i].handledQuest +' : '+ session.history[i].answer"
                 >
-                    {{ session.history[i].handledQuest }} - {{ session.history[i].answer }}
                 </div>
             </div>
 
-            <div class="quest-zone">
+            <div class="quest-zone mt-3">
                 <div class="confirm" :class="{show: showConfirm}">{{ confirmHTML }}</div>
                 <div class="quest" v-html="questHTML"/>
             </div>
-            <div class="answer">
+            <div class="answer mt-2">
                 <textarea
                         class="w-100"
                         v-model="answer"
@@ -99,8 +100,6 @@ export default {
             let result = this.session.questInfo.handledQuest
                 .replaceAll(startSubstr, '<span class="inserted-text">')
                 .replaceAll(endSubstr, '</span>');
-
-
             return result;
         },
         confirmHTML() {
@@ -108,10 +107,11 @@ export default {
         }
     },
     methods: {
-        getRandomElementWithProbabilities(probabilitiesArray) {
-            const totalProbability = probabilitiesArray.reduce((accumulator, probability) => accumulator + parseFloat(probability), 0); // Суммируем вероятности
+        getRandomItem(probabilitiesArray) {
+          console.log('probabilitiesArray =>>',probabilitiesArray);
+          const totalProbability = probabilitiesArray.reduce((accumulator, probability) => accumulator + parseFloat(probability), 0); // Суммируем вероятности
 
-            if (totalProbability !== 1) throw new Error("Total probability must be equal to 1"); // Проверяем корректность данных
+            // if (totalProbability !== 1) throw new Error("Total probability must be equal to 1"); // Проверяем корректность данных
 
             let randomNumber = Math.random() * totalProbability; // Генерируем случайное число от 0 до общих вероятностей
             let cumulativeProbability = 0;
@@ -140,19 +140,26 @@ export default {
         saveHistoryItem() {
             this.session.history.push({
                 // rawQuest: '',
-                handledQuest: this.session.questInfo.handledQuest,
+                handledQuest: this.questHTML, //  this.session.questInfo.handledQuest,
                 answer: this.answer,
                 questDt: this.session.questInfo.questDt,
                 answerDt: new Date().toISOString(),
                 diffDt: 0,
                 outVarNames: this.session.questInfo.outVarNames,
             });
+          let hist = this.$refs['history'];
+          this.$nextTick(
+            ()=> hist.scrollTo({left:0, top: hist.scrollHeight, behavior: "smooth"})
+          );
+          // console.log('hist.scrollHeight =>>', hist.scrollHeight);
+          // console.log('hist =>>', hist);
+          // console.dir(hist);
         },
         showConfirmation() {
             this.showConfirm = true;
             setTimeout(() => {
                 this.showConfirm = false;
-            }, 3000);
+            }, 1200);
         },
 
         setCurrSessionInList() {
@@ -242,20 +249,18 @@ export default {
                             }
                                 break;
                             case 'randList': {
-                                let sumRates = this.mapKeyNodes[curr.key].list.reduce((s, v) => {
-                                    return s += v.attrs.rate.value
-                                }, 0);
-                                let arrProbs = this.mapKeyNodes[curr.key].list.map((v) => {
-                                    return v.attrs.rate.value / sumRates
+                                const node = this.mapKeyNodes[curr.key];
+                                let arrProbs = node.list.map((v) => {
+                                    return +v.attrs.rate.value;
                                 });
-                                let probIdx = this.getRandomElementWithProbabilities(arrProbs);
+                                let probIdx = this.getRandomItem(arrProbs);
                                 //проверить, надо ли сохранять ответ в переменной, если да, то послать имя переменной
-                                let varNames = [];
-                                if (this.mapKeyNodes[curr.key].list[probIdx].attrs.out.value !== null && this.mapKeyNodes[curr.key].list[probIdx].attrs.out.value !== '') {
-                                    varNames = [this.mapKeyNodes[curr.key].list[probIdx].attrs.out.value]
+                                let varNames = [], varName = node.list[probIdx].attrs.out.value;
+                                if (!!varName) {
+                                    varNames.push(varName);
                                 }
                                 result = {
-                                    rawQuest: this.mapKeyNodes[curr.key].list[probIdx].attrs.quest.value,
+                                    rawQuest: node.list[probIdx].attrs.quest.value,
                                     outVarNames: varNames
                                 };
                             }
@@ -328,15 +333,15 @@ export default {
 .SessionPlayer {
   width: 100%;
   height: auto;
-  font-size: 13px;
+  font-size: 14px;
 
   .inserted-text {
-    color: hsl(199, 94%, 20%);
-    text-shadow: 0 0 hsl(199, 94%, 20%);
-
+    color: hsl(200, 55%, 25%);
+    //text-shadow: 0 0 hsl(199, 94%, 10%);
+    font-weight: 500;
   }
 
-  .main {
+  .sp-main {
     width: 500px;
     height: auto;
     display: flex;
@@ -348,52 +353,86 @@ export default {
     .history {
       width: 100%;
       height: 200px;
-      padding: 5px;
-      border: 1px solid gray;
-      overflow: scroll;
+      padding: 5px 0;
+      border: 1px solid hsl(0, 0%, 80%);
+      border-radius: 6px;
+      overflow-y: scroll;
+      .history-item {
+        padding: 1px 8px 3px;
+        border-bottom: 1px solid hsl(0, 0%, 90%);
+        &:nth-child(2n) {
+          background-color: hsla(180, 30%, 50%, .12);
+        }
+      }
     }
 
     .quest-zone {
       width: 100%;
-      border: 1px solid gray;
+      height: 46px;
+      border: 1px solid hsl(0, 0%, 80%);
+      border-radius: 6px;
       display: flex;
       flex-flow: column nowrap;
       justify-content: start;
       align-items: start;
       gap: 5px;
-      padding: 5px;
+      padding: 3px;
+      font-size: 17px;
+      background-color: hsl(194, 80%, 89%);
 
       .confirm {
         width: 100%;
         padding: 5px;
-        border: 1px solid gray;
+        border: 1px solid hsl(0, 0%, 80%);
+        border-radius: 6px;
         display: none;
+        background-color: hsl(84, 80%, 89%);
 
         &.show {
           display: block;
         }
       }
-
       .quest {
         width: 100%;
         padding: 5px;
-        border: 1px solid gray;
+        border: 1px solid hsl(0, 0%, 80%);
+        border-radius: 6px;
+        background-color: hsl(194, 80%, 95%);
       }
-
     }
 
     .answer {
       width: 100%;
       height: auto;
-      border: 1px solid gray;
-      padding: 5px;
+      padding: 3px;
+      font-size: 16px;
+      background-color: hsl(84, 80%, 90%);
+      border: 1px solid hsl(0, 0%, 80%);
+      border-radius: 6px;
+      &:focus-within {
+        outline: hsl(84, 60%, 55%) auto 1px;
+        outline-offset: 1px;
+      }
+      textarea {
+        margin: 0 !important;
+        display: block;
+        background-color: hsl(84, 80%, 95%);
+        font-size: 15px;
+        border: 1px solid hsl(0, 0%, 80%);
+        border-radius: 6px;
+        &:focus-visible {
+          //outline: hsl(84, 60%, 55%) auto 1px;
+          //outline-offset: 1px;
+          outline: none;
+        }
+      }
     }
 
 
     .next {
-      display: block;
       width: 100%;
-      border: 1px solid gray;
+      border: 1px solid hsl(0, 0%, 80%);
+      border-radius: 6px;
       display: flex;
       justify-content: start;
       align-items: start;
@@ -408,7 +447,8 @@ export default {
 
     .finish {
       width: 100%;
-      border: 1px solid gray;
+      border: 1px solid hsl(0, 0%, 80%);
+      border-radius: 6px;
       display: flex;
       justify-content: start;
       align-items: start;
