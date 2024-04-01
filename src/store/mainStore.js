@@ -58,7 +58,7 @@ export default createStore({
 
 
         answer(state, v) {
-            state.session = v;
+            state.answer = v;
         },
 
 
