@@ -7,7 +7,13 @@ import {BootstrapVueNextResolver} from 'unplugin-vue-components/resolvers'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    // base: "/PsyProcessor-vue/",
+    // publicPath: import.meta.env.MODE === 'production'
+    // publicPath: import.meta.ENV === 'production'
+    //     ? '/PsyProcessor-vue/'
+    //     : '/',
+    base:  import.meta.ENV === 'production'
+        ? '/PsyProcessor-vue/'
+        : '/',
     plugins: [
         vue(),
         vueJsx(),

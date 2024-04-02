@@ -7,7 +7,7 @@ import App from "@/App.vue"
 import router from "@/router/router.js";
 import store from '@/store/mainStore.js';
 
-
+const DEBUG = import.meta.env.MODE === "development";
 const app = createApp(App);
 
 app.directive('numberOnly', {
