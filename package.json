@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host",
-    "build": "vite build",
+    "dev": "vite --host --config vite.config.js",
+    "build": "vite build --config vite.config.deploy.js",
     "preview": "vite preview",
-    "predeploy": "npm run build",
+    "predeploy": "vite build --config vite.config.deploy.js",
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {

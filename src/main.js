@@ -8,6 +8,7 @@ import router from "@/router/router.js";
 import store from '@/store/mainStore.js';
 
 const DEBUG = import.meta.env.MODE === "development";
+console.log('import.meta.env.MODE =', import.meta.env.MODE);
 const app = createApp(App);
 
 app.directive('numberOnly', {
