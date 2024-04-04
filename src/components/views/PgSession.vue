@@ -3,7 +3,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <h4>Session:</h4>
+                    <h4>Сессия:</h4>
                     {{ sessionsByID?.[sessionID]?.header.sessionTitle ?? '' }}
                     <hr/>
 <!--                    <button-->
