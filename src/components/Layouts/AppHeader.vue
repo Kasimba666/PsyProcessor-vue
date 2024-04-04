@@ -30,12 +30,12 @@ export default {
 <style lang="scss">
 .AppHeader {
   position: fixed;
-  z-index: 1000;
+  //z-index: 1000;
   left: 0;
   top: 0;
   padding: 0 20px;
   width: 100%;
-  height: 38px;
+  height: var(--header-height);
   background-color: hsl(50, 30%, 95%);
   border-bottom: 1px solid hsl(50, 30%, 75%);
   display: flex;

@@ -491,7 +491,7 @@ export default {
     height: auto;
     width: 200px;
     color: black;
-    background-color: transparent;
+    //background-color: transparent;
     border: 1px solid hsl(50, 30%, 75%);
 
     &:hover {
