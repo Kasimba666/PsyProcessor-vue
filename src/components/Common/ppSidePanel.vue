@@ -1,53 +1,51 @@
 <template>
-  <div class="Side-panel">
-  <div class="panel" :class="{'opened': isOpened}"
-  >
-    <slot></slot>
-    <div class="toggle-side-panel" :class="{'opened': isOpened}"
-         @click.stop="onToggleClick()">
-      <i
-          v-if="isOpened"
-          class="ico ico-circle-left"
-      ></i>
-      <i
-          v-else
-          class="ico  ico-circle-right"
-      ></i>
+    <div class="Side-panel">
+        <div class="panel" :class="{'opened': isOpened}"
+        >
+            <slot></slot>
+            <div class="toggle-side-panel" :class="{'opened': isOpened}"
+                 @click.stop="onToggleClick()">
+                <i
+                        v-if="isOpened"
+                        class="ico ico-circle-left"
+                ></i>
+                <i
+                        v-else
+                        class="ico  ico-circle-right"
+                ></i>
+            </div>
+        </div>
+        <div class="overlay-side-panel" :class="{'opened': isOpened}"
+             @click="onOverlay"
+        >
+        </div>
     </div>
-  </div>
-  <div class="overlay-side-panel" :class="{'opened': isOpened}"
-       @click="onOverlay"
-  >
-  </div>
-  </div>
 </template>
 
 <script>
 export default {
-  components: {},
-  props: ['isOpened'],
-  data() {
-    return {
-
-    }
-  },
-  computed: {},
-  methods: {
-    onToggleClick() {
-      this.$emit('onToggleClick');
+    components: {},
+    props: ['isOpened'],
+    data() {
+        return {}
     },
-    onOverlay() {
-      this.onToggleClick();
-    },
+    computed: {},
+    methods: {
+        onToggleClick() {
+            this.$emit('onToggleClick');
+        },
+        onOverlay() {
+            this.onToggleClick();
+        },
 
-  },
-  mounted() {
-  },
+    },
+    mounted() {
+    },
 }
 </script>
 
 <style lang="scss">
-.Side-panel{
+.Side-panel {
   .panel {
     position: fixed;
     right: 100%;
@@ -67,6 +65,7 @@ export default {
       transform: translateX(100%);
     }
   }
+
   .toggle-side-panel {
     position: absolute;
     left: 100%;
@@ -86,11 +85,13 @@ export default {
     transition: all 0.8s ease;
     cursor: pointer;
     z-index: 10;
+
     &:hover {
       color: black;
       background-color: hsla(84, 80%, 70%, 0.9);
       transition: all 0.2s ease;
     }
+
     &:active {
       background-color: hsla(84, 80%, 60%, 0.9);
       box-shadow: 1px 0px 12px 0px hsla(0, 0%, 50%, 0.7);
