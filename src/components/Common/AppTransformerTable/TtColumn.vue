@@ -1,14 +1,14 @@
 <template>
     <div class="TtColumn" v-show="!hideMe"
          :class="[context, mode.v, {'sortable-header-cell':context==='header'&&!!sortable}]"
-         :style="{justifyContent: Align}"
+         :style="Align"
          @click="context==='header'&&!!sortable && $emit('update:sortable', prop)">
         <template v-if="context==='header'">
             <div class="d-contents" v-if="!!sortable"
             >
                 <TtSortButton :field="prop" :cur-state="sortable" />
                 <slot name="header">
-                    <span v-html="label"></span>
+                    <span class="default-header-label" v-html="label"></span>
                 </slot>
             </div>
             <template v-else>

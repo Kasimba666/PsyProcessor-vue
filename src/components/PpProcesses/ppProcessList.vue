@@ -2,22 +2,23 @@
   <div class="ppProcessList">
     <b-container>
       <b-row>
-        <div class="col-12 col-sm-9 col-md-9 col-lg-9 col-xl-9">
-          <AppTransTable :data="sortedSource"
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+          <AppTransTable class="trans-table"
+                         :data="sortedSource"
                          :cardMode="{
                                         breakpoint: 'sm',
                                         titleWidth: '35%', // ширина столбца заголовков
                                       }"
                          :gridMode="{
-                                        xxl: '25px 4fr 2fr 2fr 4fr 100px 100px',
-                                        xl: '25px 4fr 2fr 2fr 4fr 100px 100px',
-                                        lg: '25px 4fr 2fr 2fr 4fr 100px 100px',
-                                        md: '25px 4fr 2fr 2fr 4fr 100px 100px',
+                                        xxl: '30px 4fr 2fr 2fr 2fr 30px',
+                                        xl: '30px 4fr 2fr 2fr 2fr 30px',
+                                        lg: '30px 4fr 2fr 2fr 2fr 30px',
+                                        md: '30px 4fr 2fr 2fr 2fr 30px',
                                         }"
                          @rowClick="onRowClick"
           >
             <TtColumn
-                label="Чекбокс"
+                label="[Чек]"
                 prop=""
             >
               <template>
@@ -25,48 +26,53 @@
               </template>
             </TtColumn>
 
+<!--            <TtColumn-->
+<!--                label="Наименование"-->
+<!--                prop="processTitle"-->
+<!--                v-model:sortable="SortMode"-->
+<!--                align="center"-->
+<!--            >-->
+<!--            </TtColumn>-->
             <TtColumn
-                label="Наименование"
+                label="Тест"
                 prop="processTitle"
-                :sortable.sync="SortMode"
             >
+                <template #default="{ row }">
+                    {{row.test.test1}}
+                </template>
             </TtColumn>
             <TtColumn
                 label="Категория"
                 prop="processCategory"
-                :sortable.sync="SortMode"
             >
             </TtColumn>
             <TtColumn
                 label="Дата создания"
                 prop="createdDt"
-                :sortable.sync="SortMode"
+                v-model:sortable="SortMode"
+                align="center"
             >
             </TtColumn>
             <TtColumn
                 label="Дата изменения"
                 prop="changedDt"
-                :sortable.sync="SortMode"
+                v-model:sortable="SortMode"
+                align="center"
             >
             </TtColumn>
             <TtColumn
-                label="Изменить"
+                label=""
                 prop=""
+                align="center"
             >
-              <template>
-
-              </template>
+                  <template #default="{row, rowIdx }">
+                      <div>
+                          <i class="ico ico-menu">{{ rowIdx }}</i>
+                      </div>
+                  </template>
 
             </TtColumn>
-            <TtColumn
-                label="Запуск"
-                prop=""
-            >
-              <template>
 
-              </template>
-
-            </TtColumn>
           </AppTransTable>
 
         </div>
@@ -83,7 +89,7 @@ import TtColumn from '@/components/Common/AppTransformerTable/TtColumn.vue';
 import TableMixin from "@/components/Common/AppTransformerTable/TableMixin.vue";
 
 const defaultSortOrder = {
-  field: 'processTitle',
+  field: 'changedDt',
   order: 'ASC'
 };
 
@@ -123,6 +129,10 @@ export default {
 
 <style lang="scss">
 .ppProcessList {
+  .trans-table {
+    user-select: none;
+    font-size: 12px;
+  }
 
 }
 </style>

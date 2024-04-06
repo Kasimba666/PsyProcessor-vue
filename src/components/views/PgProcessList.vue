@@ -53,6 +53,7 @@ export default {
       if (this.processList === null || this.processList.length === 0) return [];
       return this.processList.map(v => {
         return {
+          test: {test1: v.header.processTitle},
           processTitle: v.header.processTitle,
           processCategory: v.header.processCategory,
           createdDt: this.dtFormatCustom(v.header.createdDt),
