@@ -1,5 +1,9 @@
 <template>
   <div class="AppHeader">
+    <div class="screen-monitor" v-if="DEBUG">
+      {{ screen.type }}<br/>
+      {{ screen.width }}px
+    </div>
     <div class="logo">
       PsyProcessor
     </div>
@@ -13,16 +17,50 @@
 </template>
 
 <script>
+import {mapState} from "vuex";
+
 export default {
   name: "AppHeader",
   components: {},
   props: [],
   data() {
-    return {}
+    return {
+      DEBUG: import.meta.env.MODE === 'development',
+    }
   },
-  computed: {},
-  methods: {},
+  computed: {
+    ...mapState(['screen', 'screenBreakpoints']),
+  },
+  methods: {
+    onResize() {
+      let screen = {};
+      screen['width'] = window.innerWidth;
+      screen['height'] = window.innerHeight;
+      let t = "";
+      switch (true) {
+        case screen.width <= this.screenBreakpoints.sm:
+          t = "xs";
+          break;
+        case screen.width <= this.screenBreakpoints.md:
+          t = "sm";
+          break;
+        case screen.width <= this.screenBreakpoints.lg:
+          t = "md";
+          break;
+        case screen.width <= this.screenBreakpoints.xl:
+          t = "lg";
+          break;
+        default:
+          t = "xl";
+          break;
+      }
+      screen['type'] = t;
+      this.$store.commit("screen", screen);
+    }
+  },
   mounted() {
+    this.onResize();
+    window.addEventListener("resize", this.onResize);
   },
 }
 </script>
@@ -99,8 +137,13 @@ export default {
       }
     }
   }
-
-
-
+  .screen-monitor {
+    position: absolute;
+    left: 10px;
+    top: var(--header-height);
+    font-size: 12px;
+    color: black;
+    z-index: 10;
+  }
 }
 </style>

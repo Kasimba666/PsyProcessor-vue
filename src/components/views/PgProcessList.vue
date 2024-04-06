@@ -1,14 +1,19 @@
 <template>
-  <div class="ProcessList">
+  <div class="ProcessListByIdx">
     <div class="container">
       <div class="row">
         <div class="col-12 mt-40">
-          <ppProcessList
+          <ppProcessListByIdx
               :rows="rows"
               :fields="fields"
+              @doAction="onDoActionByIdx"
+          ></ppProcessListByIdx>
+
+          <ppProcessList
+              :source="rows"
               @doAction="onDoAction"
           ></ppProcessList>
-          <!--                    <pre>{{ !!this.file ? this.file.content : 'нет' }}</pre>-->
+
         </div>
       </div>
     </div>
@@ -16,16 +21,18 @@
 </template>
 
 <script>
+import ppProcessListByIdx from "@/components/PpProcesses/ppProcessListByIdx.vue";
 import ppProcessList from "@/components/PpProcesses/ppProcessList.vue";
 import {mapState} from "vuex";
 import {v4 as createUuid} from "uuid";
+
 
 export default {
   head: {
     title: 'PsyProcessor : Процессы'
   },
   name: "ProcessList",
-  components: {ppProcessList},
+  components: {ppProcessListByIdx, ppProcessList},
   props: [],
   data() {
     return {
@@ -37,9 +44,7 @@ export default {
         {key: 'createdDt', label: 'Дата создания', sortable: true},
         {key: 'changedDt', label: 'Дата изменения', sortable: true},
         {key: 'description', label: 'Описание', sortable: true},
-
       ],
-
     }
   },
   computed: {
@@ -59,7 +64,7 @@ export default {
 
   },
   methods: {
-    onDoAction(action, idxs, file) {
+    onDoActionByIdx(action, idxs, file) {
       switch (action) {
         case 'create': {
           this.$store.commit('currentEditableProcessIdx', -1);
@@ -80,7 +85,7 @@ export default {
           for (let i = 0; i < idxs.length; i++) {
             forSave.push(JSON.parse(JSON.stringify(this.processList[idxs[i]])));
           }
-          forSave.forEach(v=>v.id=createUuid()); // обновляем IDs
+          forSave.forEach(v => v.id = createUuid()); // обновляем IDs
           this.$store.commit('addProcessesInList', forSave);
         }
           return;
@@ -142,7 +147,8 @@ export default {
         }
       }
     },
-
+    onDoAction() {
+    },
 
     dtFormatCustom(dtISO) {
       let result = dtISO.substring(0, 19).split('');
@@ -193,7 +199,7 @@ export default {
 </script>
 
 <style lang="scss">
-.ProcessList {
+.ProcessListIdx {
   width: 100%;
   height: auto;
 
