@@ -1,5 +1,7 @@
 <template>
-  <div class="TtRow">
+  <div class="TtRow"
+  @click="onRowClick"
+  >
     <slot></slot>
   </div>
 </template>
@@ -22,7 +24,12 @@ export default {
   computed: {
 
   },
-  methods: {},
+  methods: {
+      onRowClick() {
+          console.log('rowClick', this.rowIdx);
+          this.$emit('rowClick', this.rowIdx);
+      },
+  },
   mounted() {
   },
 };

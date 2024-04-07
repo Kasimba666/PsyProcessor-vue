@@ -3,21 +3,22 @@
     <b-container>
       <b-row>
         <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-          <AppTransTable class="trans-table"
-                         :data="sortedSource"
-                         :cardMode="{
-                                        breakpoint: 'sm',
-                                        titleWidth: '35%', // ширина столбца заголовков
-                                      }"
-                         :gridMode="{
-                                        xxl: '30px 4fr 2fr 2fr 2fr 30px',
-                                        xl: '30px 4fr 2fr 2fr 2fr 30px',
-                                        lg: '30px 4fr 2fr 2fr 2fr 30px',
-                                        md: '30px 4fr 2fr 2fr 2fr 30px',
-                                        }"
-                         @rowClick="onRowClick"
+          <AppTransTable
+             class="trans-table"
+             :data="sortedSource"
+             :cardMode="{
+                            breakpoint: 'sm',
+                            titleWidth: 'calc(15% + 100px)', // ширина столбца заголовков
+                          }"
+              :gridMode="{
+              xxl: '30px 4fr 2fr 2fr 2fr 30px',
+              xl: '30px 4fr 2fr 2fr 2fr 30px',
+              lg: '30px 4fr 2fr 2fr 2fr 30px',
+              md: '30px 4fr 2fr 2fr 2fr 30px',
+              }"
+             @rowClick="onRowClick"
           >
-            <TtColumn
+              <TtColumn
                 label="[Чек]"
                 prop=""
             >

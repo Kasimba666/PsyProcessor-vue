@@ -38,7 +38,7 @@ export default {
 .TtSortButton {
   width: 20px;
   height: 20px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;

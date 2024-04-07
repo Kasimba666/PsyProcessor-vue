@@ -1,6 +1,6 @@
 <template>
     <div class="TtColumn" v-show="!hideMe"
-         :class="[context, mode.v, {'sortable-header-cell':context==='header'&&!!sortable}]"
+         :class="[context, mode.value, {'sortable-header-cell':context==='header'&&!!sortable}]"
          :style="Align"
          @click="context==='header'&&!!sortable && $emit('update:sortable', prop)">
         <template v-if="context==='header'">
@@ -47,7 +47,7 @@ export default {
         ...mapState(['screen']),
         Align(){
             let out = {justifyContent: 'start', textAlign: 'left'};
-            if(this.mode === 'card') {
+            if(this.mode.value === 'card') {
                 return out;
             }
             switch (this.align) {
@@ -62,7 +62,7 @@ export default {
             return out;
         },
         hideMe(){
-            return  !!this.screen.type && this.context === 'header' && !this.sortable && this.mode.v==='card';
+            return  !!this.screen.type && this.context === 'header' && !this.sortable && this.mode.value==='card';
         },
     },
     methods: {

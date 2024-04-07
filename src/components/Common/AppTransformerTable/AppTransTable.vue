@@ -24,9 +24,14 @@
                 </tt-header>
             </div>
             <div class="tt-rows">
-                <tt-row :row="row" :rowIdx="idx" v-for="(row, idx) of data"
-                        @click.native="$emit('rowClick', {row, rowIdx: idx})"
-                        :key="idx">
+                <tt-row
+                    :class=""
+                    :row="row"
+                    :rowIdx="idx"
+                    v-for="(row, idx) of data"
+                    @click.native="$emit('rowClick', {row, rowIdx: idx})"
+                    :key="idx"
+                >
                     <slot name="default"></slot>
                 </tt-row>
             </div>
