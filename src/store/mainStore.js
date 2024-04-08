@@ -25,7 +25,7 @@ export default createStore({
         currentEditableProcessID: null,
         answer: '',
         sessionList: [],
-
+        currentSessionID: null,
         token: null,
         user: null, //curLang: 'en',
         //verbs: verbs['en'],
@@ -34,7 +34,7 @@ export default createStore({
         testData: '',
     },
     mutations: {
-        screen(state, v){
+        screen(state, v) {
             state.screen = v;
         },
         processList(state, v) {
@@ -65,6 +65,10 @@ export default createStore({
         },
         changeSessionStatusByIdx(state, {idx, status}) {
             state.sessionList[idx].status = status;
+        },
+
+        changeSessionStatusByID(state, {id, status}) {
+            state.sessionList.filter((vv) => vv.id === id)[0].status = status;
         },
         removeSessionInListByID(state, v) {
             state.sessionList = state.sessionList.filter((vv) => vv.id !== v);
@@ -172,13 +176,13 @@ export default createStore({
     },
     getters: {
         sessionsByID(state) {
-            return state.sessionList.reduce((s, v)=>{
+            return state.sessionList.reduce((s, v) => {
                 s[v.id] = v;
                 return s;
             }, {});
         },
         processesByID(state) {
-            return state.processList.reduce((s, v)=>{
+            return state.processList.reduce((s, v) => {
                 s[v.id] = v;
             }, {});
         },

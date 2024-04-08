@@ -25,7 +25,6 @@
             </div>
             <div class="tt-rows">
                 <tt-row
-                    :class=""
                     :row="row"
                     :rowIdx="idx"
                     v-for="(row, idx) of data"

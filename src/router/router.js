@@ -52,8 +52,8 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from) => {
-    console.log('to', from.path.toString());
-    console.log('from', to.path.toString());
+    // console.log('to', from.path.toString());
+    // console.log('from', to.path.toString());
 
     // if (true) {
     //     return ({name: 'Pg404'});

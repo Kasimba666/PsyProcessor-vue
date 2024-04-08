@@ -6,11 +6,7 @@
                     <h4>Сессия:</h4>
                     {{ sessionsByID?.[sessionID]?.header.sessionTitle ?? '' }}
                     <hr/>
-<!--                    <button-->
-<!--                            @click="$store.commit('sessionID', null)">-->
-<!--                        Удалить сессию-->
-<!--                    </button>-->
-                    <hr/>
+
                     <SessionPlayer
                             v-if="!!sessionID"
                             :key="sessionID"
