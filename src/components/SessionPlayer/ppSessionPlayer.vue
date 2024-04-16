@@ -3,10 +3,10 @@
     <div class="sp-main">
       <div class="history" ref="history">
         <div
-          class="history-item"
-          v-for="(v, i) in session.history"
-          :key="i"
-          v-html="v.handledQuest +' : '+ v.answer"
+            class="history-item"
+            v-for="(v, i) in session.history"
+            :key="i"
+            v-html="v.handledQuest +' : '+ v.answer"
         >
         </div>
         <!--                    v-html="session.history[i].handledQuest +' : '+ session.history[i].answer"-->
@@ -18,15 +18,15 @@
       </div>
       <div class="answer mt-2">
                 <textarea
-                  class="w-100"
-                  v-model="answer"
-                  placeholder="Введите ответ"
-                  @keyup.enter="onClickNext()"
+                    class="w-100"
+                    v-model="answer"
+                    placeholder="Введите ответ"
+                    @keyup.enter="onClickNext()"
                 />
       </div>
       <div class="next">
         <button class="btn btn-outline-primary btn-next btn-sm"
-                @click="onClickPauseSession">
+                @click="onPauseSession">
           Пауза
         </button>
         <button class="btn btn-outline-primary btn-next btn-sm"
@@ -38,13 +38,13 @@
       </div>
       <div class="finish">
         <button
-          v-if="!!session && session.stack.length > 0 && session.stack[0].maxCount === 0"
-          class="btn btn-outline-primary btn-next btn-sm"
-          @click="onClickFinishCycle">
+            v-if="!!session && session.stack.length > 0 && session.stack[0].maxCount === 0"
+            class="btn btn-outline-primary btn-next btn-sm"
+            @click="onFinishCycle">
           Завершить текущий цикл
         </button>
         <button class="btn btn-outline-primary btn-next btn-sm"
-                @click="onClickFinishSession">
+                @click="onFinishSession">
           Завершить сессию
         </button>
       </div>
@@ -99,8 +99,8 @@ export default {
     },
     questHTML() {
       let result = this.session.questInfo.handledQuest
-        .replaceAll(startSubstr, '<span class="inserted-text">')
-        .replaceAll(endSubstr, '</span>');
+          .replaceAll(startSubstr, '<span class="inserted-text">')
+          .replaceAll(endSubstr, '</span>');
       return result;
     },
     confirmHTML() {
@@ -110,16 +110,16 @@ export default {
   methods: {
     onClickQuest(e) {
       console.log('onClickQuest::e=>>', e);
-      if(e.target.className==="inserted-text") {
+      if (e.target.className === "inserted-text") {
         console.log('inserted-text clicked !!!');
-        let newText = prompt("Редактирование текста", );
+        let newText = prompt("Редактирование текста",);
         console.log('newText =>>', newText);
-        if(!!newText) {
+        if (!!newText) {
           const oldText = e.target.outerText;
           console.log('oldText =>>', oldText);
-          for(let key in this.session.varsByName) {
+          for (let key in this.session.varsByName) {
             console.log('###0 key=>>', key, this.session.varsByName[key]);
-            if(this.session.varsByName[key] === oldText) {
+            if (this.session.varsByName[key] === oldText) {
               console.log('###1');
               this.session.varsByName[key] = newText;
             }
@@ -148,7 +148,7 @@ export default {
 
     handleQuest(goNext = true) {
       let response = this.session.questInfo;
-      if(goNext){
+      if (goNext) {
         response = this.nextQuest();
         this.session.questInfo.rawQuest = response.rawQuest;
       }
@@ -171,13 +171,11 @@ export default {
         diffDt: 0,
         outVarNames: this.session.questInfo.outVarNames,
       });
+      this.session.header.changedDt = new Date().toISOString();
       let hist = this.$refs['history'];
       this.$nextTick(
-        () => hist.scrollTo({left: 0, top: hist.scrollHeight, behavior: "smooth"})
+          () => hist.scrollTo({left: 0, top: hist.scrollHeight, behavior: "smooth"})
       );
-      // console.log('hist.scrollHeight =>>', hist.scrollHeight);
-      // console.log('hist =>>', hist);
-      // console.dir(hist);
     },
     showConfirmation() {
       this.showConfirm = true;
@@ -205,8 +203,8 @@ export default {
         //положить ответ в переменные, указанные в предыдущем вопросе
         this.session.varsByName['$last'] = this.answer;
         this.session.questInfo.outVarNames.forEach((v) => {
-            if (!!v) this.session.varsByName[v] = this.answer;
-          }
+              if (!!v) this.session.varsByName[v] = this.answer;
+            }
         );
 
         this.saveHistoryItem();
@@ -223,14 +221,14 @@ export default {
       this.$store.commit('answer', 'save test');
 
     },
-    onClickFinishCycle() {
+    onFinishCycle() {
       if (this.session.stack.length > 0) this.session.stack.shift();
     },
-    onClickPauseSession() {
+    onPauseSession() {
       this.session.status = 'paused';
       this.setCurrSessionInList();
     },
-    onClickFinishSession() {
+    onFinishSession() {
       this.session.stack = [];
       this.session.status = 'finished';
       this.setCurrSessionInList();
@@ -320,7 +318,7 @@ export default {
         }
         if (this.session.stack.length === 0) {
           this.session.status = 'finished';
-          result = {rawQuest: 'Сказочке конец'};
+          result = {rawQuest: 'Сессия завершена'};
         }
       }
       return result;
@@ -336,19 +334,13 @@ export default {
     if (this.session.status === 'paused') {
       this.session.status = 'inProgress';
     }
-
+    window.onbeforeunload = () => {this.onPauseSession()};
+    window.addEventListener('unload', ()=>{this.onPauseSession();})
   },
-  // watch: {
-  //     sessionFirstQuest: {
-  //         handler(v) {
-  //             if (v) {
-  //
-  //             }
-  //         },
-  //         deep: false,
-  //         immediate: true,
-  //     }
-  // },
+  beforeUnmount() {
+    this.onPauseSession();
+  },
+
 };
 </script>
 

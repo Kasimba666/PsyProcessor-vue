@@ -16,13 +16,13 @@
         <div class="markers-panel">
             <div
                     class="marker"
-                    :class="{'in-progress': session.status === 'inProgress'}"
+                    :class="{'in-progress': session.status === 'inProgress', 'active': session.id === currentID}"
                     v-for="session in sessionList"
                     @click="onMarker(session)"
                     v-b-popover.hover.top=session.header.sessionTitle
 
             >
-<!--               {{ session.header.changedDt }}-->
+              {{dtFormatCustom(session.header.changedDt)}}
             </div>
         </div>
 
@@ -131,9 +131,9 @@ export default {
         },
         dtFormatCustom(dtISO) {
             let result = dtISO.substring(0, 19).split('');
-            result[10] = '-';
-            result[13] = '-';
-            result[16] = '-';
+            result[10] = ' ';
+            result[13] = ':';
+            result[16] = ':';
             return result.join('');
         },
         allInProgressToPausedExceptThis(id) {
@@ -143,9 +143,9 @@ export default {
         },
         onDoAction(action, idxs, file) {
             if (idxs !== null) {
-                console.log('idxs !== null')
                 this.currentIdx = idxs[0];
                 this.currentID = this.sessionList[this.currentIdx].id;
+                console.log('idxs = ', idxs, 'currentID = ',  this.currentID);
             }
             switch (action) {
                 case 'changeStatus': {
@@ -274,31 +274,31 @@ export default {
   .markers-panel {
     position: fixed;
     top: var(--header-height);
-    right: 0px;
+    left: 60px;
     width: 100%;
     height: 30px;
     display: flex;
-    flex-flow: row;
-    justify-content: flex-end;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
     align-items: flex-start;
-    gap: 20px;
+    gap: 10px;
+    flex: 1 1 auto;
 
     .marker {
       position: relative;
-      height: 25px;
-      width: 60px;
+      font-size: 10px;
+      height: auto;
+      width: auto;
       color: black;
       background-color: hsla(58, 80%, 80%, 0.9);
       border-top: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      padding: 3px;
       user-select: none;
       border-radius: 0 0px 10px 10px;
-      overflow-x: hidden;
       box-shadow: 2px 1px 12px 0px hsla(0, 0%, 50%, 0.7);
-      transition: all 0.8s ease;
+      transition: all 0.4s ease;
       cursor: pointer;
+      flex-shrink: 0;
       z-index: 10;
 
       &.in-progress {
@@ -312,9 +312,13 @@ export default {
       }
 
       &:active {
-        //background-color: hsla(44, 80%, 60%, 0.9);
         box-shadow: 1px 0px 12px 0px hsla(0, 0%, 50%, 0.7);
         transform: translate(1px, 1px);
+      }
+      &.active {
+        border: 1px solid gray;
+        border-top: none;
+        //box-shadow: 2px 1px 12px 0px hsla(60, 80%, 40%, 0.7);
       }
     }
   }
