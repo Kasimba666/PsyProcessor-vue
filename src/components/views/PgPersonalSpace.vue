@@ -16,13 +16,18 @@
         <div class="markers-panel">
             <div
                     class="marker"
-                    :class="{'in-progress': session.status === 'inProgress', 'active': session.id === currentID}"
-                    v-for="session in sessionList"
+                    :class="{
+                'in-progress': session.status === 'inProgress',
+                'active': session.id === currentID,
+                'stacked': markersStacked
+            }"
+                    :style="{top: markersStacked ? idx*40+'px': 0, zIndex: 1000-idx}"
+                    v-for="(session, idx) in sessionList"
                     @click="onMarker(session)"
-                    v-b-popover.hover.top=session.header.sessionTitle
+                    v-b-tooltip.hover.leftbottom=session.header.sessionTitle
 
             >
-              {{dtFormatCustom(session.header.changedDt)}}
+                {{ dtFormatCustom(session.header.changedDt) }}
             </div>
         </div>
 
@@ -95,6 +100,9 @@ export default {
                 }
             });
         },
+        markersStacked() {
+            return true;
+        },
     },
     methods: {
         saveJSONFile: function (object, filename) {
@@ -145,7 +153,7 @@ export default {
             if (idxs !== null) {
                 this.currentIdx = idxs[0];
                 this.currentID = this.sessionList[this.currentIdx].id;
-                console.log('idxs = ', idxs, 'currentID = ',  this.currentID);
+                console.log('idxs = ', idxs, 'currentID = ', this.currentID);
             }
             switch (action) {
                 case 'changeStatus': {
@@ -222,7 +230,10 @@ export default {
             // console.log('currentID ', this.currentID);
             // console.log('v.id ', v.id);
             if (v.id !== this.currentID) {
-                if (!!this.currentID) this.$store.commit('changeSessionStatusByID', {id: this.currentID, status:'paused'});
+                if (!!this.currentID) this.$store.commit('changeSessionStatusByID', {
+                    id: this.currentID,
+                    status: 'paused'
+                });
                 v.status = 'inProgress';
                 this.$router.push({name: 'PgSession', params: {id: v.id}});
                 this.currentID = v.id;
@@ -274,15 +285,16 @@ export default {
   .markers-panel {
     position: fixed;
     top: var(--header-height);
-    left: 60px;
+    left: 0px;
     width: 100%;
     height: 30px;
     display: flex;
     flex-flow: row nowrap;
-    justify-content: flex-start;
+    justify-content: flex-end;
     align-items: flex-start;
     gap: 10px;
     flex: 1 1 auto;
+
 
     .marker {
       position: relative;
@@ -294,7 +306,7 @@ export default {
       border-top: none;
       padding: 3px;
       user-select: none;
-      border-radius: 0 0px 10px 10px;
+      border-radius: 0 0px 0px 10px;
       box-shadow: 2px 1px 12px 0px hsla(0, 0%, 50%, 0.7);
       transition: all 0.4s ease;
       cursor: pointer;
@@ -315,10 +327,17 @@ export default {
         box-shadow: 1px 0px 12px 0px hsla(0, 0%, 50%, 0.7);
         transform: translate(1px, 1px);
       }
+
       &.active {
         border: 1px solid gray;
         border-top: none;
         //box-shadow: 2px 1px 12px 0px hsla(60, 80%, 40%, 0.7);
+      }
+
+      &.stacked {
+        position: absolute;
+        right: 0px;
+
       }
     }
   }
