@@ -59,7 +59,7 @@ export default {
     gap: 0px;
     transition: all 0.5s ease;
     box-shadow: 2px 0px 12px 0px hsla(0, 0%, 50%, 0.7);
-    z-index: 10;
+    z-index: 20;
 
     &.opened {
       transform: translateX(100%);
@@ -84,7 +84,7 @@ export default {
     box-shadow: 2px 1px 12px 0px hsla(0, 0%, 50%, 0.7);
     transition: all 0.8s ease;
     cursor: pointer;
-    z-index: 10;
+    z-index: 20;
 
     &:hover {
       color: black;

@@ -9,7 +9,6 @@
             v-html="v.handledQuest +' : '+ v.answer"
         >
         </div>
-        <!--                    v-html="session.history[i].handledQuest +' : '+ session.history[i].answer"-->
       </div>
 
       <div class="quest-zone mt-3">
@@ -48,20 +47,31 @@
           Завершить сессию
         </button>
       </div>
-      <!--{{!!session ? session : ''}}-->
-      <!--{{!!sessionID ? sessionID : ''}}-->
 
-      <pre>Вопрос и ответ: {{ !!this.session ? this.session.questInfo : '' }} </pre>
-      <!--            <pre>Стек: {{ !!this.session ? this.session.stack : '' }}</pre>-->
-      <!--            <pre>Сдвиг: {{ !!this.session ? this.session.positions : '' }}</pre>-->
-      <!--            <pre>Переменные: {{ !!this.session ? this.session.varsByName : '' }}</pre>-->
+      <button
+          class="btn btn-outline-primary btn-continue btn-sm"
+          :class="{'show': session.status === 'paused'}"
+          @click="onContinueSession"
+      >
+        Продолжить
+      </button>
+<!--      <pre>Вопрос и ответ: {{ !!session ? session.questInfo : '' }} </pre>-->
+<!--      <pre>Стек: {{ !!this.session ? this.session.stack : '' }}</pre>-->
+<!--      <pre>Сдвиг: {{ !!this.session ? this.session.positions : '' }}</pre>-->
+<!--      <pre>Переменные: {{ !!this.session ? this.session.varsByName : '' }}</pre>-->
     </div>
+    <div
+        class="overlay"
+        :class="{'opened': session.status !== 'inProgress'}">
+
+    </div>
+
   </div>
 </template>
 
 <script>
 
-import {mapGetters, mapState} from "vuex";
+import {mapGetters} from "vuex";
 
 const startSubstr = '{{';
 const endSubstr = '}}';
@@ -82,7 +92,6 @@ export default {
     ...mapGetters(['sessionsByID']),
     session() {
       return this.sessionsByID[this.sessionID];
-      // return this.$store.getters.sessionsByID[this.sessionID];
     },
 
     mapKeyNodes() {
@@ -233,7 +242,9 @@ export default {
       this.session.status = 'finished';
       this.setCurrSessionInList();
     },
-
+    onContinueSession() {
+      this.session.status = 'inProgress';
+    },
     nextQuest() {
       if (true || this.session.status === 'inProgress') {
         let response = {};
@@ -327,18 +338,22 @@ export default {
   },
   mounted() {
     console.log('mounted');
-    if (this.session.status === 'new') {
+    if (this.session.status === 'new' || this.session.questInfo.rawQuest === '') {
       this.onClickNext(true);
       this.session.status = 'inProgress';
     }
     if (this.session.status === 'paused') {
       this.session.status = 'inProgress';
     }
-    window.onbeforeunload = () => {this.onPauseSession()};
-    window.addEventListener('unload', ()=>{this.onPauseSession();})
+    // window.onbeforeunload = () => {
+    //   this.onPauseSession()
+    // };
+    // window.addEventListener('beforeunload', () => {
+    //   this.onPauseSession();
+    // })
   },
   beforeUnmount() {
-    this.onPauseSession();
+    // this.onPauseSession();
   },
 
 };
@@ -347,6 +362,7 @@ export default {
 <style lang="scss">
 /****  SessionPlayer  ****/
 .SessionPlayer {
+  position: relative;
   width: 100%;
   height: auto;
   font-size: 14px;
@@ -490,6 +506,42 @@ export default {
       color: black;
       background-color: hsl(52, 29%, 90%);
     }
+  }
+
+
+  .overlay {
+    position: fixed;
+    right: 100%;
+    top: var(--header-height);
+    height: 100dvh;
+    //height: 600px;
+    width: 100%;
+    z-index: 5;
+    transition: all 0.3s ease;
+    pointer-events: none;
+
+    &.opened {
+      background-color: hsla(0, 0%, 0%, 0.2);
+      backdrop-filter: blur(4px);
+      pointer-events: all;
+      transform: translateX(100%);
+    }
+  }
+
+  .btn-continue {
+    //position: absolute;
+    position: fixed;
+    top: calc(100dvh / 2.5 - 15px);
+    right: 100%;
+    height: auto;
+    width: 200px;
+    transition: all 0.8s ease;
+    z-index: 10;
+
+    &.show {
+      transform: translateX(calc(100% + 100%));
+    }
+
   }
 }
 </style>

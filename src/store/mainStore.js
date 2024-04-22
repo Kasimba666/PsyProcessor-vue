@@ -54,6 +54,9 @@ export default createStore({
             state.currentEditableProcessIdx = v;
         },
 
+        currentSessionID(state, v) {
+            state.currentSessionID = v;
+        },
         sessionList(state, v) {
             state.sessionList = v;
         },
@@ -185,6 +188,9 @@ export default createStore({
             return state.processList.reduce((s, v) => {
                 s[v.id] = v;
             }, {});
+        },
+        markerSessions(state){
+            return state.sessionList.map((v)=>{return {id: v.id, title: v.header.sessionTitle, time: v.header.changedDt}}).sort((a, b) => b.time - a.time);
         },
     },
 

@@ -4,6 +4,31 @@
       {{ screen.type }}<br/>
       {{ screen.width }}px
     </div>
+    <div class="markers-panel">
+      <div
+          class="marker"
+          :class="{
+                'in-progress': session.status === 'inProgress',
+                'active': session.id === currentSessionID,
+                'stacked': markersStacked
+            }"
+          :style="{top: markersStacked ? idx*40+'px': 0, zIndex: 1000-idx}"
+          v-for="(session, idx) in sessionList"
+          @click="onMarker(session)"
+          :key="session.id"
+      >
+        {{ dtFormatCustom(session.header.changedDt) }}
+        <div
+            v-if="markersStacked"
+            class="tooltip"
+            v-b-tooltip.hover.left=session.header.sessionTitle
+        />
+        <div v-else
+            class="tooltip"
+            v-b-tooltip.hover.bottom=session.header.sessionTitle
+        />
+      </div>
+    </div>
     <div class="logo">
       PsyProcessor
     </div>
@@ -17,7 +42,10 @@
 </template>
 
 <script>
-import {mapState} from "vuex";
+import {mapGetters, mapState} from "vuex";
+
+const markerWidth = 96;
+const markerGap = 10;
 
 export default {
   name: "AppHeader",
@@ -29,7 +57,11 @@ export default {
     }
   },
   computed: {
-    ...mapState(['screen', 'screenBreakpoints']),
+    ...mapState(['currentSessionID', 'sessionList', 'screen', 'screenBreakpoints']),
+    ...mapGetters(['markerSessions']),
+    markersStacked() {
+      return this.screen.width < this.markerSessions.length * (markerWidth + markerGap) + markerGap;
+    },
   },
   methods: {
     onResize() {
@@ -56,7 +88,33 @@ export default {
       }
       screen['type'] = t;
       this.$store.commit("screen", screen);
-    }
+    },
+    dtFormatCustom(dtISO) {
+      let result = dtISO.substring(0, 19).split('');
+      result[10] = ' ';
+      result[13] = ':';
+      result[16] = ':';
+      return result.join('');
+    },
+    onMarker(v) {
+      //обработка нажатия на другую закладку, чем открыта сейчас
+      if (v.id !== this.currentSessionID) {
+        //поставить на паузу предыдущую сессию
+        if (!!this.currentSessionID) this.$store.commit('changeSessionStatusByID', {
+          id: this.currentSessionID,
+          status: 'paused'
+        });
+        this.$router.push({name: 'PgSession', params: {id: v.id}});
+        this.$store.commit('currentSessionID', v.id);
+        //запустить текущую сессию
+        // this.$store.commit('changeSessionStatusByID', {
+        //   id: this.currentSessionID,
+        //   status: 'inProgress'
+        // });
+      } else {
+
+      }
+    },
   },
   mounted() {
     this.onResize();
@@ -68,7 +126,6 @@ export default {
 <style lang="scss">
 .AppHeader {
   position: fixed;
-  //z-index: 1000;
   left: 0;
   top: 0;
   padding: 0 20px;
@@ -78,6 +135,7 @@ export default {
   border-bottom: 1px solid hsl(50, 30%, 75%);
   display: flex;
   align-items: center;
+  z-index: 20;
 
   a {
     color: hsl(180, 100%, 30%);
@@ -134,6 +192,7 @@ export default {
         box-shadow: inset 0 -3px 1px -2px hsl(50, 99%, 22%);
         transform: translate3d(0, 2px, 20px);
         text-decoration: none;
+
       }
     }
   }
@@ -143,7 +202,76 @@ export default {
     top: var(--header-height);
     font-size: 12px;
     color: black;
-    z-index: 10;
+    z-index: 15;
   }
+  .markers-panel {
+    position: fixed;
+    top: var(--header-height);
+    left: 0px;
+    width: 100%;
+    height: 30px;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-end;
+    align-items: flex-start;
+    gap: 10px;
+    flex: 1 1 auto;
+    z-index: 10;
+
+
+    .marker {
+      position: relative;
+      font-size: 10px;
+      height: auto;
+      width: auto;
+      color: black;
+      background-color: hsla(58, 80%, 80%, 0.9);
+      border-top: none;
+      padding: 3px;
+      user-select: none;
+      border-radius: 0 0px 0px 10px;
+      box-shadow: 2px 1px 12px 0px hsla(0, 0%, 50%, 0.7);
+      transition: all 0.4s ease;
+      cursor: pointer;
+      flex-shrink: 0;
+      z-index: 10;
+
+      &.in-progress {
+        background-color: hsla(84, 80%, 80%, 0.9);
+      }
+
+      &:hover {
+        color: black;
+        //background-color: hsla(44, 80%, 70%, 0.9);
+        transition: all 0.2s ease;
+      }
+
+      &:active {
+        box-shadow: 1px 0px 12px 0px hsla(0, 0%, 50%, 0.7);
+        transform: translate(1px, 1px);
+      }
+
+      &.active {
+        border: 1px solid gray;
+        border-top: none;
+        //box-shadow: 2px 1px 12px 0px hsla(60, 80%, 40%, 0.7);
+      }
+
+      &.stacked {
+        position: absolute;
+        right: 0px;
+
+      }
+
+      .tooltip {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+
 }
 </style>
