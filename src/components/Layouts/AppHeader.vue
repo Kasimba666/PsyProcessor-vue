@@ -36,7 +36,7 @@
       <router-link class="menu-item home" :to="{name: 'PgHome'}">Главная</router-link>
       <router-link class="menu-item" :to="{name: 'PgProcessList'}">Процессы</router-link>
       <router-link class="menu-item" :to="{name: 'PgConstructor'}">Конструктор</router-link>
-      <router-link class="menu-item" :to="{name: 'PgSession'}">Личный кабинет</router-link>
+      <router-link class="menu-item" :to="{name: 'PgSession', params: {id: this.currentSessionID}}">Личный кабинет</router-link>
     </div>
   </div>
 </template>

@@ -36,14 +36,15 @@ export default {
     },
     computed: {
         ...mapGetters(['sessionsByID']),
+        ...mapState(['currentSessionID']),
         sessionID() {
             return this.$route.params.id;
         },
     },
     methods: {},
     mounted() {
-        // console.log(this.$route);
-        // console.log(this.$router);
+       // if (!!this.currentSessionID)  this.$router.push({name: 'PgSession', params: {id: this.currentSessionID}});
+
     },
 }
 </script>
