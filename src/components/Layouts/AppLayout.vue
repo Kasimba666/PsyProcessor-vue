@@ -4,6 +4,7 @@
     <AppHeader/>
     <div class="main">
       <router-view/>
+      {{defaultProcessList}}
     </div>
     <AppFooter/>
   </div>
@@ -25,39 +26,28 @@ export default {
     }
   },
   computed: {
-
   },
   methods: {
-      // async readJsonFolder () {
-      //     const jsonFiles = Object.keys(modules);
-      //     const data = await Promise.all(jsonFiles.map(async (file) => {
-      //         const module = await modules[file]();
-      //         return module.default;
-      //     }));
-      //     return data;
-      // },
-      readJsonFolder() {
-          const jsonFiles = Object.keys(modules);
-          const data = (jsonFiles.map(async (file) => {
+      async readJsonFolder() {
+        return await Promise.all(Object.keys(modules).map(async (file) => {
               const module = await modules[file]();
               return module.default;
           }));
-          return data;
       },
 
   },
   mounted() {
-      for (const path in modules) {
-          modules[path]().then((mod) => {
-                      mod.default.forEach((v)=>{
-                          // console.log(v);
-                          if (v.type === 'process') this.defaultProcessList.push(v);
-                      });
+    this.readJsonFolder().then((result)=>{
+      result.forEach((v)=> {
+        v.forEach((w) => {
+          if (w.type === 'process') {
+            this.defaultProcessList.push(w);
 
-          })
-      }
-      console.log(this.defaultProcessList);
-      // this.defaultProcessList.forEach((v)=>console.log(v.header.processTitle));
+          };
+        });
+      });
+    });
+
   },
 }
 </script>
