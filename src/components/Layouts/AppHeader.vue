@@ -17,7 +17,7 @@
           @click="onMarker(session)"
           :key="session.id"
       >
-        {{ dtFormatCustom(session.header.changedDt) }}
+        {{ dtIsoShort(session.header.changedDt) }}
         <div
             v-if="markersStacked"
             class="tooltip"
@@ -43,6 +43,7 @@
 
 <script>
 import {mapGetters, mapState} from "vuex";
+import {useDtFilters} from "@/composables/useDtFilters.js";
 
 const markerWidth = 96;
 const markerGap = 10;
@@ -56,6 +57,13 @@ export default {
       DEBUG: import.meta.env.MODE === 'development',
     }
   },
+
+    setup() {
+        const {dtIsoShort} = useDtFilters();
+        return {
+            dtIsoShort
+        }
+    },
   computed: {
     ...mapState(['currentSessionID', 'sessionList', 'screen', 'screenBreakpoints']),
     ...mapGetters(['markerSessions']),
@@ -89,13 +97,7 @@ export default {
       screen['type'] = t;
       this.$store.commit("screen", screen);
     },
-    dtFormatCustom(dtISO) {
-      let result = dtISO.substring(0, 19).split('');
-      result[10] = ' ';
-      result[13] = ':';
-      result[16] = ':';
-      return result.join('');
-    },
+
     onMarker(v) {
       //обработка нажатия на другую закладку, чем открыта сейчас
       if (v.id !== this.currentSessionID) {

@@ -4,7 +4,7 @@ import PgPersonalSpace from "@/components/views/PgPersonalSpace.vue";
 import PgProcessList from "@/components/views/PgProcessList.vue";
 import PgConstructor from "@/components/views/PgConstructor.vue";
 import PgSession from "@/components/views/PgSession.vue";
-import Pg404 from "../components/views/Pg404.vue";
+import Pg404 from "@/components/views/Pg404.vue";
 
 const routes = [
     {

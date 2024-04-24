@@ -8,11 +8,11 @@
               :fields="fields"
               @doAction="onDoActionByIdx"
           ></ppProcessListByIdx>
-
-          <ppProcessList
-              :source="rows"
-              @doAction="onDoAction"
-          ></ppProcessList>
+            <ppProcessList
+                :source="rows"
+                @doAction="onDoAction"
+            >
+            </ppProcessList>
 
         </div>
       </div>
@@ -25,12 +25,10 @@ import ppProcessListByIdx from "@/components/PpProcesses/ppProcessListByIdx.vue"
 import ppProcessList from "@/components/PpProcesses/ppProcessList.vue";
 import {mapState} from "vuex";
 import {v4 as createUuid} from "uuid";
+import {useDtFilters} from "@/composables/useDtFilters.js";
 
 
 export default {
-  head: {
-    title: 'PsyProcessor : Процессы'
-  },
   name: "ProcessList",
   components: {ppProcessListByIdx, ppProcessList},
   props: [],
@@ -47,17 +45,24 @@ export default {
       ],
     }
   },
-  computed: {
+    setup() {
+        const {dtIsoShort, dtIsoFileName} = useDtFilters();
+        return {
+            dtIsoShort,
+            dtIsoFileName,
+        };
+    },
+    computed: {
     ...mapState(['processList']),
     rows() {
-      if (this.processList === null || this.processList.jhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh566666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666length === 0) return [];
+      if (this.processList === null || this.processList.length === 0) return [];
       return this.processList.map(v => {
         return {
           test: {test1: v.header.processTitle},
           processTitle: v.header.processTitle,
           processCategory: v.header.processCategory,
-          createdDt: this.dtFormatCustom(v.header.createdDt),
-          changedDt: this.dtFormatCustom(v.header.changedDt),
+          createdDt: this.dtIsoShort(v.header.createdDt),
+          changedDt: this.dtIsoShort(v.header.changedDt),
           description: v.header.description,
         }
       });
@@ -99,14 +104,7 @@ export default {
           }
         }
           return;
-          // case 'load': {
-          //     // let rawArr = null;
-          //         this.loadJSON(file).then((data)=>{
-          //             this.$store.commit('addProcessesInList', data.content);
-          //         });
-          //     //проверка на существование в списке
-          // }
-          //     break;
+
         case 'load': {
           let reader = new FileReader();
           const promise = new Promise((resolve, reject) => {
@@ -135,7 +133,7 @@ export default {
           idxs.forEach((v) => {
             arr.push(this.processList[v]);
           });
-          this.saveJSONFile(arr, arr[0].header.processTitle + ' ' + this.dtFormatCustom(arr[0].header.changedDt));
+          this.saveJSONFile(arr, arr[0].header.processTitle + ' ' + this.dtIsoFileName(arr[0].header.changedDt));
         }
           return;
 
@@ -150,15 +148,6 @@ export default {
     },
     onDoAction() {
     },
-
-    dtFormatCustom(dtISO) {
-      let result = dtISO.substring(0, 19).split('');
-      result[10] = '-';
-      result[13] = '-';
-      result[16] = '-';
-      return result.join('');
-    },
-
 
     saveJSONFile: function (object, filename) {
       const json = JSON.stringify(object, null, 2); // Преобразуем объект в строку JSON

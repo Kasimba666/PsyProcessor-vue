@@ -3,8 +3,7 @@
 
     <AppHeader/>
     <div class="main">
-      <router-view/>
-      {{defaultProcessList}}
+            <router-view/>
     </div>
     <AppFooter/>
   </div>

@@ -45,6 +45,7 @@ import ppUserMenu from "@/components/PpUserSpace/ppUserMenu.vue";
 import ppSidePanel from "@/components/Common/ppSidePanel.vue";
 import {mapGetters, mapState} from "vuex";
 import SessionPlayer from "@/components/SessionPlayer/ppSessionPlayer.vue";
+import {useDtFilters} from "@/composables/useDtFilters.js";
 
 export default {
   name: "PgPersonalSpace",
@@ -66,6 +67,12 @@ export default {
       isOpenedSidePanel: false,
     }
   },
+  setup() {
+      const {dtIsoShort} = useDtFilters();
+      return {
+        dtIsoShort
+      }
+  },
   computed: {
     ...mapState(['sessionList', 'currentSessionID']),
 
@@ -75,7 +82,7 @@ export default {
         return {
           sessionTitle: v.header.sessionTitle,
           processTitle: v.process.header.processTitle,
-          createdDt: this.dtFormatCustom(v.header.createdDt),
+          createdDt: this.dtIsoShort(v.header.createdDt),
           status: v.status,
 
         }
@@ -116,13 +123,8 @@ export default {
       return result;
 
     },
-    dtFormatCustom(dtISO) {
-      let result = dtISO.substring(0, 19).split('');
-      result[10] = ' ';
-      result[13] = ':';
-      result[16] = ':';
-      return result.join('');
-    },
+
+
     allInProgressToPausedExceptThis(id) {
       this.sessionList.forEach((v) => {
         if (v.id !== id && v.status === 'inProgress') v.status = 'paused'
@@ -192,7 +194,7 @@ export default {
           return
         case 'save': {
           let session = this.sessionList[this.currentIdx];
-          this.saveJSONFile(session, session.header.sessionTitle + ' ' + this.dtFormatCustom(session.header.changedDt));
+          this.saveJSONFile(session, session.header.sessionTitle + ' ' + this.dtIsoShort(session.header.changedDt));
         }
           return
         default: {

@@ -3,78 +3,79 @@
     <b-container>
       <b-row>
         <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-          <AppTransTable
-             class="trans-table"
-             :data="sortedSource"
-             :cardMode="{
+
+                <AppTransTable
+                        class="trans-table"
+                        :data="sortedSource"
+                        :cardMode="{
                             breakpoint: 'sm',
                             titleWidth: 'calc(15% + 100px)', // ширина столбца заголовков
                           }"
-              :gridMode="{
+                        :gridMode="{
               xxl: '30px 4fr 2fr 2fr 2fr 30px',
               xl: '30px 4fr 2fr 2fr 2fr 30px',
               lg: '30px 4fr 2fr 2fr 2fr 30px',
               md: '30px 4fr 2fr 2fr 2fr 30px',
               }"
-             @rowClick="onRowClick"
-          >
-              <TtColumn
-                label="[Чек]"
-                prop=""
-            >
-              <template>
+                        @rowClick="onRowClick"
+                >
+                    <TtColumn
+                            label=""
+                            prop=""
+                    >
+                        <template>
 
-              </template>
-            </TtColumn>
+                        </template>
+                    </TtColumn>
 
-<!--            <TtColumn-->
-<!--                label="Наименование"-->
-<!--                prop="processTitle"-->
-<!--                v-model:sortable="SortMode"-->
-<!--                align="center"-->
-<!--            >-->
-<!--            </TtColumn>-->
-            <TtColumn
-                label="Тест"
-                prop="processTitle"
-            >
-                <template #default="{ row }">
-                    {{row.test.test1}}
-                </template>
-            </TtColumn>
-            <TtColumn
-                label="Категория"
-                prop="processCategory"
-            >
-            </TtColumn>
-            <TtColumn
-                label="Дата создания"
-                prop="createdDt"
-                v-model:sortable="SortMode"
-                align="center"
-            >
-            </TtColumn>
-            <TtColumn
-                label="Дата изменения"
-                prop="changedDt"
-                v-model:sortable="SortMode"
-                align="center"
-            >
-            </TtColumn>
-            <TtColumn
-                label=""
-                prop=""
-                align="center"
-            >
-                  <template #default="{row, rowIdx }">
-                      <div>
-                          <i class="ico ico-menu">{{ rowIdx }}</i>
-                      </div>
-                  </template>
+                    <!--            <TtColumn-->
+                    <!--                label="Наименование"-->
+                    <!--                prop="processTitle"-->
+                    <!--                v-model:sortable="SortMode"-->
+                    <!--                align="center"-->
+                    <!--            >-->
+                    <!--            </TtColumn>-->
+                    <TtColumn
+                            label="Наименование"
+                            prop="processTitle"
+                    >
+                        <template #default="{ row }">
+                            {{ row.test.test1 }}
+                        </template>
+                    </TtColumn>
+                    <TtColumn
+                            label="Категория"
+                            prop="processCategory"
+                    >
+                    </TtColumn>
+                    <TtColumn
+                            label="Дата создания"
+                            prop="createdDt"
+                            v-model:sortable="SortMode"
+                            align="center"
+                    >
+                    </TtColumn>
+                    <TtColumn
+                            label="Дата изменения"
+                            prop="changedDt"
+                            v-model:sortable="SortMode"
+                            align="center"
+                    >
+                    </TtColumn>
+                    <TtColumn
+                            label=""
+                            prop=""
+                            align="center"
+                    >
+                        <template #default="{row, rowIdx }">
+                            <div>
+                                <i class="ico ico-menu">{{ rowIdx }}</i>
+                            </div>
+                        </template>
 
-            </TtColumn>
+                    </TtColumn>
 
-          </AppTransTable>
+                </AppTransTable>
 
         </div>
       </b-row>
@@ -88,6 +89,7 @@
 import AppTransTable from '@/components/Common/AppTransformerTable/AppTransTable.vue';
 import TtColumn from '@/components/Common/AppTransformerTable/TtColumn.vue';
 import TableMixin from "@/components/Common/AppTransformerTable/TableMixin.vue";
+import {mapMutations, mapState} from "vuex";
 
 const defaultSortOrder = {
   field: 'changedDt',
@@ -101,11 +103,12 @@ export default {
   mixins: [TableMixin],
   data() {
     return {
-      defaultSortOrder: {...defaultSortOrder},
-      sortMode: {...defaultSortOrder},
+      // sortMode: {...defaultSortOrder},
     }
   },
   computed: {
+    ...mapState({sortMode: state => state.processListSortMode}),
+
     sortedSource() {
       let orderDESC = this.sortMode.order === 'DESC';
       return [...this.source].sort((a, b) => {
@@ -118,6 +121,7 @@ export default {
     },
   },
     methods: {
+      ...mapMutations({sortMode: 'processListSortMode'}),
       onRowClick(v) {
         console.log(v);
       }

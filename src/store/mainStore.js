@@ -9,6 +9,12 @@ const screenBreakpoints = {
     lg: 992,
     xl: 1200,
 };
+
+const defaultSortOrder = {
+    field: 'changedDt',
+    order: 'ASC'
+};
+
 export default createStore({
     state: {
         screenBreakpoints,
@@ -20,6 +26,7 @@ export default createStore({
         mobileMenuActive: false,
         mobileMenuTransition: false,
         processList: [],
+        processListSortMode: {...defaultSortOrder},
         currentEditableProcess: null,
         currentEditableProcessIdx: -1,
         currentEditableProcessID: null,
@@ -37,9 +44,15 @@ export default createStore({
         screen(state, v) {
             state.screen = v;
         },
+
         processList(state, v) {
             state.processList = v;
         },
+        processListSortMode(state, v) {
+            state.processListSortMode = v;
+        },
+
+
         addProcessesInList(state, arr) {
             if (!!arr) arr.forEach((v) => state.processList.unshift(v));
         },
