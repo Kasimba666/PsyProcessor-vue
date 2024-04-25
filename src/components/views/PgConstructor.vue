@@ -3,8 +3,7 @@
     <div class="container">
       <div class="row">
         <div class="col-12">
-          <PpConstructor v-model:process="process" @changed="processChanged"/>
-
+            <PpConstructor v-model:process="process" @changed="processChanged"/>
         </div>
         <div class="files-control">
           <button class="btn btn-outline-primary btn-next btn-sm"
@@ -20,7 +19,7 @@
 <script>
 import PpConstructor from "@/components/PpConstructor/PpConstructor.vue";
 import {mapState} from "vuex";
-import {reactive} from "vue";
+import {reactive, shallowRef} from "vue";
 import {v4} from "uuid";
 let generateID = () => {
     return v4();
@@ -70,9 +69,11 @@ export default {
       }),
       debounceTime: 800,
       debounceHandle: null,
-
+      // current: 'PpConstructor',
+      current: reactive(PpConstructor),
     }
   },
+
   computed: {
     ...mapState(['currentEditableProcess', 'currentEditableProcessIdx']),
   },

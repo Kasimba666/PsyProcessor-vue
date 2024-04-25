@@ -89,7 +89,7 @@
 import AppTransTable from '@/components/Common/AppTransformerTable/AppTransTable.vue';
 import TtColumn from '@/components/Common/AppTransformerTable/TtColumn.vue';
 import TableMixin from "@/components/Common/AppTransformerTable/TableMixin.vue";
-import {mapMutations, mapState} from "vuex";
+import {mapState} from "vuex";
 
 const defaultSortOrder = {
   field: 'changedDt',
@@ -103,11 +103,20 @@ export default {
   mixins: [TableMixin],
   data() {
     return {
-      // sortMode: {...defaultSortOrder},
+      sortMode: {...defaultSortOrder},
     }
   },
+
   computed: {
-    ...mapState({sortMode: state => state.processListSortMode}),
+    // ...mapState(['processListSortMode']),
+    // sortMode: {
+    //   get() {
+    //     return this.processListSortMode
+    //   },
+    //   set(v) {
+    //     this.$store.commit('processListSortMode', v)
+    //   }
+    // },
 
     sortedSource() {
       let orderDESC = this.sortMode.order === 'DESC';
@@ -121,7 +130,7 @@ export default {
     },
   },
     methods: {
-      ...mapMutations({sortMode: 'processListSortMode'}),
+
       onRowClick(v) {
         console.log(v);
       }

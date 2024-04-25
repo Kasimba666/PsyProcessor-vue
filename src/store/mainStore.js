@@ -209,8 +209,10 @@ export default createStore({
 
     plugins: [createPersistedState({
         key: 'psyProc', paths: [
+            'processListSortMode',
             'currentEditableProcess',
             'currentEditableProcessIdx',
+            'currentSessionID',
             'processList',
             'sessionList',
             'answer'
