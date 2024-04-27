@@ -11,37 +11,30 @@
                             breakpoint: 'sm',
                             titleWidth: 'calc(15% + 100px)', // ширина столбца заголовков
                           }"
-                        :gridMode="{
-              xxl: '30px 4fr 2fr 2fr 2fr 30px',
-              xl: '30px 4fr 2fr 2fr 2fr 30px',
-              lg: '30px 4fr 2fr 2fr 2fr 30px',
-              md: '30px 4fr 2fr 2fr 2fr 30px',
-              }"
+                        v-model:gridMode="gridMode"
                         @rowClick="onRowClick"
+                        :key="prepareToSave"
                 >
                     <TtColumn
+                            v-if="prepareToSave"
                             label=""
                             prop=""
                     >
-                        <template>
-
+                        <template  #default="{ row }">
+                          <b-form-checkbox
+                              v-model="checkedList[row.id]"
+                              class="h-75"
+                          >
+                          </b-form-checkbox>
                         </template>
                     </TtColumn>
 
-                    <!--            <TtColumn-->
-                    <!--                label="Наименование"-->
-                    <!--                prop="processTitle"-->
-                    <!--                v-model:sortable="SortMode"-->
-                    <!--                align="center"-->
-                    <!--            >-->
-                    <!--            </TtColumn>-->
                     <TtColumn
                             label="Наименование"
                             prop="processTitle"
+                            v-model:sortable="SortMode"
                     >
-                        <template #default="{ row }">
-                            {{ row.test.test1 }}
-                        </template>
+
                     </TtColumn>
                     <TtColumn
                             label="Категория"
@@ -63,13 +56,14 @@
                     >
                     </TtColumn>
                     <TtColumn
+                            v-if="!prepareToSave"
                             label=""
                             prop=""
                             align="center"
                     >
                         <template #default="{row, rowIdx }">
-                            <div>
-                                <i class="ico ico-menu">{{ rowIdx }}</i>
+                            <div class="btn btn-outline-primary btn-menu btn-sm">
+<!--                                <i class="ico ico-menu"></i>-->
                             </div>
                         </template>
 
@@ -77,6 +71,44 @@
 
                 </AppTransTable>
 
+        </div>
+        <div class="process-list-control">
+          <button
+              v-if="!prepareToSave"
+              class="btn btn-outline-primary btn-group-actions btn-sm"
+              @click="onSelectProcesses"
+          >
+            Выбрать процессы для сохранения
+          </button>
+          <button
+              v-if="prepareToSave"
+              class="btn btn-outline-primary btn-group-actions btn-sm"
+              @click="onCancel"
+          >
+            Отмена
+          </button>
+          <button
+              v-if="prepareToSave"
+              :disabled="selectedIDs.length===sortedSource.length"
+              class="btn btn-outline-primary btn-group-actions btn-sm"
+              @click="onSelectAll">
+            Выбрать все
+          </button>
+          <button
+              v-if="prepareToSave"
+              :disabled="selectedIDs.length===0"
+              class="btn btn-outline-primary btn-group-actions btn-sm"
+              @click="onUnselectAll">
+            Развыбрать все
+          </button>
+          <button
+              v-if="prepareToSave"
+              :disabled="selectedIDs.length===0"
+              class="btn btn-outline-primary btn-group-actions btn-sm"
+              @click="onSave"
+          >
+            Сохранить выбранные
+          </button>
         </div>
       </b-row>
     </b-container>
@@ -104,19 +136,23 @@ export default {
   data() {
     return {
       sortMode: {...defaultSortOrder},
+      prepareToSave: false,
+      checkedList: {},
     }
   },
 
   computed: {
-    // ...mapState(['processListSortMode']),
-    // sortMode: {
-    //   get() {
-    //     return this.processListSortMode
-    //   },
-    //   set(v) {
-    //     this.$store.commit('processListSortMode', v)
-    //   }
-    // },
+    selectedIDs() {
+      return Object.keys(this.checkedList).filter((v)=>{if (this.checkedList[v]===true) return v});
+    },
+    gridMode() {
+      return {
+        xxl: `${this.prepareToSave ? '60px ' : ''}4fr 1fr 2fr 2fr${!this.prepareToSave ? ' 60px' : ''}`,
+        xl: `${this.prepareToSave ? '60px ' : ''}4fr 1fr 2fr 2fr${!this.prepareToSave ? ' 60px' : ''}`,
+        lg: `${this.prepareToSave ? '60px ' : ''}4fr 1fr 2fr 2fr${!this.prepareToSave ? ' 60px' : ''}`,
+        md: `${this.prepareToSave ? '60px ' : ''}4fr 1fr 2fr 2fr${!this.prepareToSave ? ' 60px' : ''}`,
+      }
+    },
 
     sortedSource() {
       let orderDESC = this.sortMode.order === 'DESC';
@@ -130,10 +166,29 @@ export default {
     },
   },
     methods: {
-
       onRowClick(v) {
-        console.log(v);
-      }
+        // console.log(v);
+      },
+
+      onSelectProcesses() {
+        this.prepareToSave = true;
+      },
+      onCancel() {
+        this.prepareToSave = false;
+      },
+      onSave() {
+        this.prepareToSave = false;
+      },
+      onSelectAll() {
+        this.source.forEach((v)=>{
+          this.checkedList[v.id] = true;
+        });
+      },
+      onUnselectAll() {
+        this.source.forEach((v)=>{
+          this.checkedList[v.id] = false;
+        });
+      },
     },
     mounted() {
     },
@@ -146,7 +201,47 @@ export default {
   .trans-table {
     user-select: none;
     font-size: 12px;
+
+    .btn-menu {
+      width: 30px;
+      height: 30px;
+      border-radius: 15px;
+      color: hsl(50, 30%, 75%);
+      border: 2px solid hsl(50, 30%, 65%);
+      margin: 1px;
+      font-size: 18px;
+      align-items: center;
+      justify-content: center;
+
+
+      &:hover {
+        color: white;
+        background-color: hsl(50, 30%, 75%);
+      }
+    }
+  }
+  .process-list-control {
+    width: auto;
+    display: flex;
+    flex-flow: row;
+    justify-content: center;
+    gap: 10px;
+    //padding-right: 5px;
+    margin: 10px;
+
   }
 
+  .btn-group-actions {
+    height: auto;
+    width: auto;
+    color: black;
+    border: 1px solid hsl(50, 30%, 75%);
+    margin: 5px;
+
+    &:hover {
+      color: black;
+      background-color: hsl(52, 29%, 90%);
+    }
+  }
 }
 </style>

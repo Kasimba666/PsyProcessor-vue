@@ -72,7 +72,7 @@ export default {
             default() {
                 return null;
             },
-            description: 'Определет ширину столбцов в гриде для разных сайзов',
+            description: 'Определяет ширину столбцов в гриде для разных сайзов',
             syntax: {
                 xxl: '1fr 2fr 100px 30% 2fr',
                 xl: '1fr 2fr 100px 30% 2fr',
