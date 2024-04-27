@@ -61,14 +61,31 @@
                             prop=""
                             align="center"
                     >
-                        <template #default="{row, rowIdx }">
-                            <div class="btn btn-outline-primary btn-menu btn-sm">
-<!--                                <i class="ico ico-menu"></i>-->
+                        <template #default="{row, rowIdx}">
+                            <div
+                              class="btn btn-outline-primary btn-menu btn-sm"
+                              @click="onToggleMenu">
+                                <i class="ico ico-menu"></i>
+                              <div class="menu-context" v-if="isMenuOpen && rowIdx === currentRow">
+                                <ul class="list-group">
+                                  <li class="list-group-item">
+                                    <a href="#">Начать</a>
+                                  </li>
+                                  <li class="list-group-item">
+                                    <a href="#">Изменить</a>
+                                  </li>
+                                  <li class="list-group-item">
+                                    <a href="#">Удалить</a>
+                                  </li>
+                                  <li class="list-group-item">
+                                    <a href="#"
+                                       @click.stop="onToggleMenu">Закрыть</a>
+                                  </li>
+                                </ul>
+                              </div>
                             </div>
                         </template>
-
                     </TtColumn>
-
                 </AppTransTable>
 
         </div>
@@ -110,8 +127,12 @@
             Сохранить выбранные
           </button>
         </div>
+
       </b-row>
     </b-container>
+
+
+
 
   </div>
 </template>
@@ -138,6 +159,9 @@ export default {
       sortMode: {...defaultSortOrder},
       prepareToSave: false,
       checkedList: {},
+      currentRow: null,
+      isMenuOpen: false,
+
     }
   },
 
@@ -167,7 +191,11 @@ export default {
   },
     methods: {
       onRowClick(v) {
-        // console.log(v);
+        this.currentRow = v.rowIdx;
+      },
+      onToggleMenu() {
+        this.isMenuOpen = !this.isMenuOpen;
+        console.log(this.isMenuOpen ? 'Открыть меню' : 'Закрыть меню');
       },
 
       onSelectProcesses() {
@@ -198,11 +226,14 @@ export default {
 
 <style lang="scss">
 .ppProcessList {
+  position: relative;
+
   .trans-table {
     user-select: none;
     font-size: 12px;
 
     .btn-menu {
+      position: relative;
       width: 30px;
       height: 30px;
       border-radius: 15px;
@@ -212,13 +243,39 @@ export default {
       font-size: 18px;
       align-items: center;
       justify-content: center;
-
-
       &:hover {
         color: white;
         background-color: hsl(50, 30%, 75%);
       }
     }
+    .menu-context {
+      position: absolute;
+      top: -40px;
+      right: 35px;
+      width: 100px;
+      display: inline-block;
+      background-color: hsl(0, 0%, 95%);
+      padding: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      z-index: 1;
+
+      .list-group {
+        font-size: 14px;
+        list-style: none;
+        .list-group-item {
+          height: 30px;
+          padding: 2px;
+          a {
+            color: black;
+            text-decoration: none;
+            &:hover {
+              background-color: hsl(0, 0%, 87%);
+            }
+          }
+        }
+      }
+    }
+
   }
   .process-list-control {
     width: auto;
@@ -228,7 +285,6 @@ export default {
     gap: 10px;
     //padding-right: 5px;
     margin: 10px;
-
   }
 
   .btn-group-actions {
@@ -237,11 +293,11 @@ export default {
     color: black;
     border: 1px solid hsl(50, 30%, 75%);
     margin: 5px;
-
     &:hover {
       color: black;
       background-color: hsl(52, 29%, 90%);
     }
   }
+
 }
 </style>
