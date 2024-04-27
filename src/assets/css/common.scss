@@ -13,7 +13,7 @@
     position: relative;
 }
 
-input, textarea {
+input:not([type='checkbox']), textarea {
     padding: 5px 10px;
     font-size: 13px;
     &::placeholder {

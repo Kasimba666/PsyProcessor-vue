@@ -21,11 +21,12 @@
                             prop=""
                     >
                         <template  #default="{ row }">
-                          <b-form-checkbox
-                              v-model="checkedList[row.id]"
-                              class="h-75"
-                          >
-                          </b-form-checkbox>
+                            <div class="d-flex align-content-center">
+                                <input
+                                        type="checkbox"
+                                        v-model="checkedList[row.id]"
+                                />
+                            </div>
                         </template>
                     </TtColumn>
 
@@ -63,8 +64,8 @@
                     >
                         <template #default="{row, rowIdx}">
                             <div
-                              class="btn btn-outline-primary btn-menu btn-sm"
-                              @click="onToggleMenu">
+                              class="d-flex align-items-center"
+                                @click="onToggleMenu">
                                 <i class="ico ico-menu"></i>
                               <div class="menu-context" v-if="isMenuOpen && rowIdx === currentRow">
                                 <ul class="list-group">
