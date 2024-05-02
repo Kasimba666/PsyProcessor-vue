@@ -30,6 +30,7 @@ export default createStore({
         currentEditableProcess: null,
         currentEditableProcessIdx: -1,
         currentEditableProcessID: null,
+        isNewProcess: false,
         answer: '',
         sessionList: [],
         currentSessionID: null,
@@ -51,8 +52,9 @@ export default createStore({
         processListSortMode(state, v) {
             state.processListSortMode = v;
         },
-
-
+        isNewProcess(state, v) {
+            state.isNewProcess = v;
+        },
         addProcessesInList(state, arr) {
             if (!!arr) arr.forEach((v) => state.processList.unshift(v));
         },

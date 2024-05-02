@@ -210,6 +210,7 @@ export default {
         this.prepareToSave = false;
       },
       onSave() {
+        this.$emit('doAction', 'save', this.selectedIDs, null);
         this.prepareToSave = false;
       },
       onSelectAll() {

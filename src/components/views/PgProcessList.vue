@@ -32,7 +32,7 @@ const generateID = () => {
 };
 
 const newProcess = {
-  id: generateID(),
+  id: null,
       header: {
     processTitle: "Новый процесс",
         version: "0.0.1",
@@ -192,14 +192,18 @@ export default {
       console.log('action', action, IDs);
       switch (action) {
         case 'create': {
-          this.$store.commit('currentEditableProcessID', null);
-          this.$store.commit('currentEditableProcess', newProcess);
+          this.$store.commit('isNewProcess', true);
+          let process = newProcess;
+          process.id = generateID();
+          this.$store.commit('currentEditableProcess', process);
+          this.$store.commit('currentEditableProcessID', this.currentEditableProcess.id);
           this.$router.push({name: 'PgConstructor'});
         }
           return;
         case 'change': {
           if (IDs.length > 0) {
             let forEdit = JSON.parse(JSON.stringify(this.processesByID[IDs[0]]));
+            this.$store.commit('isNewProcess', false);
             this.$store.commit('currentEditableProcess', forEdit);
             this.$store.commit('currentEditableProcessID', IDs[0]);
             this.$router.push({name: 'PgConstructor'});
@@ -252,8 +256,8 @@ export default {
 
         case 'save': {
           let arr = [];
-          idxs.forEach((v) => {
-            arr.push(this.processList[v]);
+          IDs.forEach((v) => {
+            arr.push(this.processesByID[v]);
           });
           this.saveJSONFile(arr, arr[0].header.processTitle + ' ' + this.dtIsoFileName(arr[0].header.changedDt));
         }
@@ -282,6 +286,8 @@ export default {
 
       URL.revokeObjectURL(url); // Очищаем URL после скачивания
     },
+
+
     //функция возвращает Promise
     loadJSON(file) {
       let reader = new FileReader();

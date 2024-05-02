@@ -3,13 +3,10 @@
     <div class="container">
       <div class="row">
         <div class="col-12">
-          Current: {{ !!currentEditableProcessID ? currentEditableProcessID : 'нет'}}<br>
-          {{ !!currentEditableProcess.id ? currentEditableProcess.id : 'нет' }}
-          {{ !!currentEditableProcess.header.processTitle ? currentEditableProcess.header.processTitle : 'нет' }}
           <PpConstructor
               v-model:process="currentEditableProcess"
               @changed="processChanged"
-              :key="currentEditableProcessID"
+              :key="currentEditableProcess.id"
           />
         </div>
         <div class="files-control">
@@ -36,48 +33,48 @@ export default {
   props: [],
   data() {
     return {
-      process: {
-        id: generateID(),
-        header: {
-          processTitle: "Новый процесс",
-          version: "0.0.1",
-          processCategory: ["common"],
-          createdDt: (new Date()).toISOString(),
-          changedDt: (new Date()).toISOString(),
-          description: 'Описание',
-          toSave: false,
-          toAdd: false,
-        },
-        type: 'process',
-        vars: [
-          {name: '$topic', value: '',},
-          {name: '$last', value: '',},
-        ],
-        rootNode: {
-          type: 'loopList',
-          attrs: {
-            nodeName: {
-              inpType: 'text',
-              inpLabel: 'Название узла (optional)',
-              value: 'root',
-            },
-            loopCount: {
-              inpType: 'number',
-              inpLabel: 'Количество циклов',
-              value: 0, // ноль означает бесконечный цикл
-            },
-          },
-          list: [],
-          forKey: 'root',
-        }
-      },
+      // process: {
+      //   id: generateID(),
+      //   header: {
+      //     processTitle: "Новый процесс",
+      //     version: "0.0.1",
+      //     processCategory: ["common"],
+      //     createdDt: (new Date()).toISOString(),
+      //     changedDt: (new Date()).toISOString(),
+      //     description: 'Описание',
+      //     toSave: false,
+      //     toAdd: false,
+      //   },
+      //   type: 'process',
+      //   vars: [
+      //     {name: '$topic', value: '',},
+      //     {name: '$last', value: '',},
+      //   ],
+      //   rootNode: {
+      //     type: 'loopList',
+      //     attrs: {
+      //       nodeName: {
+      //         inpType: 'text',
+      //         inpLabel: 'Название узла (optional)',
+      //         value: 'root',
+      //       },
+      //       loopCount: {
+      //         inpType: 'number',
+      //         inpLabel: 'Количество циклов',
+      //         value: 0, // ноль означает бесконечный цикл
+      //       },
+      //     },
+      //     list: [],
+      //     forKey: 'root',
+      //   }
+      // },
       debounceTime: 800,
       debounceHandle: null,
     }
   },
 
   computed: {
-    ...mapState(['currentEditableProcess', 'currentEditableProcessID']),
+    ...mapState(['currentEditableProcess', 'currentEditableProcessID', 'isNewProcess']),
   },
   methods: {
     processChanged() {
@@ -89,13 +86,12 @@ export default {
     },
     onSaveInList() {
       let forSave = JSON.parse(JSON.stringify(this.currentEditableProcess));
-      if (!!this.currentEditableProcessID) {
+      if (!this.isNewProcess) {
         this.$store.commit('changeProcessInListByID', {id: this.currentEditableProcessID, process: forSave});
       } else {
         this.$store.commit('addProcessesInList', [forSave]);
-        console.log('добавить новый процесс', 'currentEditableProcessID:', this.currentEditableProcessID, 'forSave.id: ', forSave.id);
-        //сделать процесс текущим
-        this.$store.commit('currentEditableProcessID', forSave.id);
+        //убрать флаг нового процесса
+        this.$store.commit('isNewProcess', false);
       };
 
       this.$router.push({name: 'PgProcessList'});
