@@ -15,20 +15,6 @@
                         @rowClick="onRowClick"
                         :key="prepareToSave"
                 >
-                    <TtColumn
-                            v-if="prepareToSave"
-                            label=""
-                            prop=""
-                    >
-                        <template  #default="{ row }">
-                            <div class="d-flex align-content-center">
-                                <input
-                                        type="checkbox"
-                                        v-model="checkedList[row.id]"
-                                />
-                            </div>
-                        </template>
-                    </TtColumn>
 
                     <TtColumn
                             label="Наименование"
@@ -38,8 +24,8 @@
 
                     </TtColumn>
                     <TtColumn
-                            label="Категория"
-                            prop="processCategory"
+                            label="ID"
+                            prop="id"
                     >
                     </TtColumn>
                     <TtColumn
@@ -57,50 +43,66 @@
                     >
                     </TtColumn>
                     <TtColumn
-                            v-if="!prepareToSave"
-                            label=""
-                            prop=""
-                            align="center"
+                      label=""
+                      prop=""
+                  >
+                    <template
+                        v-if="prepareToSave"
+                        #default="{ row }"
                     >
-                        <template #default="{row, rowIdx}">
-                            <div
-                              class="d-flex align-items-center"
-                                @click="onToggleMenu">
-                                <i class="ico ico-menu"></i>
-                              <div class="menu-context" v-if="isMenuOpen && rowIdx === currentRow">
-                                <ul class="list-group">
-                                  <li class="list-group-item">
-                                    <a href="#">Начать</a>
-                                  </li>
-                                  <li class="list-group-item">
-                                    <a href="#">Изменить</a>
-                                  </li>
-                                  <li class="list-group-item">
-                                    <a href="#">Удалить</a>
-                                  </li>
-                                  <li class="list-group-item">
-                                    <a href="#"
-                                       @click.stop="onToggleMenu">Закрыть</a>
-                                  </li>
-                                </ul>
-                              </div>
-                            </div>
-                        </template>
-                    </TtColumn>
+                      <div class="d-flex align-content-center p-10">
+                        <input
+                            type="checkbox"
+                            v-model="checkedList[row.id]"
+                        />
+                      </div>
+                    </template>
+                    <template
+                        v-else
+                        #default="{row, rowIdx}"
+                    >
+                      <div
+                          class="btn-menu d-flex align-items-center"
+                          @click="onToggleMenu">
+                        <i class="ico ico-menu" style="font-size: 20px"></i>
+                        <div
+                            class="menu-container"
+                            v-if="isMenuOpen && rowIdx === currentRow"
+                        >
+                          <div class="menu-item d-flex align-items-center" @click.stop="onStartProcess(row.id)">Начать</div>
+                          <div class="menu-item d-flex align-items-center" @click.stop="onChangeProcess(row.id)">Изменить</div>
+                          <div class="menu-item d-flex align-items-center" @click.stop="onDuplicateProcess(row.id)">Дублировать</div>
+                          <div class="menu-item d-flex align-items-center" @click.stop="onRemoveProcess(row.id)">Удалить</div>
+                          <div class="menu-item d-flex align-items-center" @click.stop="onCloseMenu">Отмена</div>
+                        </div>
+
+                      </div>
+                    </template>
+
+                  </TtColumn>
+
                 </AppTransTable>
 
         </div>
         <div class="process-list-control">
           <button
               v-if="!prepareToSave"
-              class="btn btn-outline-primary btn-group-actions btn-sm"
+              class="btn btn-outline-primary btn-actions btn-sm"
+              @click="onCreateProcess"
+          >
+            Создать
+          </button>
+
+          <button
+              v-if="!prepareToSave"
+              class="btn btn-outline-primary btn-actions btn-sm"
               @click="onSelectProcesses"
           >
             Выбрать процессы для сохранения
           </button>
           <button
               v-if="prepareToSave"
-              class="btn btn-outline-primary btn-group-actions btn-sm"
+              class="btn btn-outline-primary btn-actions btn-sm"
               @click="onCancel"
           >
             Отмена
@@ -108,21 +110,21 @@
           <button
               v-if="prepareToSave"
               :disabled="selectedIDs.length===sortedSource.length"
-              class="btn btn-outline-primary btn-group-actions btn-sm"
+              class="btn btn-outline-primary btn-actions btn-sm"
               @click="onSelectAll">
             Выбрать все
           </button>
           <button
               v-if="prepareToSave"
               :disabled="selectedIDs.length===0"
-              class="btn btn-outline-primary btn-group-actions btn-sm"
+              class="btn btn-outline-primary btn-actions btn-sm"
               @click="onUnselectAll">
             Развыбрать все
           </button>
           <button
               v-if="prepareToSave"
               :disabled="selectedIDs.length===0"
-              class="btn btn-outline-primary btn-group-actions btn-sm"
+              class="btn btn-outline-primary btn-actions btn-sm"
               @click="onSave"
           >
             Сохранить выбранные
@@ -172,10 +174,10 @@ export default {
     },
     gridMode() {
       return {
-        xxl: `${this.prepareToSave ? '60px ' : ''}4fr 1fr 2fr 2fr${!this.prepareToSave ? ' 60px' : ''}`,
-        xl: `${this.prepareToSave ? '60px ' : ''}4fr 1fr 2fr 2fr${!this.prepareToSave ? ' 60px' : ''}`,
-        lg: `${this.prepareToSave ? '60px ' : ''}4fr 1fr 2fr 2fr${!this.prepareToSave ? ' 60px' : ''}`,
-        md: `${this.prepareToSave ? '60px ' : ''}4fr 1fr 2fr 2fr${!this.prepareToSave ? ' 60px' : ''}`,
+        xxl: '2fr 3fr 2fr 2fr 40px',
+        xl: '2fr 3fr 2fr 2fr 40px',
+        lg: '2fr 3fr 2fr 2fr 40px',
+        md: '2fr 3fr 2fr 2fr 40px',
       }
     },
 
@@ -196,7 +198,9 @@ export default {
       },
       onToggleMenu() {
         this.isMenuOpen = !this.isMenuOpen;
-        console.log(this.isMenuOpen ? 'Открыть меню' : 'Закрыть меню');
+      },
+      onCloseMenu() {
+        this.isMenuOpen = false;
       },
 
       onSelectProcesses() {
@@ -218,6 +222,26 @@ export default {
           this.checkedList[v.id] = false;
         });
       },
+      onCreateProcess() {
+        this.$emit('doAction', 'create', [], null);
+        this.isMenuOpen = false;
+      },
+      onChangeProcess(v) {
+        this.$emit('doAction', 'change', [v], null);
+        this.isMenuOpen = false;
+      },
+      onDuplicateProcess(v) {
+        this.$emit('doAction', 'duplicate', [v], null);
+        this.isMenuOpen = false;
+      },
+      onRemoveProcess(v) {
+        this.$emit('doAction', 'remove', [v], null);
+        this.isMenuOpen = false;
+      },
+
+      onStartProcess(v) {
+        this.$emit('doAction', 'start', [v], null);
+      },
     },
     mounted() {
     },
@@ -235,60 +259,57 @@ export default {
 
     .btn-menu {
       position: relative;
-      width: 30px;
-      height: 30px;
-      border-radius: 15px;
-      color: hsl(50, 30%, 75%);
-      border: 2px solid hsl(50, 30%, 65%);
-      margin: 1px;
-      font-size: 18px;
-      align-items: center;
-      justify-content: center;
+      padding: 6px;
       &:hover {
         color: white;
         background-color: hsl(50, 30%, 75%);
       }
-    }
-    .menu-context {
-      position: absolute;
-      top: -40px;
-      right: 35px;
-      width: 100px;
-      display: inline-block;
-      background-color: hsl(0, 0%, 95%);
-      padding: 10px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      z-index: 1;
 
-      .list-group {
-        font-size: 14px;
-        list-style: none;
-        .list-group-item {
+      .menu-container {
+        position: absolute;
+        top: -44px;
+        right: 15px;
+        width: auto;
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+        align-items: start;
+        //border-radius: 5px 0px 5px 5px;
+        border: 1px solid hsl(50, 30%, 65%);
+        box-shadow: 2px 1px 12px 0px hsla(0, 0%, 50%, 0.7);
+        background-color: white;
+        z-index: 10;
+
+        .menu-item {
+          width: 100%;
           height: 30px;
-          padding: 2px;
-          a {
-            color: black;
-            text-decoration: none;
-            &:hover {
-              background-color: hsl(0, 0%, 87%);
-            }
+          padding-left: 20px;
+          padding-right: 20px;
+          cursor: pointer;
+          color: black;
+          border-bottom: 1px solid hsl(50, 30%, 65%);
+          font-size: 12px;
+          &:last-child {
+            border-bottom: none;
+          }
+          &:hover {
+            background-color: hsl(50, 30%, 75%);
           }
         }
       }
     }
-
   }
+
   .process-list-control {
     width: auto;
     display: flex;
     flex-flow: row;
     justify-content: center;
     gap: 10px;
-    //padding-right: 5px;
     margin: 10px;
   }
 
-  .btn-group-actions {
+  .btn-actions {
     height: auto;
     width: auto;
     color: black;

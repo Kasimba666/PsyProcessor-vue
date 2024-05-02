@@ -6,7 +6,7 @@
           <ppProcessListByIdx
               :rows="rows"
               :fields="fields"
-              @doAction="onDoActionByIdx"
+              @doActionByIdx="onDoActionByIdx"
           ></ppProcessListByIdx>
             <ppProcessList
                 :source="rows"
@@ -23,10 +23,49 @@
 <script>
 import ppProcessListByIdx from "@/components/PpProcesses/ppProcessListByIdx.vue";
 import ppProcessList from "@/components/PpProcesses/ppProcessList.vue";
-import {mapState} from "vuex";
-import {v4 as createUuid} from "uuid";
+import {mapGetters, mapState} from "vuex";
+import {v4, v4 as createUuid} from "uuid";
 import {useDtFilters} from "@/composables/useDtFilters.js";
 
+const generateID = () => {
+  return v4();
+};
+
+const newProcess = {
+  id: generateID(),
+      header: {
+    processTitle: "Новый процесс",
+        version: "0.0.1",
+        processCategory: ["common"],
+        createdDt: (new Date()).toISOString(),
+        changedDt: (new Date()).toISOString(),
+        description: 'Описание',
+        toSave: false,
+        toAdd: false,
+  },
+  type: 'process',
+      vars: [
+    {name: '$topic', value: '',},
+    {name: '$last', value: '',},
+  ],
+      rootNode: {
+    type: 'loopList',
+        attrs: {
+      nodeName: {
+        inpType: 'text',
+            inpLabel: 'Название узла (optional)',
+            value: 'root',
+      },
+      loopCount: {
+        inpType: 'number',
+            inpLabel: 'Количество циклов',
+            value: 0, // ноль означает бесконечный цикл
+      },
+    },
+    list: [],
+        forKey: 'root',
+  }
+};
 
 export default {
   name: "ProcessList",
@@ -53,7 +92,9 @@ export default {
         };
     },
     computed: {
-    ...mapState(['processList']),
+    ...mapState(['processList', 'currentEditableProcess', 'currentEditableProcessID', 'currentEditableProcessIdx']),
+    ...mapGetters(['processesByID']),
+
     rows() {
       if (this.processList === null || this.processList.length === 0) return [];
       return this.processList.map(v => {
@@ -87,6 +128,7 @@ export default {
         }
           return;
         case 'duplicate': {
+          // console.log(idxs);
           let forSave = [];
           for (let i = 0; i < idxs.length; i++) {
             forSave.push(JSON.parse(JSON.stringify(this.processList[idxs[i]])));
@@ -146,7 +188,86 @@ export default {
         }
       }
     },
-    onDoAction() {
+    onDoAction(action, IDs, file) {
+      console.log('action', action, IDs);
+      switch (action) {
+        case 'create': {
+          this.$store.commit('currentEditableProcessID', null);
+          this.$store.commit('currentEditableProcess', newProcess);
+          this.$router.push({name: 'PgConstructor'});
+        }
+          return;
+        case 'change': {
+          if (IDs.length > 0) {
+            let forEdit = JSON.parse(JSON.stringify(this.processesByID[IDs[0]]));
+            this.$store.commit('currentEditableProcess', forEdit);
+            this.$store.commit('currentEditableProcessID', IDs[0]);
+            this.$router.push({name: 'PgConstructor'});
+          }
+        }
+          return;
+        case 'duplicate': {
+          let forSave = [];
+          for (let i = 0; i < IDs.length; i++) {
+            forSave.push(JSON.parse(JSON.stringify(this.processesByID[IDs[i]])));
+          }
+          forSave.forEach(v => {
+            v.id = createUuid();
+            v.header.processTitle += ' - дубликат';
+          }); // обновляем IDs
+          this.$store.commit('addProcessesInList', forSave);
+        }
+          return;
+        case 'remove': {
+          if (IDs.length > 0) {
+            IDs.forEach(v => {
+              if (confirm(`Удалить процесс ${v} ?`)) this.$store.commit('removeProcessInListByID', v);
+            });
+          }
+        }
+          return;
+
+        case 'load': {
+          let reader = new FileReader();
+          const promise = new Promise((resolve, reject) => {
+            reader.onload = () => {
+              try {
+                let content = JSON.parse(reader.result);
+                this.file = {content: content, name: file.name};
+                resolve({content: content, name: file.name});
+
+              } catch (e) {
+                reject(e);
+              }
+            };
+          });
+          reader.readAsText(file);
+          promise.then((data) => {
+            this.$store.commit('addProcessesInList', data.content);
+          }).catch(e => {
+            console.log('onload error:', e);
+          });
+        }
+          return;
+
+        case 'save': {
+          let arr = [];
+          idxs.forEach((v) => {
+            arr.push(this.processList[v]);
+          });
+          this.saveJSONFile(arr, arr[0].header.processTitle + ' ' + this.dtIsoFileName(arr[0].header.changedDt));
+        }
+          return;
+
+        case 'start': {
+          this.$store.dispatch('createNewSession', this.processList[idxs[0]]);
+          this.$router.push({name: 'PgSession'});
+        }
+          return;
+        default: {
+        }
+      }
+
     },
 
     saveJSONFile: function (object, filename) {

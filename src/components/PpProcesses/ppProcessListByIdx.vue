@@ -123,26 +123,26 @@ export default {
     },
 
     createProcess() {
-      this.$emit('doAction', 'create', [], null);
+      this.$emit('doActionByIdx', 'create', [], null);
     },
     changeProcess(v) {
-      this.$emit('doAction', 'change', [v], null);
+      this.$emit('doActionByIdx', 'change', [v], null);
     },
     duplicateProcess() {
-      this.$emit('doAction', 'duplicate', this.selectedIdxs, null);
+      this.$emit('doActionByIdx', 'duplicate', this.selectedIdxs, null);
     },
     removeProcess() {
-      if (this.selectedIdxs.length > 0) this.$emit('doAction', 'remove', this.selectedIdxs, null);
+      if (this.selectedIdxs.length > 0) this.$emit('doActionByIdx', 'remove', this.selectedIdxs, null);
     },
     loadProcesses(e) {
       let file = e.target.files[0];
-      this.$emit('doAction', 'load', null, file);
+      this.$emit('doActionByIdx', 'load', null, file);
     },
     saveProcesses() {
-      if (this.selectedIdxs.length > 0) this.$emit('doAction', 'save', this.selectedIdxs, null);
+      if (this.selectedIdxs.length > 0) this.$emit('doActionByIdx', 'save', this.selectedIdxs, null);
     },
     startProcess(v) {
-      this.$emit('doAction', 'start', [v], null);
+      this.$emit('doActionByIdx', 'start', [v], null);
     },
 
     onRowClicked(v) {
