@@ -59,12 +59,31 @@ export default createStore({
         changeProcessInListByIdx(state, v) {
             state.processList[v.idx] = v.process;
         },
+        changeProcessInListByID(state, v) {
+            //найти индекс по ID и заменить по индексу
+            for (let i=0; i<state.processList.length; i++)
+                if (state.processList[i].id === v.id) {
+                    state.processList[i] = v.process;
+                    return
+                }
+        },
+        removeProcessInListByID(state, v) {
+            //найти индекс по ID и удалить по индексу
+            for (let i=0; i<state.processList.length; i++)
+                if (state.processList[i].id === v) {
+                    state.processList.splice(i, 1);
+                    return
+                }
+        },
 
         currentEditableProcess(state, v) {
             state.currentEditableProcess = v;
         },
         currentEditableProcessIdx(state, v) {
             state.currentEditableProcessIdx = v;
+        },
+        currentEditableProcessID(state, v) {
+            state.currentEditableProcessID = v;
         },
 
         currentSessionID(state, v) {
@@ -191,15 +210,18 @@ export default createStore({
         },
     },
     getters: {
+        //формирует объект, у которого в качестве ключей используются идентификаторы сессий, а в качестве значений - объекты сессий
         sessionsByID(state) {
             return state.sessionList.reduce((s, v) => {
                 s[v.id] = v;
                 return s;
             }, {});
         },
+        //формирует объект, у которого в качестве ключей используются идентификаторы процессов, а в качестве значений - объекты процессов
         processesByID(state) {
             return state.processList.reduce((s, v) => {
                 s[v.id] = v;
+                return s;
             }, {});
         },
         markerSessions(state){
@@ -212,6 +234,7 @@ export default createStore({
             'processListSortMode',
             'currentEditableProcess',
             'currentEditableProcessIdx',
+            'currentEditableProcessID',
             'currentSessionID',
             'processList',
             'sessionList',

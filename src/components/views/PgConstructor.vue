@@ -1,9 +1,16 @@
--++++++++++++++++++++++++++++++++++++<template>
+<template>
   <div class="Constructor">
     <div class="container">
       <div class="row">
         <div class="col-12">
-            <PpConstructor v-model:process="process" @changed="processChanged"/>
+          Current: {{ !!currentEditableProcessID ? currentEditableProcessID : 'нет'}}<br>
+          {{ !!currentEditableProcess.id ? currentEditableProcess.id : 'нет' }}
+          {{ !!currentEditableProcess.header.processTitle ? currentEditableProcess.header.processTitle : 'нет' }}
+          <PpConstructor
+              v-model:process="currentEditableProcess"
+              @changed="processChanged"
+              :key="currentEditableProcessID"
+          />
         </div>
         <div class="files-control">
           <button class="btn btn-outline-primary btn-next btn-sm"
@@ -19,7 +26,6 @@
 <script>
 import PpConstructor from "@/components/PpConstructor/PpConstructor.vue";
 import {mapState} from "vuex";
-import {reactive, shallowRef} from "vue";
 import {v4} from "uuid";
 let generateID = () => {
     return v4();
@@ -30,8 +36,7 @@ export default {
   props: [],
   data() {
     return {
-      isNew: Boolean,
-      process: reactive({
+      process: {
         id: generateID(),
         header: {
           processTitle: "Новый процесс",
@@ -42,7 +47,6 @@ export default {
           description: 'Описание',
           toSave: false,
           toAdd: false,
-
         },
         type: 'process',
         vars: [
@@ -66,45 +70,44 @@ export default {
           list: [],
           forKey: 'root',
         }
-      }),
+      },
       debounceTime: 800,
       debounceHandle: null,
-      // current: 'PpConstructor',
-      current: reactive(PpConstructor),
     }
   },
 
   computed: {
-    ...mapState(['currentEditableProcess', 'currentEditableProcessIdx']),
+    ...mapState(['currentEditableProcess', 'currentEditableProcessID']),
   },
   methods: {
     processChanged() {
-      this.process.header.changedDt = (new Date()).toISOString();
+      this.currentEditableProcess.header.changedDt = (new Date()).toISOString();
       clearTimeout(this.debounceHandle);
       this.debounceHandle = setTimeout(() => {
-        this.$store.commit('currentEditableProcess', this.process);
+        this.$store.commit('currentEditableProcess', this.currentEditableProcess);
       }, this.debounceTime);
     },
     onSaveInList() {
-      let forSave = JSON.parse(JSON.stringify(this.process));
-      if (this.currentEditableProcessIdx !== -1) {
-        //изменить в списке по индексу
-        this.$store.commit('changeProcessInListByIdx', {idx: this.currentEditableProcessIdx, process: forSave});
+      let forSave = JSON.parse(JSON.stringify(this.currentEditableProcess));
+      if (!!this.currentEditableProcessID) {
+        this.$store.commit('changeProcessInListByID', {id: this.currentEditableProcessID, process: forSave});
       } else {
-        //добавить в список
         this.$store.commit('addProcessesInList', [forSave]);
-      }
+        console.log('добавить новый процесс', 'currentEditableProcessID:', this.currentEditableProcessID, 'forSave.id: ', forSave.id);
+        //сделать процесс текущим
+        this.$store.commit('currentEditableProcessID', forSave.id);
+      };
+
       this.$router.push({name: 'PgProcessList'});
     },
   },
   mounted() {
-    if (this.currentEditableProcessIdx !== -1) {
-      if (!!this.currentEditableProcess) {
-        this.process = this.currentEditableProcess;
-      }
-    }
-    // if (!!this.currentEditableProcess) {
-    //   this.process = this.currentEditableProcess;
+
+  },
+  watch: {
+    // currentEditableProcessID: {handler(v, old) {
+    //   if (v !== null && v !== old) this.currentEditableProcess = this.currentEditableProcess;
+    // },
     // }
   },
 }
@@ -114,7 +117,7 @@ export default {
 .Constructor {
   width: 100%;
   height: auto;
-  min-height: 100 dvh;
+  min-height: 100dvh;
 
   .files-control {
     width: auto;
