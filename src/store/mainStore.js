@@ -33,6 +33,7 @@ export default createStore({
         isNewProcess: false,
         answer: '',
         sessionList: [],
+        newSessionID: null,
         currentSessionID: null,
         token: null,
         user: null, //curLang: 'en',
@@ -90,6 +91,9 @@ export default createStore({
 
         currentSessionID(state, v) {
             state.currentSessionID = v;
+        },
+        newSessionID(state, v) {
+            state.newSessionID = v;
         },
         sessionList(state, v) {
             state.sessionList = v;
@@ -209,6 +213,7 @@ export default createStore({
                 history: []
             };
             commit('addSessionInList', newSession);
+            commit('newSessionID', newSession.id);
         },
     },
     getters: {

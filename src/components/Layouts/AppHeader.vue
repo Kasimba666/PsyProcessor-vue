@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import {mapGetters, mapState} from "vuex";
+import {mapGetters, mapMutations, mapState} from "vuex";
 import {useDtFilters} from "@/composables/useDtFilters.js";
 
 const markerWidth = 96;
@@ -67,6 +67,7 @@ export default {
   computed: {
     ...mapState(['currentSessionID', 'sessionList', 'screen', 'screenBreakpoints']),
     ...mapGetters(['markerSessions']),
+    ...mapMutations(['changeSessionStatusByID']),
     markersStacked() {
       return this.screen.width < this.markerSessions.length * (markerWidth + markerGap) + markerGap;
     },
@@ -109,10 +110,10 @@ export default {
         this.$router.push({name: 'PgSession', params: {id: v.id}});
         this.$store.commit('currentSessionID', v.id);
         //запустить текущую сессию
-        // this.$store.commit('changeSessionStatusByID', {
-        //   id: this.currentSessionID,
-        //   status: 'inProgress'
-        // });
+        this.$store.commit('changeSessionStatusByID', {
+          id: this.currentSessionID,
+          status: 'inProgress'
+        });
       } else {
 
       }

@@ -13,6 +13,7 @@
             <tt-card v-for="(row, idx) of data" :key="idx"
                      :row="row"
                      :titleWidth="cardMode.titleWidth"
+                     @click.native="$emit('rowClick', {row, rowIdx: idx})"
             >
                 <slot name="default"></slot>
             </tt-card>

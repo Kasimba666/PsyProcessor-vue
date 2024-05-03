@@ -23,7 +23,7 @@
 <script>
 import ppProcessListByIdx from "@/components/PpProcesses/ppProcessListByIdx.vue";
 import ppProcessList from "@/components/PpProcesses/ppProcessList.vue";
-import {mapGetters, mapState} from "vuex";
+import {mapGetters, mapMutations, mapState} from "vuex";
 import {v4, v4 as createUuid} from "uuid";
 import {useDtFilters} from "@/composables/useDtFilters.js";
 
@@ -92,8 +92,9 @@ export default {
         };
     },
     computed: {
-    ...mapState(['processList', 'currentEditableProcess', 'currentEditableProcessID', 'currentEditableProcessIdx']),
+    ...mapState(['processList', 'currentEditableProcess', 'currentEditableProcessID', 'currentEditableProcessIdx', 'newSessionID', 'currentSessionID']),
     ...mapGetters(['processesByID']),
+    ...mapMutations(['changeSessionStatusByID']),
 
     rows() {
       if (this.processList === null || this.processList.length === 0) return [];
@@ -264,8 +265,14 @@ export default {
           return;
 
         case 'start': {
-          this.$store.dispatch('createNewSession', this.processList[idxs[0]]);
-          this.$router.push({name: 'PgSession'});
+          this.$store.dispatch('createNewSession', this.processesByID[IDs[0]]);
+          //как-то надо найти ID свежесозданной сессии
+          this.$store.commit('currentSessionID', this.newSessionID);
+          this.$store.commit('changeSessionStatusByID', {
+            id: this.currentSessionID,
+            status: 'inProgress'
+          });
+          this.$router.push({name: 'PgSession', params: {id: this.currentSessionID}});
         }
           return;
         default: {

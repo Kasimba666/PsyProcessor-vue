@@ -61,7 +61,7 @@
 <!--      <pre>Переменные: {{ !!this.session ? this.session.varsByName : '' }}</pre>-->
     </div>
     <div
-        class="overlay"
+        class="menu-overlay"
         :class="{'opened': session.status !== 'inProgress'}">
 
     </div>
@@ -509,7 +509,7 @@ export default {
   }
 
 
-  .overlay {
+  .menu-overlay {
     position: fixed;
     right: 100%;
     top: var(--header-height);

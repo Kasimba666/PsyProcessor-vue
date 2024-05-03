@@ -4,84 +4,95 @@
       <b-row>
         <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
 
-                <AppTransTable
-                        class="trans-table"
-                        :data="sortedSource"
-                        :cardMode="{
+          <AppTransTable
+              class="trans-table"
+              :data="sortedSource"
+              :cardMode="{
                             breakpoint: 'sm',
                             titleWidth: 'calc(15% + 100px)', // ширина столбца заголовков
                           }"
-                        v-model:gridMode="gridMode"
-                        @rowClick="onRowClick"
-                        :key="prepareToSave"
+              v-model:gridMode="gridMode"
+              @rowClick="onRowClick"
+              :key="prepareToSave"
+          >
+
+            <TtColumn
+                label="Наименование"
+                prop="processTitle"
+                v-model:sortable="SortMode"
+            >
+
+            </TtColumn>
+            <TtColumn
+                label="ID"
+                prop="id"
+            >
+            </TtColumn>
+            <TtColumn
+                label="Дата создания"
+                prop="createdDt"
+                v-model:sortable="SortMode"
+                align="center"
+            >
+            </TtColumn>
+            <TtColumn
+                label="Дата изменения"
+                prop="changedDt"
+                v-model:sortable="SortMode"
+                align="center"
+            >
+            </TtColumn>
+            <TtColumn
+                label=""
+                prop=""
+            >
+              <template
+                  v-if="prepareToSave"
+                  #default="{ row }"
+              >
+                <div class="d-flex align-content-center p-10">
+                  <input
+                      type="checkbox"
+                      v-model="checkedList[row.id]"
+                  />
+                </div>
+              </template>
+              <template
+                  v-else
+                  #default="{row, rowIdx}"
+              >
+                <div
+                    class="btn-menu d-flex align-items-center"
+                    @click.stop="onToggleMenu(rowIdx)"
                 >
-
-                    <TtColumn
-                            label="Наименование"
-                            prop="processTitle"
-                            v-model:sortable="SortMode"
-                    >
-
-                    </TtColumn>
-                    <TtColumn
-                            label="ID"
-                            prop="id"
-                    >
-                    </TtColumn>
-                    <TtColumn
-                            label="Дата создания"
-                            prop="createdDt"
-                            v-model:sortable="SortMode"
-                            align="center"
-                    >
-                    </TtColumn>
-                    <TtColumn
-                            label="Дата изменения"
-                            prop="changedDt"
-                            v-model:sortable="SortMode"
-                            align="center"
-                    >
-                    </TtColumn>
-                    <TtColumn
-                      label=""
-                      prop=""
+                  <i class="ico ico-menu" style="font-size: 20px"></i>
+                  <div
+                      class="menu-container"
+                      v-if="openedMenu[rowIdx]"
+                      v-click-outside="hideMenu"
                   >
-                    <template
-                        v-if="prepareToSave"
-                        #default="{ row }"
-                    >
-                      <div class="d-flex align-content-center p-10">
-                        <input
-                            type="checkbox"
-                            v-model="checkedList[row.id]"
-                        />
-                      </div>
-                    </template>
-                    <template
-                        v-else
-                        #default="{row, rowIdx}"
-                    >
-                      <div
-                          class="btn-menu d-flex align-items-center"
-                          @click="onToggleMenu">
-                        <i class="ico ico-menu" style="font-size: 20px"></i>
-                        <div
-                            class="menu-container"
-                            v-if="isMenuOpen && rowIdx === currentRow"
-                        >
-                          <div class="menu-item d-flex align-items-center" @click.stop="onStartProcess(row.id)">Начать</div>
-                          <div class="menu-item d-flex align-items-center" @click.stop="onChangeProcess(row.id)">Изменить</div>
-                          <div class="menu-item d-flex align-items-center" @click.stop="onDuplicateProcess(row.id)">Дублировать</div>
-                          <div class="menu-item d-flex align-items-center" @click.stop="onRemoveProcess(row.id)">Удалить</div>
-                          <div class="menu-item d-flex align-items-center" @click.stop="onCloseMenu">Отмена</div>
-                        </div>
+<!--                      v-if="isMenuOpen && rowIdx === currentRow"-->
+<!--                      v-click-outside="hideMenu"-->
+                    <div class="menu-item d-flex align-items-center" @click.stop="onStartProcess(row.id)">Начать</div>
+                    <div class="menu-item d-flex align-items-center" @click.stop="onChangeProcess(row.id)">Изменить
+                    </div>
+                    <div class="menu-item d-flex align-items-center" @click.stop="onDuplicateProcess(row.id)">
+                      Дублировать
+                    </div>
+                    <div class="menu-item d-flex align-items-center" @click.stop="onRemoveProcess(row.id)">Удалить</div>
+<!--                    <div class="menu-item d-flex align-items-center" @click.stop="hideMenu">Закрыть</div>-->
+                  </div>
+                </div>
+<!--                <div class="menu-overlay"-->
+<!--                     @click="hideMenu"-->
+<!--                     v-if="openedMenu[rowIdx]"-->
+<!--                />-->
 
-                      </div>
-                    </template>
+              </template>
 
-                  </TtColumn>
+            </TtColumn>
 
-                </AppTransTable>
+          </AppTransTable>
 
         </div>
         <div class="process-list-control">
@@ -130,11 +141,9 @@
             Сохранить выбранные
           </button>
         </div>
-
       </b-row>
     </b-container>
-
-
+    {{ !!openedMenu ? openedMenu : 'пусто' }}
 
 
   </div>
@@ -163,14 +172,17 @@ export default {
       prepareToSave: false,
       checkedList: {},
       currentRow: null,
-      isMenuOpen: false,
+      // isMenuOpen: false,
+      openedMenu: {},
 
     }
   },
 
   computed: {
     selectedIDs() {
-      return Object.keys(this.checkedList).filter((v)=>{if (this.checkedList[v]===true) return v});
+      return Object.keys(this.checkedList).filter((v) => {
+        if (this.checkedList[v] === true) return v
+      });
     },
     gridMode() {
       return {
@@ -192,60 +204,63 @@ export default {
       });
     },
   },
-    methods: {
-      onRowClick(v) {
-        this.currentRow = v.rowIdx;
-      },
-      onToggleMenu() {
-        this.isMenuOpen = !this.isMenuOpen;
-      },
-      onCloseMenu() {
-        this.isMenuOpen = false;
-      },
-
-      onSelectProcesses() {
-        this.prepareToSave = true;
-      },
-      onCancel() {
-        this.prepareToSave = false;
-      },
-      onSave() {
-        this.$emit('doAction', 'save', this.selectedIDs, null);
-        this.prepareToSave = false;
-      },
-      onSelectAll() {
-        this.source.forEach((v)=>{
-          this.checkedList[v.id] = true;
-        });
-      },
-      onUnselectAll() {
-        this.source.forEach((v)=>{
-          this.checkedList[v.id] = false;
-        });
-      },
-      onCreateProcess() {
-        this.$emit('doAction', 'create', [], null);
-        this.isMenuOpen = false;
-      },
-      onChangeProcess(v) {
-        this.$emit('doAction', 'change', [v], null);
-        this.isMenuOpen = false;
-      },
-      onDuplicateProcess(v) {
-        this.$emit('doAction', 'duplicate', [v], null);
-        this.isMenuOpen = false;
-      },
-      onRemoveProcess(v) {
-        this.$emit('doAction', 'remove', [v], null);
-        this.isMenuOpen = false;
-      },
-
-      onStartProcess(v) {
-        this.$emit('doAction', 'start', [v], null);
-      },
+  methods: {
+    onRowClick(v) {
+      this.currentRow = v.rowIdx;
     },
-    mounted() {
+    onToggleMenu(v) {
+      if (this.openedMenu[v]) this.openedMenu = {};
+      this.openedMenu[v] = !this.openedMenu[v];
     },
+    hideMenu() {
+      this.openedMenu = {};
+    },
+
+    onSelectProcesses() {
+      this.prepareToSave = true;
+    },
+    onCancel() {
+      this.prepareToSave = false;
+    },
+    onSave() {
+      this.$emit('doAction', 'save', this.selectedIDs, null);
+      this.prepareToSave = false;
+    },
+    onSelectAll() {
+      this.source.forEach((v) => {
+        this.checkedList[v.id] = true;
+      });
+    },
+    onUnselectAll() {
+      this.source.forEach((v) => {
+        this.checkedList[v.id] = false;
+      });
+    },
+    onCreateProcess() {
+      this.$emit('doAction', 'create', [], null);
+      this.openedMenu = {};
+    },
+    onChangeProcess(v) {
+      this.$emit('doAction', 'change', [v], null);
+      this.openedMenu = {};
+    },
+    onDuplicateProcess(v) {
+      this.$emit('doAction', 'duplicate', [v], null);
+      this.openedMenu = {};
+    },
+    onRemoveProcess(v) {
+      this.$emit('doAction', 'remove', [v], null);
+      this.openedMenu = {};
+    },
+
+    onStartProcess(v) {
+      this.$emit('doAction', 'start', [v], null);
+      this.openedMenu = {};
+    },
+  },
+
+  mounted() {
+  },
 
 }
 </script>
@@ -261,6 +276,7 @@ export default {
     .btn-menu {
       position: relative;
       padding: 6px;
+
       &:hover {
         color: white;
         background-color: hsl(50, 30%, 75%);
@@ -290,6 +306,7 @@ export default {
           color: black;
           border-bottom: 1px solid hsl(50, 30%, 65%);
           font-size: 12px;
+          z-index: 15;
           &:last-child {
             border-bottom: none;
           }
@@ -298,6 +315,15 @@ export default {
           }
         }
       }
+    }
+
+    .menu-overlay {
+      position: fixed;
+      left: 0px;
+      height: 0px;
+      width: 100dvw;
+      height: 100dvh;
+      z-index: 5;
     }
   }
 
@@ -316,6 +342,7 @@ export default {
     color: black;
     border: 1px solid hsl(50, 30%, 75%);
     margin: 5px;
+
     &:hover {
       color: black;
       background-color: hsl(52, 29%, 90%);
