@@ -68,11 +68,9 @@
                   <i class="ico ico-menu" style="font-size: 20px"></i>
                   <div
                       class="menu-container"
-                      v-if="openedMenu[rowIdx]"
+                      v-if="openedMenus[rowIdx]"
                       v-click-outside="hideMenu"
                   >
-<!--                      v-if="isMenuOpen && rowIdx === currentRow"-->
-<!--                      v-click-outside="hideMenu"-->
                     <div class="menu-item d-flex align-items-center" @click.stop="onStartProcess(row.id)">Начать</div>
                     <div class="menu-item d-flex align-items-center" @click.stop="onChangeProcess(row.id)">Изменить
                     </div>
@@ -85,7 +83,7 @@
                 </div>
 <!--                <div class="menu-overlay"-->
 <!--                     @click="hideMenu"-->
-<!--                     v-if="openedMenu[rowIdx]"-->
+<!--                     v-if="openedMenus[rowIdx]"-->
 <!--                />-->
 
               </template>
@@ -143,9 +141,6 @@
         </div>
       </b-row>
     </b-container>
-    {{ !!openedMenu ? openedMenu : 'пусто' }}
-
-
   </div>
 </template>
 
@@ -173,7 +168,7 @@ export default {
       checkedList: {},
       currentRow: null,
       // isMenuOpen: false,
-      openedMenu: {},
+      openedMenus: {},
 
     }
   },
@@ -209,11 +204,10 @@ export default {
       this.currentRow = v.rowIdx;
     },
     onToggleMenu(v) {
-      if (this.openedMenu[v]) this.openedMenu = {};
-      this.openedMenu[v] = !this.openedMenu[v];
+        this.openedMenus = {[v]: !this.openedMenus[v]};
     },
     hideMenu() {
-      this.openedMenu = {};
+      this.openedMenus = {};
     },
 
     onSelectProcesses() {
@@ -238,24 +232,24 @@ export default {
     },
     onCreateProcess() {
       this.$emit('doAction', 'create', [], null);
-      this.openedMenu = {};
+      this.openedMenus = {};
     },
     onChangeProcess(v) {
       this.$emit('doAction', 'change', [v], null);
-      this.openedMenu = {};
+      this.openedMenus = {};
     },
     onDuplicateProcess(v) {
       this.$emit('doAction', 'duplicate', [v], null);
-      this.openedMenu = {};
+      this.openedMenus = {};
     },
     onRemoveProcess(v) {
       this.$emit('doAction', 'remove', [v], null);
-      this.openedMenu = {};
+      this.openedMenus = {};
     },
 
     onStartProcess(v) {
       this.$emit('doAction', 'start', [v], null);
-      this.openedMenu = {};
+      this.openedMenus = {};
     },
   },
 
