@@ -35,8 +35,8 @@ export default {
         return {}
     },
     computed: {
-        ...mapGetters(['sessionsByID']),
         ...mapState(['currentSessionID']),
+        ...mapGetters(['sessionsByID']),
         sessionID() {
             return this.$route.params.id;
         },

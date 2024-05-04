@@ -43,7 +43,7 @@
 import ppSessionList from "@/components/PpUserSpace/ppSessionList.vue";
 import ppUserMenu from "@/components/PpUserSpace/ppUserMenu.vue";
 import ppSidePanel from "@/components/Common/ppSidePanel.vue";
-import {mapGetters, mapState} from "vuex";
+import {mapGetters, mapMutations, mapState} from "vuex";
 import SessionPlayer from "@/components/SessionPlayer/ppSessionPlayer.vue";
 import {useDtFilters} from "@/composables/useDtFilters.js";
 
@@ -56,7 +56,7 @@ export default {
       file: null,
       newSessionName: '',
       showModalName: false,
-      currentIdx: null,
+      currentID: null,
       currentSession: null,
       fields: [
         {key: 'sessionTitle', label: 'Наименование'},
@@ -75,11 +75,14 @@ export default {
   },
   computed: {
     ...mapState(['sessionList', 'currentSessionID']),
+    ...mapGetters(['sessionsByID']),
+    ...mapMutations(['sessionsToPausedExceptThis']),
 
     rows() {
       if (this.sessionList === null || this.sessionList.length === 0) return [];
       return this.sessionList.map(v => {
         return {
+          id: v.id,
           sessionTitle: v.header.sessionTitle,
           processTitle: v.process.header.processTitle,
           createdDt: this.dtIsoShort(v.header.createdDt),
@@ -124,32 +127,26 @@ export default {
 
     },
 
-
-    allInProgressToPausedExceptThis(id) {
-      this.sessionList.forEach((v) => {
-        if (v.id !== id && v.status === 'inProgress') v.status = 'paused'
-      })
-    },
-    onDoAction(action, idxs, file) {
-      if (idxs !== null) {
-        this.currentIdx = idxs[0];
-        this.$store.commit('currentSessionID', this.sessionList[this.currentIdx].id);
-        console.log('idxs = ', idxs, 'currentID = ', this.currentSessionID);
+    onDoAction(action, IDs, file) {
+      if (IDs !== null) {
+        this.currentID = IDs[0];
+        this.$store.commit('currentSessionID', this.currentID);
       }
       switch (action) {
         case 'changeStatus': {
-          let oldStatus = this.sessionList[this.currentIdx].status;
+          let oldStatus = this.sessionsByID[this.currentID].status;
           switch (oldStatus) {
             case 'new':
             case 'paused': {
               this.onToggleSidePanel();
-              this.allInProgressToPausedExceptThis(this.currentSessionID);
+              this.$store.commit('changeSessionStatusByID', {id: this.currentID, status: 'inProgress'});
+              this.$store.commit('sessionsToPausedExceptThis', this.currentSessionID);
               this.$router.push({name: 'PgSession', params: {id: this.currentSessionID}});
             }
               break;
             case 'inProgress': {
-              this.sessionList[this.currentIdx].status = 'paused';
-
+              this.sessionsByID[this.currentID].status = 'paused';
+              this.onToggleSidePanel();
             }
               break;
             default: {
@@ -158,13 +155,13 @@ export default {
         }
           return
         case 'remove': {
-          if (this.currentIdx !== -1 && !!this.currentSessionID) this.$store.commit('removeSessionInListByID', this.currentSessionID);
+          if (this.currentID !== -1 && !!this.currentSessionID) this.$store.commit('removeSessionInListByID', this.currentSessionID);
 
         }
           return
         case 'changeName': {
-          if (this.currentIdx !== -1 && !!this.currentSessionID) {
-            this.newSessionName = this.sessionList[this.currentIdx].header.sessionTitle;
+          if (this.currentID !== -1 && !!this.currentSessionID) {
+            this.newSessionName = this.sessionsByID[this.currentID].header.sessionTitle;
             this.showModalName = true;
           }
         }
@@ -193,7 +190,7 @@ export default {
         }
           return
         case 'save': {
-          let session = this.sessionList[this.currentIdx];
+          let session = this.sessionsByID[this.currentID];
           this.saveJSONFile(session, session.header.sessionTitle + ' ' + this.dtIsoShort(session.header.changedDt));
         }
           return
@@ -201,6 +198,8 @@ export default {
         }
       }
     },
+
+
     onOkChangeName() {
       this.$store.commit('changeSessionNameByID', {id: this.currentSessionID, name: this.newSessionName});
     },

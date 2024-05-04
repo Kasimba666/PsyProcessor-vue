@@ -15,6 +15,10 @@ const defaultSortOrder = {
     order: 'ASC'
 };
 
+const generateID = () => {
+    return v4();
+};
+
 export default createStore({
     state: {
         screenBreakpoints,
@@ -33,7 +37,6 @@ export default createStore({
         isNewProcess: false,
         answer: '',
         sessionList: [],
-        newSessionID: null,
         currentSessionID: null,
         token: null,
         user: null, //curLang: 'en',
@@ -88,12 +91,8 @@ export default createStore({
         currentEditableProcessID(state, v) {
             state.currentEditableProcessID = v;
         },
-
         currentSessionID(state, v) {
             state.currentSessionID = v;
-        },
-        newSessionID(state, v) {
-            state.newSessionID = v;
         },
         sessionList(state, v) {
             state.sessionList = v;
@@ -110,6 +109,11 @@ export default createStore({
 
         changeSessionStatusByID(state, {id, status}) {
             state.sessionList.filter((vv) => vv.id === id)[0].status = status;
+        },
+        sessionsToPausedExceptThis(state, id) {
+            state.sessionList.forEach((v) => {
+                if (v.id !== id && v.status === 'inProgress') v.status = 'paused'
+            })
         },
         removeSessionInListByID(state, v) {
             state.sessionList = state.sessionList.filter((vv) => vv.id !== v);
@@ -158,9 +162,6 @@ export default createStore({
         },
     },
     actions: {
-        setDefaultSession() {
-
-        },
         createNewSession({commit, state}, p) {
             let preparePositions = (node) => {
                 let result = {};
@@ -180,9 +181,7 @@ export default createStore({
                 });
                 return result;
             };
-            let generateID = () => {
-                return v4();
-            };
+
             let newSession = {
                 id: generateID(),
                 header: {
@@ -213,7 +212,48 @@ export default createStore({
                 history: []
             };
             commit('addSessionInList', newSession);
-            commit('newSessionID', newSession.id);
+            return new Promise((resolve)=>resolve(newSession.id));
+        },
+
+        createNewProcess({commit, state}) {
+            let newProcess = {
+                    id: generateID(),
+                    header: {
+                        processTitle: "Новый процесс",
+                        version: "0.0.1",
+                        processCategory: ["common"],
+                        createdDt: (new Date()).toISOString(),
+                        changedDt: (new Date()).toISOString(),
+                        description: 'Описание',
+                        toSave: false,
+                        toAdd: false,
+                    },
+                    type: 'process',
+                    vars: [
+                        {name: '$topic', value: '',},
+                        {name: '$last', value: '',},
+                    ],
+                    rootNode: {
+                        type: 'loopList',
+                        attrs: {
+                            nodeName: {
+                                inpType: 'text',
+                                inpLabel: 'Название узла (optional)',
+                                value: 'root',
+                            },
+                            loopCount: {
+                                inpType: 'number',
+                                inpLabel: 'Количество циклов',
+                                value: 0, // ноль означает бесконечный цикл
+                            },
+                        },
+                        list: [],
+                        forKey: 'root',
+                    }
+             };
+            commit('addProcessesInList', [newProcess]);
+            commit('newProcessID', newProcess.id);
+            return new Promise((resolve)=>resolve(newProcess.id));
         },
     },
     getters: {

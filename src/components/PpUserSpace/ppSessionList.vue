@@ -14,8 +14,8 @@
            v-if="!!rows && rows.length  >0"
            v-for="(row, r) of rows" :key="r"
            :style="{backgroundColor: (r%2 === 1) ? 'hsl(0, 0%, 83%, 0.3)' : 'none'}"
-           @click="onRowClicked(r)">
-        <div :class="{current: r===currentIdx}">
+           @click="onRowClicked(row.id)">
+        <div :class="{current: row.id===currentID}">
         </div>
         <div class="table-cell cell-row" :class="{right: (f === fields.length-1)}"
              v-if="!!fields && fields.length>0"
@@ -25,7 +25,7 @@
         </div>
         <div class="table-button">
           <button class="btn btn-outline-primary btn-next btn-sm"
-                  @click="changeStatus(r)">
+                  @click="changeStatus(row.id)">
             {{ showStatus(row.status) }}
           </button>
         </div>
@@ -33,11 +33,11 @@
     </div>
     <div class="session-list-control">
       <button class="btn btn-outline-primary btn-next btn-sm"
-              @click="changeName(currentIdx)">
+              @click="changeName(currentID)">
         Изменить название
       </button>
       <button class="btn btn-outline-primary btn-next btn-sm"
-              @click="remove(currentIdx)">
+              @click="remove(currentID)">
         Удалить
       </button>
       <button class="btn btn-outline-primary btn-next btn-sm">
@@ -50,7 +50,7 @@
         </label>
       </button>
       <button class="btn btn-outline-primary btn-next btn-sm"
-              @click="saveSession(currentIdx)">
+              @click="saveSession(currentID)">
         Выгрузить
       </button>
     </div>
@@ -66,14 +66,14 @@ export default {
   props: ['rows', 'fields'],
   data() {
     return {
-      currentIdx: null,
+      // currentIdx: null,
       currentID: null,
     }
   },
   computed: {},
   methods: {
     onRowClicked(v) {
-      this.currentIdx = v;
+      this.currentID = v;
     },
     changeStatus(v) {
       this.$emit('doAction', 'changeStatus', [v]);

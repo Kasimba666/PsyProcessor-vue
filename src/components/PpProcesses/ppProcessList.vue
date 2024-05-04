@@ -101,6 +101,18 @@
           >
             Создать
           </button>
+          <button
+              v-if="!prepareToSave"
+              class="btn btn-outline-primary btn-actions btn-sm"
+          >
+            <label class="add-item" for="id-input-file" style="margin-bottom: 0">
+              <input type="file" class="d-none" id="id-input-file"
+                     value=""
+                     :accept="'.'+'json'"
+                     @change.prevent="onLoadProcesses($event)">
+              Загрузить
+            </label>
+          </button>
 
           <button
               v-if="!prepareToSave"
@@ -233,6 +245,10 @@ export default {
     onCreateProcess() {
       this.$emit('doAction', 'create', [], null);
       this.openedMenus = {};
+    },
+    onLoadProcesses(e) {
+      let file = e.target.files[0];
+      this.$emit('doAction', 'load', null, file);
     },
     onChangeProcess(v) {
       this.$emit('doAction', 'change', [v], null);

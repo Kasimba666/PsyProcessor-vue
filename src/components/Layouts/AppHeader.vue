@@ -67,7 +67,7 @@ export default {
   computed: {
     ...mapState(['currentSessionID', 'sessionList', 'screen', 'screenBreakpoints']),
     ...mapGetters(['markerSessions']),
-    ...mapMutations(['changeSessionStatusByID']),
+    ...mapMutations(['changeSessionStatusByID', 'sessionsToPausedExceptThis']),
     markersStacked() {
       return this.screen.width < this.markerSessions.length * (markerWidth + markerGap) + markerGap;
     },

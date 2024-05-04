@@ -23,49 +23,45 @@
 <script>
 import ppProcessListByIdx from "@/components/PpProcesses/ppProcessListByIdx.vue";
 import ppProcessList from "@/components/PpProcesses/ppProcessList.vue";
-import {mapGetters, mapMutations, mapState} from "vuex";
+import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
 import {v4, v4 as createUuid} from "uuid";
 import {useDtFilters} from "@/composables/useDtFilters.js";
 
-const generateID = () => {
-  return v4();
-};
-
-const newProcess = {
-  id: null,
-      header: {
-    processTitle: "Новый процесс",
-        version: "0.0.1",
-        processCategory: ["common"],
-        createdDt: (new Date()).toISOString(),
-        changedDt: (new Date()).toISOString(),
-        description: 'Описание',
-        toSave: false,
-        toAdd: false,
-  },
-  type: 'process',
-      vars: [
-    {name: '$topic', value: '',},
-    {name: '$last', value: '',},
-  ],
-      rootNode: {
-    type: 'loopList',
-        attrs: {
-      nodeName: {
-        inpType: 'text',
-            inpLabel: 'Название узла (optional)',
-            value: 'root',
-      },
-      loopCount: {
-        inpType: 'number',
-            inpLabel: 'Количество циклов',
-            value: 0, // ноль означает бесконечный цикл
-      },
-    },
-    list: [],
-        forKey: 'root',
-  }
-};
+// const newProcess = {
+//   id: null,
+//       header: {
+//     processTitle: "Новый процесс",
+//         version: "0.0.1",
+//         processCategory: ["common"],
+//         createdDt: (new Date()).toISOString(),
+//         changedDt: (new Date()).toISOString(),
+//         description: 'Описание',
+//         toSave: false,
+//         toAdd: false,
+//   },
+//   type: 'process',
+//       vars: [
+//     {name: '$topic', value: '',},
+//     {name: '$last', value: '',},
+//   ],
+//       rootNode: {
+//     type: 'loopList',
+//         attrs: {
+//       nodeName: {
+//         inpType: 'text',
+//             inpLabel: 'Название узла (optional)',
+//             value: 'root',
+//       },
+//       loopCount: {
+//         inpType: 'number',
+//             inpLabel: 'Количество циклов',
+//             value: 0, // ноль означает бесконечный цикл
+//       },
+//     },
+//     list: [],
+//         forKey: 'root',
+//   }
+// };
 
 export default {
   name: "ProcessList",
@@ -92,9 +88,10 @@ export default {
         };
     },
     computed: {
-    ...mapState(['processList', 'currentEditableProcess', 'currentEditableProcessID', 'currentEditableProcessIdx', 'newSessionID', 'currentSessionID']),
-    ...mapGetters(['processesByID']),
-    ...mapMutations(['changeSessionStatusByID']),
+    ...mapState(['processList', 'currentEditableProcess', 'currentEditableProcessID', 'currentEditableProcessIdx', 'currentSessionID']),
+    ...mapGetters(['processesByID', 'sessionsByID']),
+    ...mapMutations(['changeSessionStatusByID', 'sessionsToPausedExceptThis']),
+    ...mapActions(['createNewProcess']),
 
     rows() {
       if (this.processList === null || this.processList.length === 0) return [];
@@ -193,12 +190,12 @@ export default {
       console.log('action', action, IDs);
       switch (action) {
         case 'create': {
-          this.$store.commit('isNewProcess', true);
-          let process = newProcess;
-          process.id = generateID();
-          this.$store.commit('currentEditableProcess', process);
-          this.$store.commit('currentEditableProcessID', this.currentEditableProcess.id);
-          this.$router.push({name: 'PgConstructor'});
+          this.$store.dispatch('createNewProcess').then((v)=>
+          {
+            this.$store.commit('currentEditableProcessID', v);
+            this.$store.commit('currentEditableProcess', this.processesByID[v]);
+            this.$router.push({name: 'PgConstructor'});
+          });
         }
           return;
         case 'change': {
@@ -260,19 +257,22 @@ export default {
           IDs.forEach((v) => {
             arr.push(this.processesByID[v]);
           });
-          this.saveJSONFile(arr, arr[0].header.processTitle + ' ' + this.dtIsoFileName(arr[0].header.changedDt));
+          let result = prompt('Введите название файла выгрузки', arr.map((v)=>v.header.processTitle).join(' ') + ' ' + (new Date()).toISOString())
+          if (!!result) this.saveJSONFile(arr, result);
         }
           return;
 
         case 'start': {
-          this.$store.dispatch('createNewSession', this.processesByID[IDs[0]]);
-          //как-то надо найти ID свежесозданной сессии
-          this.$store.commit('currentSessionID', this.newSessionID);
-          this.$store.commit('changeSessionStatusByID', {
-            id: this.currentSessionID,
-            status: 'inProgress'
-          });
-          this.$router.push({name: 'PgSession', params: {id: this.currentSessionID}});
+          this.$store.dispatch('createNewSession', this.processesByID[IDs[0]]).then((v)=>
+            {
+              this.$store.commit('currentSessionID', v);
+              this.$store.commit('changeSessionStatusByID', {
+                id: v,
+                status: 'inProgress'
+              });
+              this.$store.commit('sessionsToPausedExceptThis', this.currentSessionID);
+              this.$router.push({name: 'PgSession', params: {id: v}});
+            });
         }
           return;
         default: {
