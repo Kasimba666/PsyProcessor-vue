@@ -19,13 +19,13 @@
                         <mxPoint x="-11" y="-10" as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="15" value="Изменить шаблон" style="edgeStyle=none;html=1;" edge="1" parent="1" source="2" target="8">
+                <mxCell id="15" value="Управление шаблонами" style="edgeStyle=none;html=1;" edge="1" parent="1" source="2" target="8">
                     <mxGeometry y="10" relative="1" as="geometry">
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="2" value="Список процессов" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="60" y="200" width="120" height="40" as="geometry"/>
+                    <mxGeometry x="20" y="200" width="120" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="6" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.367;entryY=1.05;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" target="10">
                     <mxGeometry relative="1" as="geometry">
