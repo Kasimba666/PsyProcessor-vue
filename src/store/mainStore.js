@@ -135,9 +135,6 @@ export default createStore({
         mobileMenuTransitionEnd(state, v) {
             state.mobileMenuTransition = false;
         },
-        screen(state, v) {
-            state.screen = v;
-        },
         isMobile(state, v) {
             state.isMobile = v;
         },

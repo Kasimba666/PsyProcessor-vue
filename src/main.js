@@ -44,7 +44,6 @@ app.directive('numberOnly', {
                 return;
             }
         };
-        el.addEventListener("keypress", el.inputHandler);
     },
     unmounted(el) {
         el.removeEventListener("keypress", el.inputHandler);

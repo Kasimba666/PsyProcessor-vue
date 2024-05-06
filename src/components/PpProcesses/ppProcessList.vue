@@ -96,7 +96,7 @@
 <!--                        <div class="menu-item d-flex align-items-center" @click.stop="onToReady(row.id)">В готовые</div>-->
                         <div class="menu-item d-flex align-items-center" @click.stop="onToTemplate(row.id)">В шаблоны</div>
 <!--                        <div class="menu-item d-flex align-items-center" @click.stop="onRemoveProcess(row.id)">Удалить</div>-->
-                        <div class="menu-item d-flex align-items-center" @click.stop="onToTrash(row.id)">В мусарню</div>
+                        <div class="menu-item d-flex align-items-center" @click.stop="onToTrash(row.id)">В корзину</div>
 <!--                        <div class="menu-item d-flex align-items-center" @click.stop="onFromTrash(row.id)">На волю</div>-->
                       </div>
                     </div>
@@ -203,7 +203,7 @@
                         <div class="menu-item d-flex align-items-center" @click.stop="onToReady(row.id)">В готовые</div>
                         <div class="menu-item d-flex align-items-center" @click.stop="onToTemplate(row.id)">В шаблоны</div>
 <!--                        <div class="menu-item d-flex align-items-center" @click.stop="onRemoveProcess(row.id)">Удалить</div>-->
-                        <div class="menu-item d-flex align-items-center" @click.stop="onToTrash(row.id)">В мусарню</div>
+                        <div class="menu-item d-flex align-items-center" @click.stop="onToTrash(row.id)">В корзину</div>
 <!--                        <div class="menu-item d-flex align-items-center" @click.stop="onFromTrash(row.id)">На волю</div>-->
                       </div>
                     </div>
@@ -311,7 +311,7 @@
 <!--                        <div class="menu-item d-flex align-items-center" @click.stop="onToReady(row.id)">В готовые</div>-->
 <!--                        <div class="menu-item d-flex align-items-center" @click.stop="onToTemplate(row.id)">В шаблоны</div>-->
 <!--                        <div class="menu-item d-flex align-items-center" @click.stop="onRemoveProcess(row.id)">Удалить</div>-->
-                        <div class="menu-item d-flex align-items-center" @click.stop="onToTrash(row.id)">В мусарню</div>
+                        <div class="menu-item d-flex align-items-center" @click.stop="onToTrash(row.id)">В корзину</div>
 <!--                        <div class="menu-item d-flex align-items-center" @click.stop="onFromTrash(row.id)">На волю</div>-->
                       </div>
                     </div>
@@ -419,7 +419,7 @@
 <!--                        <div class="menu-item d-flex align-items-center" @click.stop="onToReady(row.id)">В готовые</div>-->
 <!--                        <div class="menu-item d-flex align-items-center" @click.stop="onToTemplate(row.id)">В шаблоны</div>-->
                         <div class="menu-item d-flex align-items-center" @click.stop="onRemoveProcess(row.id)">Удалить</div>
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onToTrash(row.id)">В мусарню</div>-->
+<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onToTrash(row.id)">В корзину</div>-->
                         <div class="menu-item d-flex align-items-center" @click.stop="onFromTrash(row.id)">На волю</div>
                       </div>
                     </div>
@@ -528,8 +528,8 @@
 <!--                        <div class="menu-item d-flex align-items-center" @click.stop="onToReady(row.id)">В готовые</div>-->
 <!--                        <div class="menu-item d-flex align-items-center" @click.stop="onToTemplate(row.id)">В шаблоны</div>-->
 <!--                        <div class="menu-item d-flex align-items-center" @click.stop="onRemoveProcess(row.id)">Удалить</div>-->
-                        <div class="menu-item d-flex align-items-center" @click.stop="onToTrash(row.id)">В мусарню</div>
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onFromTrash(row.id)">На волю</div>-->
+                        <div class="menu-item d-flex align-items-center" @click.stop="onToTrash(row.id)">В корзину</div>
+<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onFromTrash(row.id)">Из корзины</div>-->
                       </div>
                     </div>
                     <!--                <div class="menu-overlay"-->
