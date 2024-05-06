@@ -32,14 +32,14 @@ export default createStore({
         processList: [],
         processListSortMode: {...defaultSortOrder},
         currentEditableProcess: null,
-        currentEditableProcessIdx: -1,
         currentEditableProcessID: null,
         isNewProcess: false,
         answer: '',
         sessionList: [],
         currentSessionID: null,
         token: null,
-        user: null, //curLang: 'en',
+        user: null,
+        //curLang: 'en',
         //verbs: verbs['en'],
         isMobile: false,
         blur: false,
@@ -62,8 +62,8 @@ export default createStore({
         addProcessesInList(state, arr) {
             if (!!arr) arr.forEach((v) => state.processList.unshift(v));
         },
-        changeProcessInListByIdx(state, v) {
-            state.processList[v.idx] = v.process;
+        changeProcessTypeByID(state, v) {
+            this.getters.processesByID[v.id].type = v.type;
         },
         changeProcessInListByID(state, v) {
             //найти индекс по ID и заменить по индексу
@@ -72,6 +72,9 @@ export default createStore({
                     state.processList[i] = v.process;
                     return
                 }
+        },
+        trashProcessInListByID(state, v) {
+            this.getters.processesByID[v.id].deleted = v.deleted;
         },
         removeProcessInListByID(state, v) {
             //найти индекс по ID и удалить по индексу
@@ -85,9 +88,6 @@ export default createStore({
         currentEditableProcess(state, v) {
             state.currentEditableProcess = v;
         },
-        currentEditableProcessIdx(state, v) {
-            state.currentEditableProcessIdx = v;
-        },
         currentEditableProcessID(state, v) {
             state.currentEditableProcessID = v;
         },
@@ -97,14 +97,9 @@ export default createStore({
         sessionList(state, v) {
             state.sessionList = v;
         },
-        changeSessionInListByIdx(state, v) {
-            state.sessionList[v.idx] = v.session;
-        },
+
         changeSessionInListByID(state, v) {
             state.sessionList.filter((vv) => vv.id === v.id)[0] = v.session;
-        },
-        changeSessionStatusByIdx(state, {idx, status}) {
-            state.sessionList[idx].status = status;
         },
 
         changeSessionStatusByID(state, {id, status}) {
@@ -228,7 +223,8 @@ export default createStore({
                         toSave: false,
                         toAdd: false,
                     },
-                    type: 'process',
+                    type: 'draft',
+                    deleted: false,
                     vars: [
                         {name: '$topic', value: '',},
                         {name: '$last', value: '',},
@@ -252,7 +248,6 @@ export default createStore({
                     }
              };
             commit('addProcessesInList', [newProcess]);
-            commit('newProcessID', newProcess.id);
             return new Promise((resolve)=>resolve(newProcess.id));
         },
     },
@@ -264,6 +259,14 @@ export default createStore({
                 return s;
             }, {});
         },
+        finishedProcessesByID(state) {
+            return state.processList.reduce((s, v) => {
+                if (v.status='finished') {
+                    s[v.id] = v;
+                    return s;
+                }
+            }, {});
+        },
         //формирует объект, у которого в качестве ключей используются идентификаторы процессов, а в качестве значений - объекты процессов
         processesByID(state) {
             return state.processList.reduce((s, v) => {
@@ -271,6 +274,33 @@ export default createStore({
                 return s;
             }, {});
         },
+
+        readyProcessesByID(state) {
+            return state.processList.reduce((s, v) => {
+                if (v.type='ready') {
+                    s[v.id] = v;
+                    return s;
+                }
+            }, {});
+        },
+        draftProcessesByID(state) {
+            return state.processList.reduce((s, v) => {
+                if (v.type='draft') {
+                    s[v.id] = v;
+                    return s;
+                }
+            }, {});
+        },
+
+        templateProcessesByID(state) {
+            return state.processList.reduce((s, v) => {
+                if (v.type='template') {
+                    s[v.id] = v;
+                    return s;
+                }
+            }, {});
+        },
+
         markerSessions(state){
             return state.sessionList.map((v)=>{return {id: v.id, title: v.header.sessionTitle, time: v.header.changedDt}}).sort((a, b) => b.time - a.time);
         },
@@ -280,7 +310,6 @@ export default createStore({
         key: 'psyProc', paths: [
             'processListSortMode',
             'currentEditableProcess',
-            'currentEditableProcessIdx',
             'currentEditableProcessID',
             'currentSessionID',
             'processList',

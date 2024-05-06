@@ -1,13 +1,8 @@
 <template>
-  <div class="ProcessListByIdx">
+  <div class="ProcessList">
     <div class="container">
       <div class="row">
         <div class="col-12 mt-40">
-          <ppProcessListByIdx
-              :rows="rows"
-              :fields="fields"
-              @doActionByIdx="onDoActionByIdx"
-          ></ppProcessListByIdx>
             <ppProcessList
                 :source="rows"
                 @doAction="onDoAction"
@@ -21,51 +16,16 @@
 </template>
 
 <script>
-import ppProcessListByIdx from "@/components/PpProcesses/ppProcessListByIdx.vue";
 import ppProcessList from "@/components/PpProcesses/ppProcessList.vue";
 import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
 import {v4, v4 as createUuid} from "uuid";
 import {useDtFilters} from "@/composables/useDtFilters.js";
+import {useFiles} from "@/composables/useFiles.js";
 
-// const newProcess = {
-//   id: null,
-//       header: {
-//     processTitle: "Новый процесс",
-//         version: "0.0.1",
-//         processCategory: ["common"],
-//         createdDt: (new Date()).toISOString(),
-//         changedDt: (new Date()).toISOString(),
-//         description: 'Описание',
-//         toSave: false,
-//         toAdd: false,
-//   },
-//   type: 'process',
-//       vars: [
-//     {name: '$topic', value: '',},
-//     {name: '$last', value: '',},
-//   ],
-//       rootNode: {
-//     type: 'loopList',
-//         attrs: {
-//       nodeName: {
-//         inpType: 'text',
-//             inpLabel: 'Название узла (optional)',
-//             value: 'root',
-//       },
-//       loopCount: {
-//         inpType: 'number',
-//             inpLabel: 'Количество циклов',
-//             value: 0, // ноль означает бесконечный цикл
-//       },
-//     },
-//     list: [],
-//         forKey: 'root',
-//   }
-// };
 
 export default {
   name: "ProcessList",
-  components: {ppProcessListByIdx, ppProcessList},
+  components: {ppProcessList},
   props: [],
   data() {
     return {
@@ -82,15 +42,18 @@ export default {
   },
     setup() {
         const {dtIsoShort, dtIsoFileName} = useDtFilters();
+        const {saveJSONFile, loadJSON} = useDtFilters();
         return {
             dtIsoShort,
             dtIsoFileName,
+            saveJSONFile,
+            loadJSON
         };
     },
     computed: {
-    ...mapState(['processList', 'currentEditableProcess', 'currentEditableProcessID', 'currentEditableProcessIdx', 'currentSessionID']),
+    ...mapState(['processList', 'currentEditableProcess', 'currentEditableProcessID', 'currentSessionID']),
     ...mapGetters(['processesByID', 'sessionsByID']),
-    ...mapMutations(['changeSessionStatusByID', 'sessionsToPausedExceptThis']),
+    ...mapMutations(['changeSessionStatusByID','changeProcessTypeByID', 'trashProcessInListByID', 'sessionsToPausedExceptThis']),
     ...mapActions(['createNewProcess']),
 
     rows() {
@@ -98,6 +61,8 @@ export default {
       return this.processList.map(v => {
         return {
           id: v.id,
+          type: v.type,
+          deleted: v.deleted,
           processTitle: v.header.processTitle,
           processCategory: v.header.processCategory,
           createdDt: this.dtIsoShort(v.header.createdDt),
@@ -109,85 +74,8 @@ export default {
 
   },
   methods: {
-    onDoActionByIdx(action, idxs, file) {
-      switch (action) {
-        case 'create': {
-          this.$store.commit('currentEditableProcessIdx', -1);
-          this.$router.push({name: 'PgConstructor'});
-        }
-          return;
-        case 'change': {
-          if (idxs.length > 0) {
-            let forEdit = JSON.parse(JSON.stringify(this.processList[idxs[0]]));
-            this.$store.commit('currentEditableProcess', forEdit);
-            this.$store.commit('currentEditableProcessIdx', idxs[0]);
-            this.$router.push({name: 'PgConstructor'});
-          }
-        }
-          return;
-        case 'duplicate': {
-          // console.log(idxs);
-          let forSave = [];
-          for (let i = 0; i < idxs.length; i++) {
-            forSave.push(JSON.parse(JSON.stringify(this.processList[idxs[i]])));
-          }
-          forSave.forEach(v => v.id = createUuid()); // обновляем IDs
-          this.$store.commit('addProcessesInList', forSave);
-        }
-          return;
-        case 'remove': {
-          if (idxs.length > 0) {
-            idxs.reverse().forEach(v => {
-              this.processList.splice(v, 1)
-            });
-            this.$store.commit('processList', this.processList);
-          }
-        }
-          return;
-
-        case 'load': {
-          let reader = new FileReader();
-          const promise = new Promise((resolve, reject) => {
-            reader.onload = () => {
-              try {
-                let content = JSON.parse(reader.result);
-                this.file = {content: content, name: file.name};
-                resolve({content: content, name: file.name});
-
-              } catch (e) {
-                reject(e);
-              }
-            };
-          });
-          reader.readAsText(file);
-          promise.then((data) => {
-            this.$store.commit('addProcessesInList', data.content);
-          }).catch(e => {
-            console.log('onload error:', e);
-          });
-        }
-          return;
-
-        case 'save': {
-          let arr = [];
-          idxs.forEach((v) => {
-            arr.push(this.processList[v]);
-          });
-          this.saveJSONFile(arr, arr[0].header.processTitle + ' ' + this.dtIsoFileName(arr[0].header.changedDt));
-        }
-          return;
-
-        case 'start': {
-          this.$store.dispatch('createNewSession', this.processList[idxs[0]]);
-          this.$router.push({name: 'PgSession'});
-        }
-          return;
-        default: {
-        }
-      }
-    },
     onDoAction(action, IDs, file) {
-      console.log('action', action, IDs);
+      console.log(action, IDs);
       switch (action) {
         case 'create': {
           this.$store.dispatch('createNewProcess').then((v)=>
@@ -195,6 +83,7 @@ export default {
             this.$store.commit('currentEditableProcessID', v);
             this.$store.commit('currentEditableProcess', this.processesByID[v]);
             this.$router.push({name: 'PgConstructor'});
+            alert(v);
           });
         }
           return;
@@ -220,10 +109,76 @@ export default {
           this.$store.commit('addProcessesInList', forSave);
         }
           return;
+        case 'toDraft': {
+          if (this.processesByID[IDs[0]].type !== 'draft') {
+            this.$store.commit('changeProcessTypeByID', {id: IDs[0], type: 'draft'});
+          }
+        }
+          return;
+        case 'toReady': {
+          if (this.processesByID[IDs[0]].type !== 'ready') {
+            this.$store.commit('changeProcessTypeByID', {id: IDs[0], type: 'ready'});
+          }
+        }
+          return;
+        case 'toTemplate': {
+          if (this.processesByID[IDs[0]].type !== 'template') {
+            this.$store.commit('changeProcessTypeByID', {id: IDs[0], type: 'template'});
+          }
+        }
+          return;
+
+        case 'fromTemplate': {
+          //дублировать и сделать тип 'Черновик'
+          let forSave = [];
+          for (let i = 0; i < IDs.length; i++) {
+            if (this.processesByID[IDs[i]].type === 'template') forSave.push(JSON.parse(JSON.stringify(this.processesByID[IDs[i]])));
+          }
+          forSave.forEach(v => {
+            v.id = createUuid();
+            v.header.processTitle += ' - дубликат';
+            v.type = 'draft'
+          }); // обновляем IDs
+          this.$store.commit('addProcessesInList', forSave);
+        }
+          return;
+
+        case 'fromDraftOrReady': {
+          //дублировать и сделать тип 'Шаблон'
+          let forSave = [];
+          for (let i = 0; i < IDs.length; i++) {
+            if (this.processesByID[IDs[i]].type === 'draft' || this.processesByID[IDs[i]].type === 'ready') forSave.push(JSON.parse(JSON.stringify(this.processesByID[IDs[i]])));
+          }
+          forSave.forEach(v => {
+            v.id = createUuid();
+            v.header.processTitle += ' - дубликат';
+            v.type = 'template'
+          }); // обновляем IDs
+          this.$store.commit('addProcessesInList', forSave);
+        }
+          return;
+
         case 'remove': {
           if (IDs.length > 0) {
             IDs.forEach(v => {
               if (confirm(`Удалить процесс ${v} ?`)) this.$store.commit('removeProcessInListByID', v);
+            });
+          }
+        }
+          return
+
+        case 'toTrash': {
+          if (IDs.length > 0) {
+            IDs.forEach(v => {
+              if (confirm(`Переместить в корзину процесс ${v} ?`)) this.$store.commit('trashProcessInListByID', {id: v, deleted: true});
+            });
+          }
+        }
+          return;
+        case 'fromTrash': {
+          if (IDs.length > 0) {
+            IDs.forEach(v => {
+              if (confirm(`Достать из корзины процесс ${v} ?`)) this.$store.commit('trashProcessInListByID', {id: v, deleted: false});
             });
           }
         }
@@ -257,7 +212,7 @@ export default {
           IDs.forEach((v) => {
             arr.push(this.processesByID[v]);
           });
-          let result = prompt('Введите название файла выгрузки', arr.map((v)=>v.header.processTitle).join(' ') + ' ' + (new Date()).toISOString())
+          let result = prompt('Введите название файла выгрузки', arr.map((v)=>v.header.processTitle).join(' ') + ' ' + this.dtIsoFileName(new Date()).toISOString())
           if (!!result) this.saveJSONFile(arr, result);
         }
           return;
@@ -278,42 +233,6 @@ export default {
         default: {
         }
       }
-
-    },
-
-    saveJSONFile: function (object, filename) {
-      const json = JSON.stringify(object, null, 2); // Преобразуем объект в строку JSON
-      const blob = new Blob([json], {type: "application/json"}); // Создаем Blob из строки JSON
-      const url = URL.createObjectURL(blob); // Создаем URL для Blob
-
-      const a = document.createElement("a"); // Создаем элемент <a>
-      a.href = url;
-      a.download = filename + ".json"; // Устанавливаем имя файла
-      a.click();// "Жмем" на <a>, чтобы начать скачивание
-
-      URL.revokeObjectURL(url); // Очищаем URL после скачивания
-    },
-
-
-    //функция возвращает Promise
-    loadJSON(file) {
-      let reader = new FileReader();
-      const result = new Promise((resolve, reject) => {
-        reader.onload = () => {
-          try {
-            let content = JSON.parse(reader.result);
-            this.file = {content: content, name: file.name};
-            resolve({content: content, name: file.name});
-
-          } catch (e) {
-            console.log('onload error:', e);
-            reject(e);
-          }
-        };
-      });
-      reader.readAsText(file);
-      return result;
-
     },
   },
   mounted() {
@@ -323,7 +242,7 @@ export default {
 </script>
 
 <style lang="scss">
-.ProcessListIdx {
+.ProcessList {
   width: 100%;
   height: auto;
 

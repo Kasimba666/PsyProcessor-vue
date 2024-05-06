@@ -33,41 +33,7 @@ export default {
   props: [],
   data() {
     return {
-      // process: {
-      //   id: generateID(),
-      //   header: {
-      //     processTitle: "Новый процесс",
-      //     version: "0.0.1",
-      //     processCategory: ["common"],
-      //     createdDt: (new Date()).toISOString(),
-      //     changedDt: (new Date()).toISOString(),
-      //     description: 'Описание',
-      //     toSave: false,
-      //     toAdd: false,
-      //   },
-      //   type: 'process',
-      //   vars: [
-      //     {name: '$topic', value: '',},
-      //     {name: '$last', value: '',},
-      //   ],
-      //   rootNode: {
-      //     type: 'loopList',
-      //     attrs: {
-      //       nodeName: {
-      //         inpType: 'text',
-      //         inpLabel: 'Название узла (optional)',
-      //         value: 'root',
-      //       },
-      //       loopCount: {
-      //         inpType: 'number',
-      //         inpLabel: 'Количество циклов',
-      //         value: 0, // ноль означает бесконечный цикл
-      //       },
-      //     },
-      //     list: [],
-      //     forKey: 'root',
-      //   }
-      // },
+
       debounceTime: 800,
       debounceHandle: null,
     }

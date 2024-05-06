@@ -13,7 +13,8 @@
       "toSave": false,
       "toAdd": false
     },
-    "type": "process",
+    "type": "draft",
+	"deleted": false,
     "vars": [
       {
         "name": "$topic",

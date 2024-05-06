@@ -1,6 +1,8 @@
-import 'bootstrap-vue-next/dist/bootstrap-vue-next.css'
-// import '@/style.css'
+import 'bootstrap-vue-next/dist/bootstrap-vue-next.css';
+import ElementPlus from 'element-plus';
+import 'element-plus/dist/index.css';
 import '@/assets/css/app.scss';
+// import '@/style.css'
 
 import { createApp } from 'vue';
 import App from "@/App.vue"
@@ -69,5 +71,6 @@ app.directive('numberOnly', {
 }
 );
 
+app.use(ElementPlus);
 
-app.use(router).use(store).mount('#app')
+app.use(router).use(store).mount('#app');
