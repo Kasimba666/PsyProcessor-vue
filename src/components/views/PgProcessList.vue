@@ -18,7 +18,7 @@
 <script>
 import ppProcessList from "@/components/PpProcesses/ppProcessList.vue";
 import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
-import {v4, v4 as createUuid} from "uuid";
+import {v4 as createUuid} from "uuid";
 import {useDtFilters} from "@/composables/useDtFilters.js";
 import {useFiles} from "@/composables/useFiles.js";
 
@@ -31,13 +31,6 @@ export default {
     return {
       file: null,
       typeFile: 'json',
-      fields: [
-        {key: 'processTitle', label: 'Наименование', sortable: true},
-        {key: 'processCategory', label: 'Категория', sortable: true},
-        {key: 'createdDt', label: 'Дата создания', sortable: true},
-        {key: 'changedDt', label: 'Дата изменения', sortable: true},
-        {key: 'description', label: 'Описание', sortable: true},
-      ],
     }
   },
     setup() {
@@ -53,15 +46,15 @@ export default {
     computed: {
     ...mapState(['processList', 'currentEditableProcess', 'currentEditableProcessID', 'currentSessionID']),
     ...mapGetters(['processesByID', 'sessionsByID']),
-    ...mapMutations(['changeSessionStatusByID','changeProcessTypeByID', 'trashProcessInListByID', 'sessionsToPausedExceptThis']),
+    ...mapMutations(['changeSessionStatusByID','changeProcessStatusByID', 'trashProcessInListByID', 'sessionsToPausedExceptThis']),
     ...mapActions(['createNewProcess']),
 
     rows() {
       if (this.processList === null || this.processList.length === 0) return [];
       return this.processList.map(v => {
         return {
-          id: v.id,
-          type: v.type,
+          id: ((v)=>{v.splice(4,28, '...'); return v.join('')})(v.id.split('')),
+          status: v.status,
           deleted: v.deleted,
           processTitle: v.header.processTitle,
           processCategory: v.header.processCategory,
@@ -98,6 +91,7 @@ export default {
         }
           return;
         case 'duplicate': {
+          // console.log('внутри дубликата');
           let forSave = [];
           for (let i = 0; i < IDs.length; i++) {
             forSave.push(JSON.parse(JSON.stringify(this.processesByID[IDs[i]])));
@@ -110,53 +104,53 @@ export default {
         }
           return;
         case 'toDraft': {
-          if (this.processesByID[IDs[0]].type !== 'draft') {
-            this.$store.commit('changeProcessTypeByID', {id: IDs[0], type: 'draft'});
+          if (this.processesByID[IDs[0]].status !== 'draft') {
+            this.$store.commit('changeProcessStatusByID', {id: IDs[0], status: 'draft'});
           }
         }
           return;
         case 'toReady': {
-          if (this.processesByID[IDs[0]].type !== 'ready') {
-            this.$store.commit('changeProcessTypeByID', {id: IDs[0], type: 'ready'});
+          if (this.processesByID[IDs[0]].status !== 'ready') {
+            this.$store.commit('changeProcessStatusByID', {id: IDs[0], status: 'ready'});
           }
         }
           return;
         case 'toTemplate': {
-          if (this.processesByID[IDs[0]].type !== 'template') {
-            this.$store.commit('changeProcessTypeByID', {id: IDs[0], type: 'template'});
+          if (this.processesByID[IDs[0]].status !== 'template') {
+            this.$store.commit('changeProcessStatusByID', {id: IDs[0], status: 'template'});
           }
         }
           return;
 
-        case 'fromTemplate': {
-          //дублировать и сделать тип 'Черновик'
-          let forSave = [];
-          for (let i = 0; i < IDs.length; i++) {
-            if (this.processesByID[IDs[i]].type === 'template') forSave.push(JSON.parse(JSON.stringify(this.processesByID[IDs[i]])));
-          }
-          forSave.forEach(v => {
-            v.id = createUuid();
-            v.header.processTitle += ' - дубликат';
-            v.type = 'draft'
-          }); // обновляем IDs
-          this.$store.commit('addProcessesInList', forSave);
-        }
-          return;
-
-        case 'fromDraftOrReady': {
-          //дублировать и сделать тип 'Шаблон'
-          let forSave = [];
-          for (let i = 0; i < IDs.length; i++) {
-            if (this.processesByID[IDs[i]].type === 'draft' || this.processesByID[IDs[i]].type === 'ready') forSave.push(JSON.parse(JSON.stringify(this.processesByID[IDs[i]])));
-          }
-          forSave.forEach(v => {
-            v.id = createUuid();
-            v.header.processTitle += ' - дубликат';
-            v.type = 'template'
-          }); // обновляем IDs
-          this.$store.commit('addProcessesInList', forSave);
-        }
-          return;
+        // case 'fromTemplate': {
+        //   //дублировать и сделать тип 'Черновик'
+        //   let forSave = [];
+        //   for (let i = 0; i < IDs.length; i++) {
+        //     if (this.processesByID[IDs[i]].status === 'template') forSave.push(JSON.parse(JSON.stringify(this.processesByID[IDs[i]])));
+        //   }
+        //   forSave.forEach(v => {
+        //     v.id = createUuid();
+        //     v.header.processTitle += ' - дубликат';
+        //     v.status = 'draft'
+        //   }); // обновляем IDs
+        //   this.$store.commit('addProcessesInList', forSave);
+        // }
+        //   return;
+        //
+        // case 'fromDraftOrReady': {
+        //   //дублировать и сделать тип 'Шаблон'
+        //   let forSave = [];
+        //   for (let i = 0; i < IDs.length; i++) {
+        //     if (this.processesByID[IDs[i]].status === 'draft' || this.processesByID[IDs[i]].status === 'ready') forSave.push(JSON.parse(JSON.stringify(this.processesByID[IDs[i]])));
+        //   }
+        //   forSave.forEach(v => {
+        //     v.id = createUuid();
+        //     v.header.processTitle += ' - дубликат';
+        //     v.status = 'template'
+        //   }); // обновляем IDs
+        //   this.$store.commit('addProcessesInList', forSave);
+        // }
+        //   return;
 
         case 'remove': {
           if (IDs.length > 0) {
@@ -175,7 +169,7 @@ export default {
           }
         }
           return;
-        case 'fromTrash': {
+        case 'restore': {
           if (IDs.length > 0) {
             IDs.forEach(v => {
               if (confirm(`Достать из корзины процесс ${v} ?`)) this.$store.commit('trashProcessInListByID', {id: v, deleted: false});

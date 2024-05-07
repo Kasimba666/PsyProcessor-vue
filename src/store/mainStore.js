@@ -62,8 +62,8 @@ export default createStore({
         addProcessesInList(state, arr) {
             if (!!arr) arr.forEach((v) => state.processList.unshift(v));
         },
-        changeProcessTypeByID(state, v) {
-            this.getters.processesByID[v.id].type = v.type;
+        changeProcessStatusByID(state, v) {
+            this.getters.processesByID[v.id].status = v.status;
         },
         changeProcessInListByID(state, v) {
             //найти индекс по ID и заменить по индексу
@@ -277,7 +277,7 @@ export default createStore({
 
         readyProcessesByID(state) {
             return state.processList.reduce((s, v) => {
-                if (v.type='ready') {
+                if (v.status='ready') {
                     s[v.id] = v;
                     return s;
                 }
@@ -285,7 +285,7 @@ export default createStore({
         },
         draftProcessesByID(state) {
             return state.processList.reduce((s, v) => {
-                if (v.type='draft') {
+                if (v.status='draft') {
                     s[v.id] = v;
                     return s;
                 }
@@ -294,7 +294,7 @@ export default createStore({
 
         templateProcessesByID(state) {
             return state.processList.reduce((s, v) => {
-                if (v.type='template') {
+                if (v.status='template') {
                     s[v.id] = v;
                     return s;
                 }

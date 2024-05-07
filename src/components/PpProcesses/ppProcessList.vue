@@ -14,7 +14,7 @@
                         }"
                   v-model:gridMode="readyProcessesGridMode"
                   @rowClick="onRowClick"
-                  :key="renderKeyReadyProcesses"
+                  :key="readyProcessesRenderKey"
               >
 
                 <TtColumn
@@ -39,8 +39,8 @@
                 >
                 </TtColumn>
                 <TtColumn
-                    label="Тип"
-                    prop="type"
+                    label="Статус"
+                    prop="status"
                     v-model:sortable="SortMode"
                 >
                 </TtColumn>
@@ -63,7 +63,7 @@
                     prop=""
                 >
                   <template
-                      v-if="prepareToSave"
+                      v-if="showCheckboxes"
                       #default="{ row }"
                   >
                     <div class="d-flex align-content-center p-10">
@@ -82,23 +82,13 @@
                         @click.stop="onToggleMenu(rowIdx)"
                     >
                       <i class="ico ico-menu" style="font-size: 20px"></i>
-                      <div
+                      <ppProcessMenu
                           class="menu-container"
                           v-if="openedMenus[rowIdx]"
                           v-click-outside="hideMenu"
-                      >
-                        <div class="menu-item d-flex align-items-center" @click.stop="onStartProcess(row.id)">Начать</div>
-                        <div class="menu-item d-flex align-items-center" @click.stop="onChangeProcess(row.id)">Изменить</div>
-                        <div class="menu-item d-flex align-items-center" @click.stop="onDuplicateProcess(row.id)">Дублировать</div>
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onCreateDraftFromTemplate(row.id)">Создать черновик из этого</div>-->
-                        <div class="menu-item d-flex align-items-center" @click.stop="onCreateTemplateFromDraftOrReady(row.id)">Создать шаблон из этого</div>
-                        <div class="menu-item d-flex align-items-center" @click.stop="onToDraft(row.id)">В черновики</div>
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onToReady(row.id)">В готовые</div>-->
-                        <div class="menu-item d-flex align-items-center" @click.stop="onToTemplate(row.id)">В шаблоны</div>
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onRemoveProcess(row.id)">Удалить</div>-->
-                        <div class="menu-item d-flex align-items-center" @click.stop="onToTrash(row.id)">В мусарню</div>
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onFromTrash(row.id)">На волю</div>-->
-                      </div>
+                          :items="readyProcessesMenuItems"
+                          @onClickMenuItem="(action)=>$emit('doAction', action, [row.id])"
+                      />
                     </div>
                     <!--                <div class="menu-overlay"-->
                     <!--                     @click="hideMenu"-->
@@ -121,7 +111,7 @@
                         }"
                   v-model:gridMode="draftProcessesGridMode"
                   @rowClick="onRowClick"
-                  :key="renderKeyDraftProcesses"
+                  :key="draftProcessesRenderKey"
               >
 
                 <TtColumn
@@ -146,8 +136,8 @@
                 >
                 </TtColumn>
                 <TtColumn
-                    label="Тип"
-                    prop="type"
+                    label="Статус"
+                    prop="status"
                     v-model:sortable="SortMode"
                 >
                 </TtColumn>
@@ -170,7 +160,7 @@
                     prop=""
                 >
                   <template
-                      v-if="prepareToSave"
+                      v-if="showCheckboxes"
                       #default="{ row }"
                   >
                     <div class="d-flex align-content-center p-10">
@@ -189,23 +179,13 @@
                         @click.stop="onToggleMenu(rowIdx)"
                     >
                       <i class="ico ico-menu" style="font-size: 20px"></i>
-                      <div
+                      <ppProcessMenu
                           class="menu-container"
                           v-if="openedMenus[rowIdx]"
                           v-click-outside="hideMenu"
-                      >
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onStartProcess(row.id)">Начать</div>-->
-                        <div class="menu-item d-flex align-items-center" @click.stop="onChangeProcess(row.id)">Изменить</div>
-                        <div class="menu-item d-flex align-items-center" @click.stop="onDuplicateProcess(row.id)">Дублировать</div>
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onCreateDraftFromTemplate(row.id)">Создать черновик из этого</div>-->
-                        <div class="menu-item d-flex align-items-center" @click.stop="onCreateTemplateFromDraftOrReady(row.id)">Создать шаблон из этого</div>
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onToDraft(row.id)">В черновики</div>-->
-                        <div class="menu-item d-flex align-items-center" @click.stop="onToReady(row.id)">В готовые</div>
-                        <div class="menu-item d-flex align-items-center" @click.stop="onToTemplate(row.id)">В шаблоны</div>
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onRemoveProcess(row.id)">Удалить</div>-->
-                        <div class="menu-item d-flex align-items-center" @click.stop="onToTrash(row.id)">В мусарню</div>
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onFromTrash(row.id)">На волю</div>-->
-                      </div>
+                          :items="draftProcessesMenuItems"
+                          @onClickMenuItem="(action)=>$emit('doAction', action, row.id)"
+                      />
                     </div>
                     <!--                <div class="menu-overlay"-->
                     <!--                     @click="hideMenu"-->
@@ -217,7 +197,6 @@
                 </TtColumn>
 
               </AppTransTable>
-
             </el-tab-pane>
             <el-tab-pane label="Шаблоны">
               <AppTransTable
@@ -229,7 +208,7 @@
                         }"
                   v-model:gridMode="templateProcessesGridMode"
                   @rowClick="onRowClick"
-                  :key="renderKeyTemplateProcesses"
+                  :key="templateProcessesRenderKey"
               >
 
                 <TtColumn
@@ -254,8 +233,8 @@
                 >
                 </TtColumn>
                 <TtColumn
-                    label="Тип"
-                    prop="type"
+                    label="Статус"
+                    prop="status"
                     v-model:sortable="SortMode"
                 >
                 </TtColumn>
@@ -278,7 +257,7 @@
                     prop=""
                 >
                   <template
-                      v-if="prepareToSave"
+                      v-if="showCheckboxes"
                       #default="{ row }"
                   >
                     <div class="d-flex align-content-center p-10">
@@ -302,17 +281,13 @@
                           v-if="openedMenus[rowIdx]"
                           v-click-outside="hideMenu"
                       >
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onStartProcess(row.id)">Начать</div>-->
-                        <div class="menu-item d-flex align-items-center" @click.stop="onChangeProcess(row.id)">Изменить</div>
-                        <div class="menu-item d-flex align-items-center" @click.stop="onDuplicateProcess(row.id)">Дублировать</div>
-                        <div class="menu-item d-flex align-items-center" @click.stop="onCreateDraftFromTemplate(row.id)">Создать черновик из этого</div>
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onCreateTemplateFromDraftOrReady(row.id)">Создать шаблон из этого</div>-->
-                        <div class="menu-item d-flex align-items-center" @click.stop="onToDraft(row.id)">В черновики</div>
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onToReady(row.id)">В готовые</div>-->
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onToTemplate(row.id)">В шаблоны</div>-->
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onRemoveProcess(row.id)">Удалить</div>-->
-                        <div class="menu-item d-flex align-items-center" @click.stop="onToTrash(row.id)">В мусарню</div>
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onFromTrash(row.id)">На волю</div>-->
+                        <ppProcessMenu
+                            class="menu-container"
+                            v-if="openedMenus[rowIdx]"
+                            v-click-outside="hideMenu"
+                            :items="templateProcessesMenuItems"
+                            @onClickMenuItem="(action)=>$emit('doAction', action, row.id)"
+                        />
                       </div>
                     </div>
                     <!--                <div class="menu-overlay"-->
@@ -325,9 +300,8 @@
                 </TtColumn>
 
               </AppTransTable>
-
             </el-tab-pane>
-            <el-tab-pane label="Корзинка">
+            <el-tab-pane label="Корзина">
               <AppTransTable
                   class="trans-table"
                   :data="deletedProcessesSortedSource"
@@ -337,7 +311,7 @@
                         }"
                   v-model:gridMode="deletedProcessesGridMode"
                   @rowClick="onRowClick"
-                  :key="renderKeyDeletedProcesses"
+                  :key="deletedProcessesRenderKey"
               >
 
                 <TtColumn
@@ -362,8 +336,8 @@
                 >
                 </TtColumn>
                 <TtColumn
-                    label="Тип"
-                    prop="type"
+                    label="Статус"
+                    prop="status"
                     v-model:sortable="SortMode"
                 >
                 </TtColumn>
@@ -386,7 +360,7 @@
                     prop=""
                 >
                   <template
-                      v-if="prepareToSave"
+                      v-if="showCheckboxes"
                       #default="{ row }"
                   >
                     <div class="d-flex align-content-center p-10">
@@ -410,17 +384,13 @@
                           v-if="openedMenus[rowIdx]"
                           v-click-outside="hideMenu"
                       >
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onStartProcess(row.id)">Начать</div>-->
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onChangeProcess(row.id)">Изменить</div>-->
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onDuplicateProcess(row.id)">Дублировать</div>-->
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onCreateDraftFromTemplate(row.id)">Создать черновик из этого</div>-->
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onCreateTemplateFromDraftOrReady(row.id)">Создать шаблон из этого</div>-->
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onToDraft(row.id)">В черновики</div>-->
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onToReady(row.id)">В готовые</div>-->
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onToTemplate(row.id)">В шаблоны</div>-->
-                        <div class="menu-item d-flex align-items-center" @click.stop="onRemoveProcess(row.id)">Удалить</div>
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onToTrash(row.id)">В мусарню</div>-->
-                        <div class="menu-item d-flex align-items-center" @click.stop="onFromTrash(row.id)">На волю</div>
+                        <ppProcessMenu
+                            class="menu-container"
+                            v-if="openedMenus[rowIdx]"
+                            v-click-outside="hideMenu"
+                            :items="deletedProcessesMenuItems"
+                            @onClickMenuItem="(action)=>$emit('doAction', action, row.id)"
+                        />
                       </div>
                     </div>
                     <!--                <div class="menu-overlay"-->
@@ -434,7 +404,6 @@
 
               </AppTransTable>
             </el-tab-pane>
-
             <el-tab-pane label="Все">
               <AppTransTable
                   class="trans-table"
@@ -445,7 +414,7 @@
                         }"
                   v-model:gridMode="allProcessesGridMode"
                   @rowClick="onRowClick"
-                  :key="renderKeyAllProcesses"
+                  :key="allProcessesRenderKey"
               >
 
                 <TtColumn
@@ -471,8 +440,8 @@
                 >
                 </TtColumn>
                 <TtColumn
-                    label="Тип"
-                    prop="type"
+                    label="Статус"
+                    prop="status"
                     v-model:sortable="SortMode"
                 >
                 </TtColumn>
@@ -495,7 +464,7 @@
                     prop=""
                 >
                   <template
-                      v-if="prepareToSave"
+                      v-if="showCheckboxes"
                       #default="{ row }"
                   >
                     <div class="d-flex align-content-center p-10">
@@ -519,17 +488,13 @@
                           v-if="openedMenus[rowIdx]"
                           v-click-outside="hideMenu"
                       >
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onStartProcess(row.id)">Начать</div>-->
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onChangeProcess(row.id)">Изменить</div>-->
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onDuplicateProcess(row.id)">Дублировать</div>-->
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onCreateDraftFromTemplate(row.id)">Создать черновик из этого</div>-->
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onCreateTemplateFromDraftOrReady(row.id)">Создать шаблон из этого</div>-->
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onToDraft(row.id)">В черновики</div>-->
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onToReady(row.id)">В готовые</div>-->
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onToTemplate(row.id)">В шаблоны</div>-->
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onRemoveProcess(row.id)">Удалить</div>-->
-                        <div class="menu-item d-flex align-items-center" @click.stop="onToTrash(row.id)">В мусарню</div>
-<!--                        <div class="menu-item d-flex align-items-center" @click.stop="onFromTrash(row.id)">На волю</div>-->
+                        <ppProcessMenu
+                            class="menu-container"
+                            v-if="openedMenus[rowIdx]"
+                            v-click-outside="hideMenu"
+                            :items="allProcessesMenuItems"
+                            @onClickMenuItem="(action)=>$emit('doAction', action, row.id)"
+                        />
                       </div>
                     </div>
                     <!--                <div class="menu-overlay"-->
@@ -542,20 +507,20 @@
                 </TtColumn>
 
               </AppTransTable>
-            </el-tab-pane>
+            </el-tab-pane >
 
           </el-tabs>
         </div>
         <div class="process-list-control">
           <button
-              v-if="!prepareToSave"
+              v-if="!showCheckboxes"
               class="btn btn-outline-primary btn-actions btn-sm"
               @click="onCreateProcess"
           >
             Создать пустой черновик
           </button>
           <button
-              v-if="!prepareToSave"
+              v-if="!showCheckboxes"
               class="btn btn-outline-primary btn-actions btn-sm"
           >
             <label class="add-item" for="id-input-file" style="margin-bottom: 0">
@@ -568,35 +533,35 @@
           </button>
 
           <button
-              v-if="!prepareToSave"
+              v-if="!showCheckboxes"
               class="btn btn-outline-primary btn-actions btn-sm"
               @click="onSelectProcesses"
           >
             Выбрать процессы для сохранения
           </button>
           <button
-              v-if="prepareToSave"
+              v-if="showCheckboxes"
               class="btn btn-outline-primary btn-actions btn-sm"
               @click="onCancel"
           >
             Отмена
           </button>
           <button
-              v-if="prepareToSave"
+              v-if="showCheckboxes"
               :disabled="selectedIDs.length===sortedSource.length"
               class="btn btn-outline-primary btn-actions btn-sm"
               @click="onSelectAll">
             Выбрать все
           </button>
           <button
-              v-if="prepareToSave"
+              v-if="showCheckboxes"
               :disabled="selectedIDs.length===0"
               class="btn btn-outline-primary btn-actions btn-sm"
               @click="onUnselectAll">
             Развыбрать все
           </button>
           <button
-              v-if="prepareToSave"
+              v-if="showCheckboxes"
               :disabled="selectedIDs.length===0"
               class="btn btn-outline-primary btn-actions btn-sm"
               @click="onSave"
@@ -604,6 +569,22 @@
             Сохранить выбранные
           </button>
         </div>
+        {{Object.entries(tabs).map((v)=>v[1].menuItems)}}
+        <el-tabs type="border-card">
+          <el-tab-pane
+              v-for="tab in Object.entries(tabs).map((v)=>v[1])"
+              :label="tab.title"
+          >
+            <ppProcessListTab
+              :menuIems="tab.menuItems"
+              :source="source"
+              :gridMode="allProcessesGridMode"
+              :showCheckboxes="showCheckboxes"
+              :key="allProcessesRenderKey"
+              @doAction="doAction"
+            />
+          </el-tab-pane>
+        </el-tabs>
       </b-row>
     </b-container>
   </div>
@@ -614,6 +595,9 @@
 import AppTransTable from '@/components/Common/AppTransformerTable/AppTransTable.vue';
 import TtColumn from '@/components/Common/AppTransformerTable/TtColumn.vue';
 import TableMixin from "@/components/Common/AppTransformerTable/TableMixin.vue";
+import ppProcessMenu from "@/components/PpProcesses/ppProcessMenu.vue";
+import AppTabs from "@/components/PpProcesses/AppTabs.vue";
+import ppProcessListTab from "@/components/PpProcesses/ppProcessListTab.vue";
 
 const defaultSortOrder = {
   field: 'changedDt',
@@ -622,48 +606,43 @@ const defaultSortOrder = {
 
 export default {
   name: 'ppProcessList',
-  components: {AppTransTable, TtColumn},
+  components: {AppTransTable, TtColumn, AppTabs, ppProcessMenu, ppProcessListTab},
   props: ['source'],
   mixins: [TableMixin],
   data() {
     return {
       sortMode: {...defaultSortOrder},
-      prepareToSave: false,
+      showCheckboxes: false,
       checkedList: {},
       currentRow: null,
       openedMenus: {},
 
     }
   },
+  setup() {
+    const allMenuItems = {'start': 'Начать сессию', 'change': 'Редактировать', 'duplicate': 'Дублировать', 'toDraft': 'В черновики', 'toReady': 'В готовые', 'toTemplate': 'В шаблоны', 'toTrash': 'В корзину', 'restore': 'Восстановить', 'remove': 'Удалить насовсем'};
+    const tabs = {
+      'tabReady': {title: 'Готовые', menuItems: ['start', 'change', 'duplicate', 'toDraft', 'toTemplate', 'toTrash']},
+      'tabDrafts': {title: 'Черновики', menuItems: ['start', 'change', 'duplicate', 'toReady', 'toTemplate', 'toTrash']},
+      'tabTemplates': {title: 'Шаблоны', menuItems: ['start', 'change', 'duplicate', 'toReady', 'toDraft', 'toTrash']},
+      'tabTrash': {title: 'Корзина', menuItems: ['restore', 'remove']},
+      'tabAll': {title: 'Все', menuItems: ['toTrash']}
+    };
+    return {
+      allMenuItems,
+      tabs
+    }
+  },
 
   computed: {
-    renderKeyAllProcesses() {
-      return 'all'+this.prepareToSave.toString();
+    readyProcessesRenderKey() {
+      return 'draft'+this.showCheckboxes.toString();
     },
-    allProcessesGridMode() {
-      return {
-        xxl: '20px 2fr 2fr 1fr 1fr 1fr 40px',
-        xl: '20px 2fr 2fr 1fr 1fr 1fr 40px',
-        lg: '20px 2fr 2fr 1fr 1fr 1fr 40px',
-        md: '20px 2fr 2fr 1fr 1fr 1fr 40px',
-      }
-    },
-    allProcessesSortedSource() {
-      let orderDESC = this.sortMode.order === 'DESC';
-      return [...this.source].sort((a, b) => {
-        if (a[this.sortMode.field] < b[this.sortMode.field]) {
-          return orderDESC ? 1 : -1
-        } else {
-          return orderDESC ? -1 : 1
-        }
-      });
-    },
-
-    renderKeyReadyProcesses() {
-      return 'draft'+this.prepareToSave.toString();
+    readyProcessesMenuItems() {
+      return this.menuItems(['start', 'change', 'duplicate', 'toDraft', 'toTemplate', 'toTrash']);
     },
     readyProcesses() {
-      return this.source.filter((v)=>(v.type === 'ready' && v.deleted === false));
+      return this.source.filter((v)=>(v.status === 'ready' && v.deleted === false));
     },
     readyProcessesGridMode() {
       return {
@@ -684,11 +663,14 @@ export default {
       });
     },
 
-    renderKeyDraftProcesses() {
-      return 'draft'+this.prepareToSave.toString();
+    draftProcessesRenderKey() {
+      return 'draft'+this.showCheckboxes.toString();
+    },
+    draftProcessesMenuItems() {
+      return this.menuItems(['start', 'change', 'duplicate', 'toReady', 'toTemplate', 'toTrash']);
     },
     draftProcesses() {
-      return this.source.filter((v)=>v.type === 'draft' && v.deleted === false);
+      return this.source.filter((v)=>v.status === 'draft' && v.deleted === false);
     },
     draftProcessesGridMode() {
       return {
@@ -709,11 +691,14 @@ export default {
       });
     },
 
-    renderKeyTemplateProcesses() {
-      return 'template'+this.prepareToSave.toString();
+    templateProcessesRenderKey() {
+      return 'template'+this.showCheckboxes.toString();
+    },
+    templateProcessesMenuItems() {
+      return this.menuItems(['start', 'change', 'duplicate', 'toReady', 'toDraft', 'toTrash']);
     },
     templateProcesses() {
-      return this.source.filter((v)=>v.type === 'template' && v.deleted === false);
+      return this.source.filter((v)=>v.status === 'template' && v.deleted === false);
     },
     templateProcessesGridMode() {
       return {
@@ -734,8 +719,11 @@ export default {
       });
     },
 
-    renderKeyDeletedProcesses() {
-      return 'deleted'+this.prepareToSave.toString();
+    deletedProcessesRenderKey() {
+      return 'deleted'+this.showCheckboxes.toString();
+    },
+    deletedProcessesMenuItems() {
+      return this.menuItems(['restore', 'remove']);
     },
     deletedProcesses() {
       return this.source.filter((v)=>v.deleted === true);
@@ -759,6 +747,31 @@ export default {
       });
     },
 
+    allProcessesRenderKey() {
+      return 'all'+this.showCheckboxes.toString();
+    },
+    allProcessesMenuItems() {
+      return this.menuItems(['toTrash']);
+    },
+    allProcessesGridMode() {
+      return {
+        xxl: '20px 2fr 2fr 1fr 1fr 1fr 40px',
+        xl: '20px 2fr 2fr 1fr 1fr 1fr 40px',
+        lg: '20px 2fr 2fr 1fr 1fr 1fr 40px',
+        md: '20px 2fr 2fr 1fr 1fr 1fr 40px',
+      }
+    },
+    allProcessesSortedSource() {
+      let orderDESC = this.sortMode.order === 'DESC';
+      return [...this.source].sort((a, b) => {
+        if (a[this.sortMode.field] < b[this.sortMode.field]) {
+          return orderDESC ? 1 : -1
+        } else {
+          return orderDESC ? -1 : 1
+        }
+      });
+    },
+
     selectedIDs() {
       return Object.keys(this.checkedList).filter((v) => {
         if (this.checkedList[v] === true) return v
@@ -766,6 +779,22 @@ export default {
     },
   },
   methods: {
+    menuItems(v) {
+      return v.reduce((s, w)=>{
+        s[w]=this.allMenuItems[w];
+        return s;
+      }, {});
+    },
+    tabMenuItems(tabName) {
+      return this.tabs(tabName).menuItems.reduce((s, w)=>{
+        s[w]=this.allMenuItems[w];
+        return s;
+      }, {});
+    },
+    doAction(v1, v2) {
+      console.log('insideProcessList: ', 'doAction', v1, v2);
+      this.$emit('doAction', v1, v2);
+    },
     onRowClick(v) {
       this.currentRow = v.rowIdx;
     },
@@ -777,14 +806,14 @@ export default {
     },
 
     onSelectProcesses() {
-      this.prepareToSave = true;
+      this.showCheckboxes = true;
     },
     onCancel() {
-      this.prepareToSave = false;
+      this.showCheckboxes = false;
     },
     onSave() {
       this.$emit('doAction', 'save', this.selectedIDs, null);
-      this.prepareToSave = false;
+      this.showCheckboxes = false;
     },
     onSelectAll() {
       this.source.forEach((v) => {
@@ -804,53 +833,8 @@ export default {
       let file = e.target.files[0];
       this.$emit('doAction', 'load', null, file);
     },
-    onChangeProcess(v) {
-      this.$emit('doAction', 'change', [v], null);
-      this.openedMenus = {};
-    },
-    onDuplicateProcess(v) {
-      this.$emit('doAction', 'duplicate', [v], null);
-      console.log(v);
-      this.openedMenus = {};
-    },
-    onRemoveProcess(v) {
-      this.$emit('doAction', 'remove', [v], null);
-      this.openedMenus = {};
-    },
-    onToDraft(v) {
-      this.$emit('doAction', 'toDraft', [v], null);
-      this.openedMenus = {};
-    },
-    onToReady(v) {
-      this.$emit('doAction', 'toReady', [v], null);
-      this.openedMenus = {};
-    },
-    onToTemplate(v) {
-      this.$emit('doAction', 'toTemplate', [v], null);
-      this.openedMenus = {};
-    },
-    onCreateDraftFromTemplate(v) {
-      this.$emit('doAction', 'fromTemplate', [v], null);
-      this.openedMenus = {};
-    },
-    onCreateTemplateFromDraftOrReady(v) {
-      this.$emit('doAction', 'fromDraftOrReady', [v], null);
-      this.openedMenus = {};
-    },
-    onToTrash(v) {
-      this.$emit('doAction', 'toTrash', [v], null);
-      this.openedMenus = {};
-    },
-    onFromTrash(v) {
-      this.$emit('doAction', 'fromTrash', [v], null);
-      this.openedMenus = {};
-    },
 
 
-    onStartProcess(v) {
-      this.$emit('doAction', 'start', [v], null);
-      this.openedMenus = {};
-    },
   },
 
   mounted() {
@@ -878,7 +862,8 @@ export default {
 
       .menu-container {
         position: absolute;
-        top: -44px;
+        //top: -44px;
+        bottom: -10px;
         right: 15px;
         width: auto;
         height: auto;
