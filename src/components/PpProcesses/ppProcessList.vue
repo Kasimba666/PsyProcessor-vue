@@ -24,7 +24,8 @@
                 >
                   <template
                       #default="{ row }"
-                  > {{!!row.deleted ? '-' : '+'}}
+                  >
+                      {{!!row.deleted ? '-' : '+'}}
                   </template>
                 </TtColumn>
                 <TtColumn
@@ -38,7 +39,7 @@
                     prop="id"
                 >
                   <template #default={row}>
-                    {{ ((v)=>{let shortV = JSON.parse(JSON.stringify(v.split(''))); shortV.splice(4,28, '...'); return shortV.join('')})(row.id) }}
+                      {{ idShort(row.id) }}
                   </template>
                 </TtColumn>
                 <TtColumn
@@ -138,7 +139,7 @@
                     prop="id"
                 >
                   <template #default={row}>
-                    {{ ((v)=>{let shortV = JSON.parse(JSON.stringify(v.split(''))); shortV.splice(4,28, '...'); return shortV.join('')})(row.id) }}
+                      {{ idShort(row.id) }}
                   </template>
                 </TtColumn>
                 <TtColumn
@@ -238,7 +239,7 @@
                     prop="id"
                 >
                   <template #default={row}>
-                    {{ ((v)=>{let shortV = JSON.parse(JSON.stringify(v.split(''))); shortV.splice(4,28, '...'); return shortV.join('')})(row.id) }}
+                      {{ idShort(row.id) }}
                   </template>
                 </TtColumn>
                 <TtColumn
@@ -344,7 +345,7 @@
                     prop="id"
                 >
                   <template #default={row}>
-                    {{ ((v)=>{let shortV = JSON.parse(JSON.stringify(v.split(''))); shortV.splice(4,28, '...'); return shortV.join('')})(row.id) }}
+                      {{ idShort(row.id) }}
                   </template>
 
                 </TtColumn>
@@ -452,7 +453,7 @@
                     prop="id"
                 >
                   <template #default={row}>
-                    {{ ((v)=>{let shortV = JSON.parse(JSON.stringify(v.split(''))); shortV.splice(4,28, '...'); return shortV.join('')})(row.id) }}
+                      {{ idShort(row.id) }}
                   </template>
                 </TtColumn>
                 <TtColumn
@@ -632,6 +633,8 @@ import TableMixin from "@/components/Common/AppTransformerTable/TableMixin.vue";
 import ppProcessMenu from "@/components/PpProcesses/ppProcessMenu.vue";
 import AppTabs from "@/components/PpProcesses/AppTabs.vue";
 import ppProcessListTab from "@/components/PpProcesses/ppProcessListTab.vue";
+import {useIdFilters} from "@/composables/useIdFilters.js";
+import {useDtFilters} from "@/composables/useDtFilters.js";
 
 const defaultSortOrder = {
   field: 'changedDt',
@@ -660,10 +663,12 @@ export default {
         xl: '20px 2fr 100px 80px 1fr 1fr 40px',
         lg: '20px 2fr 100px 80px 1fr 1fr 40px',
         md: '20px 2fr 100px 80px 1fr 1fr 40px',
-      }
+      };
+    const {idShort} = useIdFilters();
     return {
       allMenuItems,
-      gridMode
+      gridMode,
+      idShort
     }
   },
 

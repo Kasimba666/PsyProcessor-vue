@@ -32,7 +32,7 @@
           prop="id"
       >
         <template #default={row}>
-          {{ ((v)=>{let shortV = JSON.parse(JSON.stringify(v.split(''))); shortV.splice(4,28, '...'); return shortV.join('')})(row.id) }}
+          {{ idShort(row.id) }}
         </template>
 
       </TtColumn>
@@ -106,6 +106,8 @@ import ppProcessMenu from "@/components/PpProcesses/ppProcessMenu.vue";
 import TableMixin from "@/components/Common/AppTransformerTable/TableMixin.vue";
 import AppTransTable from '@/components/Common/AppTransformerTable/AppTransTable.vue';
 import TtColumn from '@/components/Common/AppTransformerTable/TtColumn.vue';
+import {useDtFilters} from "@/composables/useDtFilters.js";
+import {useIdFilters} from "@/composables/useIdFilters.js";
 
 const defaultSortOrder = {
   field: 'changedDt',
@@ -123,6 +125,12 @@ export default {
       currentRow: null,
     }
   },
+    setup() {
+        const {idShort} = useIdFilters();
+        return {
+            idShort
+        }
+    },
   computed: {
     sortedSource() {
       let orderDESC = this.sortMode.order === 'DESC';
