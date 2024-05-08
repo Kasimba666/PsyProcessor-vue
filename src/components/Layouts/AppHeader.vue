@@ -58,12 +58,12 @@ export default {
     }
   },
 
-    setup() {
-        const {dtIsoShort} = useDtFilters();
-        return {
-            dtIsoShort
-        }
-    },
+  setup() {
+      const {dtIsoShort} = useDtFilters();
+      return {
+          dtIsoShort
+      }
+  },
   computed: {
     ...mapState(['currentSessionID', 'sessionList', 'screen', 'screenBreakpoints']),
     ...mapGetters(['markerSessions']),

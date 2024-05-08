@@ -13,7 +13,8 @@
       "toSave": false,
       "toAdd": false
     },
-    "type": "ready",
+    "type": "process",
+    "status": "draft",
 	"deleted": false,
     "vars": [
       {
