@@ -223,7 +223,8 @@ export default createStore({
                         toSave: false,
                         toAdd: false,
                     },
-                    type: 'draft',
+                    type: 'process',
+                    status: 'draft',
                     deleted: false,
                     vars: [
                         {name: '$topic', value: '',},

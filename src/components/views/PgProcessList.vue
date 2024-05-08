@@ -53,7 +53,7 @@ export default {
       if (this.processList === null || this.processList.length === 0) return [];
       return this.processList.map(v => {
         return {
-          id: ((v)=>{v.splice(4,28, '...'); return v.join('')})(v.id.split('')),
+          id: v.id,
           status: v.status,
           deleted: v.deleted,
           processTitle: v.header.processTitle,
@@ -91,7 +91,6 @@ export default {
         }
           return;
         case 'duplicate': {
-          // console.log('внутри дубликата');
           let forSave = [];
           for (let i = 0; i < IDs.length; i++) {
             forSave.push(JSON.parse(JSON.stringify(this.processesByID[IDs[i]])));

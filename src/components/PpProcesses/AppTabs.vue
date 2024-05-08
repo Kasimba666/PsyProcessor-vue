@@ -49,6 +49,7 @@ export default {
   },
   methods: {
     selectTab(tab) {
+      console.log('fromAppTabs', tab);
       this.$emit('selectTab', tab);
     },
   },

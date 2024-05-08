@@ -12,7 +12,7 @@
                           breakpoint: 'sm',
                           titleWidth: 'calc(15% + 100px)', // ширина столбца заголовков
                         }"
-                  v-model:gridMode="readyProcessesGridMode"
+                  v-model:gridMode="gridMode"
                   @rowClick="onRowClick"
                   :key="readyProcessesRenderKey"
               >
@@ -37,6 +37,9 @@
                     label="ID"
                     prop="id"
                 >
+                  <template #default={row}>
+                    {{ ((v)=>{let shortV = JSON.parse(JSON.stringify(v.split(''))); shortV.splice(4,28, '...'); return shortV.join('')})(row.id) }}
+                  </template>
                 </TtColumn>
                 <TtColumn
                     label="Статус"
@@ -109,7 +112,7 @@
                           breakpoint: 'sm',
                           titleWidth: 'calc(15% + 100px)', // ширина столбца заголовков
                         }"
-                  v-model:gridMode="draftProcessesGridMode"
+                  v-model:gridMode="gridMode"
                   @rowClick="onRowClick"
                   :key="draftProcessesRenderKey"
               >
@@ -134,6 +137,9 @@
                     label="ID"
                     prop="id"
                 >
+                  <template #default={row}>
+                    {{ ((v)=>{let shortV = JSON.parse(JSON.stringify(v.split(''))); shortV.splice(4,28, '...'); return shortV.join('')})(row.id) }}
+                  </template>
                 </TtColumn>
                 <TtColumn
                     label="Статус"
@@ -184,7 +190,7 @@
                           v-if="openedMenus[rowIdx]"
                           v-click-outside="hideMenu"
                           :items="draftProcessesMenuItems"
-                          @onClickMenuItem="(action)=>$emit('doAction', action, row.id)"
+                          @onClickMenuItem="(action)=>$emit('doAction', action, [row.id])"
                       />
                     </div>
                     <!--                <div class="menu-overlay"-->
@@ -206,7 +212,7 @@
                           breakpoint: 'sm',
                           titleWidth: 'calc(15% + 100px)', // ширина столбца заголовков
                         }"
-                  v-model:gridMode="templateProcessesGridMode"
+                  v-model:gridMode="gridMode"
                   @rowClick="onRowClick"
                   :key="templateProcessesRenderKey"
               >
@@ -231,6 +237,9 @@
                     label="ID"
                     prop="id"
                 >
+                  <template #default={row}>
+                    {{ ((v)=>{let shortV = JSON.parse(JSON.stringify(v.split(''))); shortV.splice(4,28, '...'); return shortV.join('')})(row.id) }}
+                  </template>
                 </TtColumn>
                 <TtColumn
                     label="Статус"
@@ -286,7 +295,7 @@
                             v-if="openedMenus[rowIdx]"
                             v-click-outside="hideMenu"
                             :items="templateProcessesMenuItems"
-                            @onClickMenuItem="(action)=>$emit('doAction', action, row.id)"
+                            @onClickMenuItem="(action)=>$emit('doAction', action, [row.id])"
                         />
                       </div>
                     </div>
@@ -309,7 +318,7 @@
                           breakpoint: 'sm',
                           titleWidth: 'calc(15% + 100px)', // ширина столбца заголовков
                         }"
-                  v-model:gridMode="deletedProcessesGridMode"
+                  v-model:gridMode="gridMode"
                   @rowClick="onRowClick"
                   :key="deletedProcessesRenderKey"
               >
@@ -334,6 +343,10 @@
                     label="ID"
                     prop="id"
                 >
+                  <template #default={row}>
+                    {{ ((v)=>{let shortV = JSON.parse(JSON.stringify(v.split(''))); shortV.splice(4,28, '...'); return shortV.join('')})(row.id) }}
+                  </template>
+
                 </TtColumn>
                 <TtColumn
                     label="Статус"
@@ -389,7 +402,7 @@
                             v-if="openedMenus[rowIdx]"
                             v-click-outside="hideMenu"
                             :items="deletedProcessesMenuItems"
-                            @onClickMenuItem="(action)=>$emit('doAction', action, row.id)"
+                            @onClickMenuItem="(action)=>$emit('doAction', action, [row.id])"
                         />
                       </div>
                     </div>
@@ -412,7 +425,7 @@
                           breakpoint: 'sm',
                           titleWidth: 'calc(15% + 100px)', // ширина столбца заголовков
                         }"
-                  v-model:gridMode="allProcessesGridMode"
+                  v-model:gridMode="gridMode"
                   @rowClick="onRowClick"
                   :key="allProcessesRenderKey"
               >
@@ -438,6 +451,9 @@
                     label="ID"
                     prop="id"
                 >
+                  <template #default={row}>
+                    {{ ((v)=>{let shortV = JSON.parse(JSON.stringify(v.split(''))); shortV.splice(4,28, '...'); return shortV.join('')})(row.id) }}
+                  </template>
                 </TtColumn>
                 <TtColumn
                     label="Статус"
@@ -493,7 +509,7 @@
                             v-if="openedMenus[rowIdx]"
                             v-click-outside="hideMenu"
                             :items="allProcessesMenuItems"
-                            @onClickMenuItem="(action)=>$emit('doAction', action, row.id)"
+                            @onClickMenuItem="(action)=>$emit('doAction', action, [row.id])"
                         />
                       </div>
                     </div>
@@ -569,22 +585,40 @@
             Сохранить выбранные
           </button>
         </div>
-        {{Object.entries(tabs).map((v)=>v[1].menuItems)}}
-        <el-tabs type="border-card">
-          <el-tab-pane
-              v-for="tab in Object.entries(tabs).map((v)=>v[1])"
-              :label="tab.title"
+<!--        <el-tabs type="border-card">-->
+<!--          <el-tab-pane-->
+<!--              v-for="tab in Object.entries(tabs).map((v)=>v[1])"-->
+<!--              :label="tab.title"-->
+<!--          >-->
+<!--            <ppProcessListTab-->
+<!--              :menuItems="tab.menuItems"-->
+<!--              :source="tab.source"-->
+<!--              :gridMode="tab.gridMode"-->
+<!--              :showCheckboxes="showCheckboxes"-->
+<!--              @doAction="((v1, v2)=>{$emit('doAction', v1, v2)})"-->
+<!--            />-->
+<!--          </el-tab-pane>-->
+<!--        </el-tabs>-->
+        <div class="tabs-container">
+          <AppTabs
+              :currentTab="currentTab"
+              v-model:tabsList="tabsList"
+              @selectTab="(v)=>{this.currentTab = v}"
+          />
+
+          <div
+              v-for="tab in arrTabs"
           >
             <ppProcessListTab
-              :menuIems="tab.menuItems"
-              :source="source"
-              :gridMode="allProcessesGridMode"
-              :showCheckboxes="showCheckboxes"
-              :key="allProcessesRenderKey"
-              @doAction="doAction"
+                v-if="tab.name===this.currentTab"
+                :menuItems="tab.menuItems"
+                :source="tab.source"
+                :gridMode="tab.gridMode"
+                :showCheckboxes="showCheckboxes"
+                @doAction="((v1, v2)=>{$emit('doAction', v1, v2)})"
             />
-          </el-tab-pane>
-        </el-tabs>
+          </div>
+        </div>
       </b-row>
     </b-container>
   </div>
@@ -616,41 +650,73 @@ export default {
       checkedList: {},
       currentRow: null,
       openedMenus: {},
-
+      currentTab: ''
     }
   },
   setup() {
     const allMenuItems = {'start': 'Начать сессию', 'change': 'Редактировать', 'duplicate': 'Дублировать', 'toDraft': 'В черновики', 'toReady': 'В готовые', 'toTemplate': 'В шаблоны', 'toTrash': 'В корзину', 'restore': 'Восстановить', 'remove': 'Удалить насовсем'};
-    const tabs = {
-      'tabReady': {title: 'Готовые', menuItems: ['start', 'change', 'duplicate', 'toDraft', 'toTemplate', 'toTrash']},
-      'tabDrafts': {title: 'Черновики', menuItems: ['start', 'change', 'duplicate', 'toReady', 'toTemplate', 'toTrash']},
-      'tabTemplates': {title: 'Шаблоны', menuItems: ['start', 'change', 'duplicate', 'toReady', 'toDraft', 'toTrash']},
-      'tabTrash': {title: 'Корзина', menuItems: ['restore', 'remove']},
-      'tabAll': {title: 'Все', menuItems: ['toTrash']}
-    };
+    const gridMode = {
+        xxl: '20px 2fr 100px 80px 1fr 1fr 40px',
+        xl: '20px 2fr 100px 80px 1fr 1fr 40px',
+        lg: '20px 2fr 100px 80px 1fr 1fr 40px',
+        md: '20px 2fr 100px 80px 1fr 1fr 40px',
+      }
     return {
       allMenuItems,
-      tabs
+      gridMode
     }
   },
 
   computed: {
+    tabsList() {
+      return Object.entries(this.tabs).map((v)=>{return {value: v[0], name: v[1].title}});
+    },
+    tabs() {
+      return {
+        'tabReady': {
+          title: 'Готовые',
+          menuItems: this.menuItems(['start', 'change', 'duplicate', 'toDraft', 'toTemplate', 'toTrash']),
+          gridMode: this.gridMode,
+          source: this.source.filter((v)=>(v.status === 'ready' && v.deleted === false))
+        },
+        'tabDrafts': {
+          title: 'Черновики',
+          menuItems: this.menuItems(['start', 'change', 'duplicate', 'toReady', 'toTemplate', 'toTrash']),
+          gridMode: this.gridMode,
+          source: this.source.filter((v)=>v.status === 'draft' && v.deleted === false)
+        },
+        'tabTemplates': {
+          title: 'Шаблоны',
+          menuItems: this.menuItems(['start', 'change', 'duplicate', 'toReady', 'toDraft', 'toTrash']),
+          gridMode: this.gridMode,
+          source: this.source.filter((v)=>v.status === 'template' && v.deleted === false)
+        },
+        'tabTrash': {
+          title: 'Корзина',
+          menuItems: this.menuItems(['restore', 'remove']),
+          gridMode: this.gridMode,
+          source: this.source.filter((v)=>v.deleted === true)
+        },
+        'tabAll': {
+          title: 'Все',
+          menuItems: this.menuItems(['toTrash']),
+          gridMode: this.gridMode,
+          source: this.source
+        }
+      }
+    },
+    arrTabs() {
+      return Object.entries(this.tabs).map((v)=> {
+        let newValue = v[1];
+        newValue['name'] = v[0];
+        return newValue;
+      });
+    },
     readyProcessesRenderKey() {
       return 'draft'+this.showCheckboxes.toString();
     },
-    readyProcessesMenuItems() {
-      return this.menuItems(['start', 'change', 'duplicate', 'toDraft', 'toTemplate', 'toTrash']);
-    },
     readyProcesses() {
       return this.source.filter((v)=>(v.status === 'ready' && v.deleted === false));
-    },
-    readyProcessesGridMode() {
-      return {
-        xxl: '20px 2fr 2fr 1fr 1fr 1fr 40px',
-        xl: '20px 2fr 2fr 1fr 1fr 1fr 40px',
-        lg: '20px 2fr 2fr 1fr 1fr 1fr 40px',
-        md: '20px 2fr 2fr 1fr 1fr 1fr 40px',
-      }
     },
     readyProcessesSortedSource() {
       let orderDESC = this.sortMode.order === 'DESC';
@@ -666,20 +732,10 @@ export default {
     draftProcessesRenderKey() {
       return 'draft'+this.showCheckboxes.toString();
     },
-    draftProcessesMenuItems() {
-      return this.menuItems(['start', 'change', 'duplicate', 'toReady', 'toTemplate', 'toTrash']);
-    },
     draftProcesses() {
       return this.source.filter((v)=>v.status === 'draft' && v.deleted === false);
     },
-    draftProcessesGridMode() {
-      return {
-        xxl: '20px 2fr 2fr 1fr 1fr 1fr 40px',
-        xl: '20px 2fr 2fr 1fr 1fr 1fr 40px',
-        lg: '20px 2fr 2fr 1fr 1fr 1fr 40px',
-        md: '20px 2fr 2fr 1fr 1fr 1fr 40px',
-      }
-    },
+
     draftProcessesSortedSource() {
       let orderDESC = this.sortMode.order === 'DESC';
       return [...this.draftProcesses].sort((a, b) => {
@@ -694,19 +750,8 @@ export default {
     templateProcessesRenderKey() {
       return 'template'+this.showCheckboxes.toString();
     },
-    templateProcessesMenuItems() {
-      return this.menuItems(['start', 'change', 'duplicate', 'toReady', 'toDraft', 'toTrash']);
-    },
     templateProcesses() {
       return this.source.filter((v)=>v.status === 'template' && v.deleted === false);
-    },
-    templateProcessesGridMode() {
-      return {
-        xxl: '20px 2fr 2fr 1fr 1fr 1fr 40px',
-        xl: '20px 2fr 2fr 1fr 1fr 1fr 40px',
-        lg: '20px 2fr 2fr 1fr 1fr 1fr 40px',
-        md: '20px 2fr 2fr 1fr 1fr 1fr 40px',
-      }
     },
     templateProcessesSortedSource() {
       let orderDESC = this.sortMode.order === 'DESC';
@@ -722,19 +767,8 @@ export default {
     deletedProcessesRenderKey() {
       return 'deleted'+this.showCheckboxes.toString();
     },
-    deletedProcessesMenuItems() {
-      return this.menuItems(['restore', 'remove']);
-    },
     deletedProcesses() {
       return this.source.filter((v)=>v.deleted === true);
-    },
-    deletedProcessesGridMode() {
-      return {
-        xxl: '20px 2fr 2fr 1fr 1fr 1fr 40px',
-        xl: '20px 2fr 2fr 1fr 1fr 1fr 40px',
-        lg: '20px 2fr 2fr 1fr 1fr 1fr 40px',
-        md: '20px 2fr 2fr 1fr 1fr 1fr 40px',
-      }
     },
     deletedProcessesSortedSource() {
       let orderDESC = this.sortMode.order === 'DESC';
@@ -749,17 +783,6 @@ export default {
 
     allProcessesRenderKey() {
       return 'all'+this.showCheckboxes.toString();
-    },
-    allProcessesMenuItems() {
-      return this.menuItems(['toTrash']);
-    },
-    allProcessesGridMode() {
-      return {
-        xxl: '20px 2fr 2fr 1fr 1fr 1fr 40px',
-        xl: '20px 2fr 2fr 1fr 1fr 1fr 40px',
-        lg: '20px 2fr 2fr 1fr 1fr 1fr 40px',
-        md: '20px 2fr 2fr 1fr 1fr 1fr 40px',
-      }
     },
     allProcessesSortedSource() {
       let orderDESC = this.sortMode.order === 'DESC';
@@ -785,15 +808,14 @@ export default {
         return s;
       }, {});
     },
-    tabMenuItems(tabName) {
-      return this.tabs(tabName).menuItems.reduce((s, w)=>{
-        s[w]=this.allMenuItems[w];
-        return s;
-      }, {});
-    },
+    // tabMenuItems(tabName) {
+    //   return this.tabs(tabName).menuItems.reduce((s, w)=>{
+    //     s[w]=this.allMenuItems[w];
+    //     return s;
+    //   }, {});
+    // },
     doAction(v1, v2) {
-      console.log('insideProcessList: ', 'doAction', v1, v2);
-      this.$emit('doAction', v1, v2);
+      // this.$emit('doAction', v1, v2);
     },
     onRowClick(v) {
       this.currentRow = v.rowIdx;
@@ -833,7 +855,6 @@ export default {
       let file = e.target.files[0];
       this.$emit('doAction', 'load', null, file);
     },
-
 
   },
 
@@ -931,5 +952,11 @@ export default {
     }
   }
 
+  .tabs-container {
+    position: relative;
+    width: 100%;
+    height: auto;
+    border: 1px solid #dcdfe6;
+  }
 }
 </style>

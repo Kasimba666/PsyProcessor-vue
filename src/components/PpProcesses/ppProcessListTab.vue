@@ -9,9 +9,7 @@
                         }"
         :gridMode="gridMode"
         @rowClick="onRowClick"
-
     >
-
       <TtColumn
           label=""
           prop="deleted"
@@ -33,6 +31,10 @@
           label="ID"
           prop="id"
       >
+        <template #default={row}>
+          {{ ((v)=>{let shortV = JSON.parse(JSON.stringify(v.split(''))); shortV.splice(4,28, '...'); return shortV.join('')})(row.id) }}
+        </template>
+
       </TtColumn>
       <TtColumn
           label="Статус"
@@ -78,19 +80,13 @@
               @click.stop="onToggleMenu(rowIdx)"
           >
             <i class="ico ico-menu" style="font-size: 20px"></i>
-            <div
-                class="menu-container"
-                v-if="openedMenus[rowIdx]"
-                v-click-outside="hideMenu"
-            >
               <ppProcessMenu
                   class="menu-container"
                   v-if="openedMenus[rowIdx]"
                   v-click-outside="hideMenu"
                   :items="menuItems"
-                  @onClickMenuItem="(action)=>$emit('doAction', action, row.id)"
+                  @onClickMenuItem="(action)=>$emit('doAction', action, [row.id])"
               />
-            </div>
           </div>
           <!--                <div class="menu-overlay"-->
           <!--                     @click="hideMenu"-->
@@ -146,6 +142,7 @@ export default {
     hideMenu() {
       this.openedMenus = {};
     },
+
     onRowClick(v) {
       this.currentRow = v.rowIdx;
     },
