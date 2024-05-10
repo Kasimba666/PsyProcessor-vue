@@ -35,7 +35,7 @@ export default {
   },
     setup() {
         const {dtIsoShort, dtIsoFileName} = useDtFilters();
-        const {saveJSONFile, loadJSON} = useDtFilters();
+        const {saveJSONFile, loadJSON} = useFiles();
         return {
             dtIsoShort,
             dtIsoFileName,
@@ -205,7 +205,7 @@ export default {
           IDs.forEach((v) => {
             arr.push(this.processesByID[v]);
           });
-          let result = prompt('Введите название файла выгрузки', arr.map((v)=>v.header.processTitle).join(' ') + ' ' + this.dtIsoFileName(new Date()).toISOString())
+          let result = prompt('Введите название файла выгрузки', arr.map((v)=>v.header.processTitle).join(' ') + ' ' + this.dtIsoFileName((new Date()).toISOString()));
           if (!!result) this.saveJSONFile(arr, result);
         }
           return;

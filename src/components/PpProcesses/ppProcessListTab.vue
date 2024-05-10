@@ -67,8 +67,9 @@
           <div class="d-flex align-content-center p-10">
             <input
                 type="checkbox"
+                v-model="tabCheckedList[row.id]"
+                @input="onCheckBox"
             />
-<!--                v-model="checkedList[row.id]"-->
           </div>
         </template>
         <template
@@ -106,23 +107,24 @@ import ppProcessMenu from "@/components/PpProcesses/ppProcessMenu.vue";
 import TableMixin from "@/components/Common/AppTransformerTable/TableMixin.vue";
 import AppTransTable from '@/components/Common/AppTransformerTable/AppTransTable.vue';
 import TtColumn from '@/components/Common/AppTransformerTable/TtColumn.vue';
-import {useDtFilters} from "@/composables/useDtFilters.js";
 import {useIdFilters} from "@/composables/useIdFilters.js";
 
 const defaultSortOrder = {
   field: 'changedDt',
   order: 'ASC'
+
 };
 
 export default {
   name: 'ppProcessListTab',
   components: {AppTransTable, TtColumn, ppProcessMenu},
-  props: ['menuItems', 'source', 'gridMode', 'showCheckboxes'],
+  props: ['menuItems', 'source', 'gridMode', 'showCheckboxes', 'tabCheckedList'],
   mixins: [TableMixin],
   data() {
     return {
       openedMenus: {},
       currentRow: null,
+      // tabCheckedList: {},
     }
   },
     setup() {
@@ -150,12 +152,22 @@ export default {
     hideMenu() {
       this.openedMenus = {};
     },
-
+    onCheckBox() {
+      this.$emit('setChecked', this.tabCheckedList);
+    },
     onRowClick(v) {
       this.currentRow = v.rowIdx;
     },
   },
+  watch: {
+    // tabCheckedList: {handler(v, old) {
+    //     console.log(v);
+    //     if (v !== old) this.$emit('setChecked', this.tabCheckedList);
+    // }, deep: true
+    // }
+  },
   mounted() {
+    this.$emit('setChecked', {});
   },
 }
 </script>
