@@ -85,8 +85,8 @@ export default {
             let forEdit = JSON.parse(JSON.stringify(this.processesByID[IDs[0]]));
             this.$store.commit('isNewProcess', false);
             this.$store.commit('currentEditableProcess', forEdit);
-            this.$store.commit('currentEditableProcessID', IDs[0]);
-            this.$router.push({name: 'PgConstructor'});
+            this.$store.commit('currentEditableProcessID', IDs[0])
+            this.$router.push({name: 'PgConstructor', params: {id: IDs[0]}});
           }
         }
           return;
@@ -120,36 +120,6 @@ export default {
           }
         }
           return;
-
-        // case 'fromTemplate': {
-        //   //дублировать и сделать тип 'Черновик'
-        //   let forSave = [];
-        //   for (let i = 0; i < IDs.length; i++) {
-        //     if (this.processesByID[IDs[i]].status === 'template') forSave.push(JSON.parse(JSON.stringify(this.processesByID[IDs[i]])));
-        //   }
-        //   forSave.forEach(v => {
-        //     v.id = createUuid();
-        //     v.header.processTitle += ' - дубликат';
-        //     v.status = 'draft'
-        //   }); // обновляем IDs
-        //   this.$store.commit('addProcessesInList', forSave);
-        // }
-        //   return;
-        //
-        // case 'fromDraftOrReady': {
-        //   //дублировать и сделать тип 'Шаблон'
-        //   let forSave = [];
-        //   for (let i = 0; i < IDs.length; i++) {
-        //     if (this.processesByID[IDs[i]].status === 'draft' || this.processesByID[IDs[i]].status === 'ready') forSave.push(JSON.parse(JSON.stringify(this.processesByID[IDs[i]])));
-        //   }
-        //   forSave.forEach(v => {
-        //     v.id = createUuid();
-        //     v.header.processTitle += ' - дубликат';
-        //     v.status = 'template'
-        //   }); // обновляем IDs
-        //   this.$store.commit('addProcessesInList', forSave);
-        // }
-        //   return;
 
         case 'remove': {
           if (IDs.length > 0) {

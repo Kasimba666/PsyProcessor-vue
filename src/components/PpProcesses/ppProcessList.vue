@@ -18,7 +18,8 @@
                 :gridMode="tab.gridMode"
                 :showCheckboxes="showCheckboxes"
                 v-model:tabCheckedList="checkedList[currentTab]"
-                @doAction="((v1, v2)=>{$emit('doAction', v1, v2)})"
+                @doActionOnMenu="((v1, v2)=>{$emit('doAction', v1, v2)})"
+                :key="currentTab+'_'+showCheckboxes"
             />
           </div>
         </div>
@@ -59,7 +60,7 @@
           </button>
           <button
               v-if="showCheckboxes"
-              :disabled="selectedIDs.length===sortedSource.length"
+              :disabled="selectedIDs.length===source.length"
               class="btn btn-outline-primary btn-actions btn-sm"
               @click="onSelectAll">
             Выбрать все
@@ -105,12 +106,10 @@ export default {
   name: 'ppProcessList',
   components: {AppTransTable, TtColumn, AppTabs, ppProcessMenu, ppProcessListTab},
   props: ['source'],
-  mixins: [TableMixin],
   data() {
     return {
       sortMode: {...defaultSortOrder},
       showCheckboxes: false,
-      currentRow: null,
       openedMenus: {},
       currentTab: 'tabAll',
       previousTab: '',
@@ -139,16 +138,6 @@ export default {
   },
 
   computed: {
-    sortedSource() {
-      let orderDESC = this.sortMode.order === 'DESC';
-      return [...this.source].sort((a, b) => {
-        if (a[this.sortMode.field] < b[this.sortMode.field]) {
-          return orderDESC ? 1 : -1
-        } else {
-          return orderDESC ? -1 : 1
-        }
-      });
-    },
     tabsList() {
       return Object.entries(this.tabs).map((v)=>{return {value: v[0], name: v[1].title}});
     },
@@ -158,7 +147,7 @@ export default {
           title: 'Готовые',
           menuItems: this.menuItems(['start', 'change', 'duplicate', 'toDraft', 'toTemplate', 'toTrash']),
           gridMode: this.gridMode,
-          source: this.source.filter((v)=>(v.status === 'ready' && v.deleted === false))
+          source: this.source.filter((v)=>(v.status === 'ready' && v.deleted === false)),
         },
         'tabDrafts': {
           title: 'Черновики',
@@ -210,13 +199,6 @@ export default {
         return s;
       }, {});
     },
-
-    doAction(v1, v2) {
-      // this.$emit('doAction', v1, v2);
-    },
-    onRowClick(v) {
-      this.currentRow = v.rowIdx;
-    },
     onToggleMenu(v) {
         this.openedMenus = {[v]: !this.openedMenus[v]};
     },
@@ -260,6 +242,7 @@ export default {
   },
 
   mounted() {
+    Object.keys(this.tabs).forEach((v)=>this.checkedList[v]={});
   },
 
 }

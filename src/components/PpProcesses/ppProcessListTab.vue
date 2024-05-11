@@ -86,7 +86,7 @@
                   v-if="openedMenus[rowIdx]"
                   v-click-outside="hideMenu"
                   :items="menuItems"
-                  @onClickMenuItem="(action)=>$emit('doAction', action, [row.id])"
+                  @onClickMenuItem="(action)=>$emit('doActionOnMenu', action, [row.id])"
               />
           </div>
           <!--                <div class="menu-overlay"-->
@@ -124,7 +124,6 @@ export default {
     return {
       openedMenus: {},
       currentRow: null,
-      // tabCheckedList: {},
     }
   },
     setup() {

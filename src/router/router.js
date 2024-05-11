@@ -36,7 +36,7 @@ const routes = [
     },
     {
         name: 'PgConstructor',
-        path: '/constructor',
+        path: '/constructor/:id?',
         component: PgConstructor,
     },
     {
