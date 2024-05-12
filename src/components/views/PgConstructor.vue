@@ -41,6 +41,9 @@ export default {
 
   computed: {
     ...mapState(['currentEditableProcess', 'currentEditableProcessID', 'isNewProcess']),
+      routeConstructor() {
+        return this.$route.params.id;
+      },
   },
   methods: {
     processChanged() {
@@ -67,10 +70,17 @@ export default {
 
   },
   watch: {
-    // currentEditableProcessID: {handler(v, old) {
-    //   if (v !== null && v !== old) this.currentEditableProcess = this.currentEditableProcess;
-    // },
-    // }
+      routeConstructor: {
+          handler(v, old) {
+              console.log('Сработал вотчер', v);
+              // if (v === 'new') console.log('Новый процесс');
+              // if (v !== null && v !== old) {
+              //     console.log('Проверка процесса на существование');
+              //     console.log('Загрузка процесса для редактирования:', v);
+              //     // this.currentEditableProcess = this.currentEditableProcess;
+              // }
+          }
+      }
   },
 }
 </script>

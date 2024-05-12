@@ -127,7 +127,7 @@ export default {
     },
     computed: {
         processType() {
-          switch (this.process.type) {
+          switch (this.process.status) {
             case 'ready': {
             return 'Готовый процесс';
           }
