@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import {mapGetters} from "vuex";
+import {useScreen} from '@/composables/useScreen.js'
 
 export default {
   name: 'AppTabs',
@@ -34,8 +34,14 @@ export default {
     return {
     };
   },
+  setup() {
+    const {screen, screenBreakpoints} = useScreen();
+    return {
+      screen,
+      screenBreakpoints
+    }
+  },
   computed: {
-    ...mapGetters(['screen', 'screenBreakpoints']),
     showDropdown() {
       if (!this.dropdownFrom) {
         return false;

@@ -22,7 +22,7 @@
 
 <script>
 import PpConstructor from "@/components/PpConstructor/PpConstructor.vue";
-import {mapState} from "vuex";
+import {mapGetters, mapState} from "vuex";
 import {v4} from "uuid";
 let generateID = () => {
     return v4();
@@ -41,6 +41,7 @@ export default {
 
   computed: {
     ...mapState(['currentEditableProcess', 'currentEditableProcessID', 'isNewProcess']),
+    ...mapGetters(['processesByID']),
       routeConstructor() {
         return this.$route.params.id;
       },
@@ -67,6 +68,27 @@ export default {
     },
   },
   mounted() {
+    let newId = this.$route.params.id;
+    if (newId === 'new') {
+      console.log('задать вопрос: создаём новый черновик или шаблон');
+      return;
+    };
+    //проверить вхождение в список существующих процессов
+    const procByID = this.processesByID[newId];
+    if (!procByID) {
+      const msgError = 'Ошибка в адресной строке.';
+      let msgErrorDetail = '';
+      if (newId.length<36) {
+        msgErrorDetail = 'Слишком короткий идентификатор.'
+      } else {
+        msgErrorDetail = 'Процесс с таким идентификатором не найден.'
+      };
+      const msgErrorFullText = msgError+' '+msgErrorDetail+'Проверьте правильность ссылки.'
+      return;
+    } else {
+      alert(newId.length);
+      //Загрузить процесс для редактирования
+    };
 
   },
   watch: {

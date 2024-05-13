@@ -34,7 +34,8 @@
 
 <script>
 import TtSortButton from "./TtSortButton.vue";
-import { mapState } from "vuex";
+import {useScreen} from '@/composables/useScreen.js'
+
 export default {
     name: "TtColumn",
     components: {TtSortButton},
@@ -43,8 +44,14 @@ export default {
     data() {
         return {};
     },
+    setup() {
+      const {screen, screenBreakpoints} = useScreen();
+      return {
+        screen,
+        screenBreakpoints
+      }
+    },
     computed: {
-        ...mapState(['screen']),
         Align(){
             let out = {justifyContent: 'start', textAlign: 'left'};
             if(this.mode.value === 'card') {

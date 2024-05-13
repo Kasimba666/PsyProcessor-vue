@@ -43,8 +43,7 @@
 import TtRow from './TtRow.vue';
 import TtHeader from './TtHeader.vue';
 import TtCard from './TtCard.vue';
-
-import {mapState} from "vuex";
+import {useScreen} from '@/composables/useScreen.js'
 
 let self;
 export default {
@@ -98,8 +97,13 @@ export default {
             renderKey: 0,
         };
     },
+    setup() {
+      const {screen} = useScreen();
+      return {
+        screen,
+      }
+    },
     computed: {
-        ...mapState(['screen']),
         mode() {
             const st = this.screenTypes;
             // debugger
