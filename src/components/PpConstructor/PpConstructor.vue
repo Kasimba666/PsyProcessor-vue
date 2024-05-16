@@ -37,7 +37,9 @@
 
             <div class="struct-panel">
                 <div class="head">
-                    <span>{{ 'Процесс:' }}</span>
+
+                  <span>{{ processType }}:</span>
+<!--                  <span>{{ 'Процесс:' }}</span>-->
                     <input class="head-input"
                            type="text"
                            v-model="process.header.processTitle"
@@ -124,6 +126,22 @@ export default {
         }
     },
     computed: {
+        processType() {
+          switch (this.process.status) {
+            case 'ready': {
+            return 'Готовый процесс';
+          }
+            case 'draft': {
+            return 'Черновик';
+          }
+            case 'template': {
+            return 'Шаблон';
+          }
+            default: {
+              return 'Ошибка!'
+            }
+          }
+        },
         parentNodeType() {
             if (this.currentNode === null) return '';
             let result = '';

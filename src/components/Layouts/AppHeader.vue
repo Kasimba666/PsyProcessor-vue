@@ -44,6 +44,7 @@
 <script>
 import {mapGetters, mapMutations, mapState} from "vuex";
 import {useDtFilters} from "@/composables/useDtFilters.js";
+import {useScreen} from '@/composables/useScreen.js'
 
 const markerWidth = 96;
 const markerGap = 10;
@@ -58,14 +59,19 @@ export default {
     }
   },
 
-    setup() {
-        const {dtIsoShort} = useDtFilters();
-        return {
-            dtIsoShort
-        }
-    },
+  setup() {
+    const {dtIsoShort} = useDtFilters();
+    const {screen, screenBreakPoints, setScreenListener, removeScreenListener} = useScreen();
+      return {
+          dtIsoShort,
+          screen,
+          screenBreakPoints,
+          setScreenListener,
+          removeScreenListener
+      }
+  },
   computed: {
-    ...mapState(['currentSessionID', 'sessionList', 'screen', 'screenBreakpoints']),
+    ...mapState(['currentSessionID', 'sessionList']),
     ...mapGetters(['markerSessions']),
     ...mapMutations(['changeSessionStatusByID', 'sessionsToPausedExceptThis']),
     markersStacked() {
@@ -73,32 +79,6 @@ export default {
     },
   },
   methods: {
-    onResize() {
-      let screen = {};
-      screen['width'] = window.innerWidth;
-      screen['height'] = window.innerHeight;
-      let t = "";
-      switch (true) {
-        case screen.width <= this.screenBreakpoints.sm:
-          t = "xs";
-          break;
-        case screen.width <= this.screenBreakpoints.md:
-          t = "sm";
-          break;
-        case screen.width <= this.screenBreakpoints.lg:
-          t = "md";
-          break;
-        case screen.width <= this.screenBreakpoints.xl:
-          t = "lg";
-          break;
-        default:
-          t = "xl";
-          break;
-      }
-      screen['type'] = t;
-      this.$store.commit("screen", screen);
-    },
-
     onMarker(v) {
       //обработка нажатия на другую закладку, чем открыта сейчас
       if (v.id !== this.currentSessionID) {
@@ -120,8 +100,10 @@ export default {
     },
   },
   mounted() {
-    this.onResize();
-    window.addEventListener("resize", this.onResize);
+    this.setScreenListener();
+  },
+  unmounted() {
+    this.removeScreenListener();
   },
 }
 </script>

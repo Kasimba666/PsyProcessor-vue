@@ -22,7 +22,7 @@
 
 <script>
 import PpConstructor from "@/components/PpConstructor/PpConstructor.vue";
-import {mapState} from "vuex";
+import {mapGetters, mapState} from "vuex";
 import {v4} from "uuid";
 let generateID = () => {
     return v4();
@@ -33,41 +33,7 @@ export default {
   props: [],
   data() {
     return {
-      // process: {
-      //   id: generateID(),
-      //   header: {
-      //     processTitle: "Новый процесс",
-      //     version: "0.0.1",
-      //     processCategory: ["common"],
-      //     createdDt: (new Date()).toISOString(),
-      //     changedDt: (new Date()).toISOString(),
-      //     description: 'Описание',
-      //     toSave: false,
-      //     toAdd: false,
-      //   },
-      //   type: 'process',
-      //   vars: [
-      //     {name: '$topic', value: '',},
-      //     {name: '$last', value: '',},
-      //   ],
-      //   rootNode: {
-      //     type: 'loopList',
-      //     attrs: {
-      //       nodeName: {
-      //         inpType: 'text',
-      //         inpLabel: 'Название узла (optional)',
-      //         value: 'root',
-      //       },
-      //       loopCount: {
-      //         inpType: 'number',
-      //         inpLabel: 'Количество циклов',
-      //         value: 0, // ноль означает бесконечный цикл
-      //       },
-      //     },
-      //     list: [],
-      //     forKey: 'root',
-      //   }
-      // },
+
       debounceTime: 800,
       debounceHandle: null,
     }
@@ -75,6 +41,10 @@ export default {
 
   computed: {
     ...mapState(['currentEditableProcess', 'currentEditableProcessID', 'isNewProcess']),
+    ...mapGetters(['processesByID']),
+      routeConstructor() {
+        return this.$route.params.id;
+      },
   },
   methods: {
     processChanged() {
@@ -98,13 +68,41 @@ export default {
     },
   },
   mounted() {
+    let newId = this.$route.params.id;
+    if (newId === 'new') {
+      console.log('задать вопрос: создаём новый черновик или шаблон');
+      return;
+    };
+    //проверить вхождение в список существующих процессов
+    const procByID = this.processesByID[newId];
+    if (!procByID) {
+      const msgError = 'Ошибка в адресной строке.';
+      let msgErrorDetail = '';
+      if (newId.length<36) {
+        msgErrorDetail = 'Слишком короткий идентификатор.'
+      } else {
+        msgErrorDetail = 'Процесс с таким идентификатором не найден.'
+      };
+      const msgErrorFullText = msgError+' '+msgErrorDetail+'Проверьте правильность ссылки.'
+      return;
+    } else {
+      alert(newId.length);
+      //Загрузить процесс для редактирования
+    };
 
   },
   watch: {
-    // currentEditableProcessID: {handler(v, old) {
-    //   if (v !== null && v !== old) this.currentEditableProcess = this.currentEditableProcess;
-    // },
-    // }
+      routeConstructor: {
+          handler(v, old) {
+              console.log('Сработал вотчер', v);
+              // if (v === 'new') console.log('Новый процесс');
+              // if (v !== null && v !== old) {
+              //     console.log('Проверка процесса на существование');
+              //     console.log('Загрузка процесса для редактирования:', v);
+              //     // this.currentEditableProcess = this.currentEditableProcess;
+              // }
+          }
+      }
   },
 }
 </script>

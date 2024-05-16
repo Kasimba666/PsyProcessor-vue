@@ -2,107 +2,37 @@
   <div class="ppProcessList">
     <b-container>
       <b-row>
-        <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-
-          <AppTransTable
-              class="trans-table"
-              :data="sortedSource"
-              :cardMode="{
-                            breakpoint: 'sm',
-                            titleWidth: 'calc(15% + 100px)', // ширина столбца заголовков
-                          }"
-              v-model:gridMode="gridMode"
-              @rowClick="onRowClick"
-              :key="prepareToSave"
+        <div class="tabs-container">
+          <AppTabs
+              :currentTab="currentTab"
+              v-model:tabsList="tabsList"
+              @selectTab="onSelectTab"
+          />
+          <div
+              v-for="tab in arrTabs"
           >
-
-            <TtColumn
-                label="Наименование"
-                prop="processTitle"
-                v-model:sortable="SortMode"
-            >
-
-            </TtColumn>
-            <TtColumn
-                label="ID"
-                prop="id"
-            >
-            </TtColumn>
-            <TtColumn
-                label="Дата создания"
-                prop="createdDt"
-                v-model:sortable="SortMode"
-                align="center"
-            >
-            </TtColumn>
-            <TtColumn
-                label="Дата изменения"
-                prop="changedDt"
-                v-model:sortable="SortMode"
-                align="center"
-            >
-            </TtColumn>
-            <TtColumn
-                label=""
-                prop=""
-            >
-              <template
-                  v-if="prepareToSave"
-                  #default="{ row }"
-              >
-                <div class="d-flex align-content-center p-10">
-                  <input
-                      type="checkbox"
-                      v-model="checkedList[row.id]"
-                  />
-                </div>
-              </template>
-              <template
-                  v-else
-                  #default="{row, rowIdx}"
-              >
-                <div
-                    class="btn-menu d-flex align-items-center"
-                    @click.stop="onToggleMenu(rowIdx)"
-                >
-                  <i class="ico ico-menu" style="font-size: 20px"></i>
-                  <div
-                      class="menu-container"
-                      v-if="openedMenus[rowIdx]"
-                      v-click-outside="hideMenu"
-                  >
-                    <div class="menu-item d-flex align-items-center" @click.stop="onStartProcess(row.id)">Начать</div>
-                    <div class="menu-item d-flex align-items-center" @click.stop="onChangeProcess(row.id)">Изменить
-                    </div>
-                    <div class="menu-item d-flex align-items-center" @click.stop="onDuplicateProcess(row.id)">
-                      Дублировать
-                    </div>
-                    <div class="menu-item d-flex align-items-center" @click.stop="onRemoveProcess(row.id)">Удалить</div>
-<!--                    <div class="menu-item d-flex align-items-center" @click.stop="hideMenu">Закрыть</div>-->
-                  </div>
-                </div>
-<!--                <div class="menu-overlay"-->
-<!--                     @click="hideMenu"-->
-<!--                     v-if="openedMenus[rowIdx]"-->
-<!--                />-->
-
-              </template>
-
-            </TtColumn>
-
-          </AppTransTable>
-
+            <ppProcessListTab
+                v-if="tab.name===this.currentTab"
+                :menuItems="tab.menuItems"
+                :source="tab.source"
+                :gridMode="tab.gridMode"
+                :showCheckboxes="showCheckboxes"
+                v-model:tabCheckedList="checkedList[currentTab]"
+                @doActionOnMenu="((v1, v2)=>{$emit('doAction', v1, v2)})"
+                :key="currentTab+'_'+showCheckboxes"
+            />
+          </div>
         </div>
         <div class="process-list-control">
           <button
-              v-if="!prepareToSave"
+              v-if="!showCheckboxes"
               class="btn btn-outline-primary btn-actions btn-sm"
               @click="onCreateProcess"
           >
-            Создать
+            Создать черновик
           </button>
           <button
-              v-if="!prepareToSave"
+              v-if="!showCheckboxes"
               class="btn btn-outline-primary btn-actions btn-sm"
           >
             <label class="add-item" for="id-input-file" style="margin-bottom: 0">
@@ -115,40 +45,40 @@
           </button>
 
           <button
-              v-if="!prepareToSave"
+              v-if="!showCheckboxes"
               class="btn btn-outline-primary btn-actions btn-sm"
               @click="onSelectProcesses"
           >
-            Выбрать процессы для сохранения
+            Выбрать для выгрузки
           </button>
           <button
-              v-if="prepareToSave"
+              v-if="showCheckboxes"
               class="btn btn-outline-primary btn-actions btn-sm"
               @click="onCancel"
           >
             Отмена
           </button>
           <button
-              v-if="prepareToSave"
-              :disabled="selectedIDs.length===sortedSource.length"
+              v-if="showCheckboxes"
+              :disabled="selectedIDs.length===source.length"
               class="btn btn-outline-primary btn-actions btn-sm"
               @click="onSelectAll">
             Выбрать все
           </button>
           <button
-              v-if="prepareToSave"
+              v-if="showCheckboxes"
               :disabled="selectedIDs.length===0"
               class="btn btn-outline-primary btn-actions btn-sm"
               @click="onUnselectAll">
             Развыбрать все
           </button>
           <button
-              v-if="prepareToSave"
+              v-if="showCheckboxes"
               :disabled="selectedIDs.length===0"
               class="btn btn-outline-primary btn-actions btn-sm"
               @click="onSave"
           >
-            Сохранить выбранные
+            Выгрузить выбранные
           </button>
         </div>
       </b-row>
@@ -161,7 +91,11 @@
 import AppTransTable from '@/components/Common/AppTransformerTable/AppTransTable.vue';
 import TtColumn from '@/components/Common/AppTransformerTable/TtColumn.vue';
 import TableMixin from "@/components/Common/AppTransformerTable/TableMixin.vue";
-import {mapState} from "vuex";
+import ppProcessMenu from "@/components/PpProcesses/ppProcessMenu.vue";
+import AppTabs from "@/components/PpProcesses/AppTabs.vue";
+import ppProcessListTab from "@/components/PpProcesses/ppProcessListTab.vue";
+import {useIdFilters} from "@/composables/useIdFilters.js";
+import {useDtFilters} from "@/composables/useDtFilters.js";
 
 const defaultSortOrder = {
   field: 'changedDt',
@@ -170,50 +104,100 @@ const defaultSortOrder = {
 
 export default {
   name: 'ppProcessList',
-  components: {AppTransTable, TtColumn},
+  components: {AppTransTable, TtColumn, AppTabs, ppProcessMenu, ppProcessListTab},
   props: ['source'],
-  mixins: [TableMixin],
   data() {
     return {
       sortMode: {...defaultSortOrder},
-      prepareToSave: false,
-      checkedList: {},
-      currentRow: null,
-      // isMenuOpen: false,
+      showCheckboxes: false,
       openedMenus: {},
+      currentTab: 'tabAll',
+      previousTab: '',
+      checkedList: {}
 
+    }
+  },
+  setup() {
+    const limitRows = 20;
+    const allMenuItems = {'start': 'Начать сессию', 'change': 'Редактировать', 'duplicate': 'Дублировать', 'toDraft': 'В черновики', 'toReady': 'В готовые', 'toTemplate': 'В шаблоны', 'toTrash': 'В корзину', 'restore': 'Восстановить', 'remove': 'Удалить насовсем'};
+    const gridMode = {
+        xxl: '20px 2fr 100px 80px 1fr 1fr 40px',
+        xl: '20px 2fr 100px 80px 1fr 1fr 40px',
+        lg: '20px 2fr 100px 80px 1fr 1fr 40px',
+        md: '20px 2fr 100px 80px 1fr 1fr 40px',
+      };
+    const {idShort} = useIdFilters();
+    const {dtIsoShort, dtIsoFileName} = useDtFilters();
+    return {
+      allMenuItems,
+      gridMode,
+      dtIsoShort,
+      dtIsoFileName,
+      idShort,
     }
   },
 
   computed: {
-    selectedIDs() {
-      return Object.keys(this.checkedList).filter((v) => {
-        if (this.checkedList[v] === true) return v
-      });
+    tabsList() {
+      return Object.entries(this.tabs).map((v)=>{return {value: v[0], name: v[1].title}});
     },
-    gridMode() {
+    tabs() {
       return {
-        xxl: '2fr 3fr 2fr 2fr 40px',
-        xl: '2fr 3fr 2fr 2fr 40px',
-        lg: '2fr 3fr 2fr 2fr 40px',
-        md: '2fr 3fr 2fr 2fr 40px',
+        'tabReady': {
+          title: 'Готовые',
+          menuItems: this.menuItems(['start', 'change', 'duplicate', 'toDraft', 'toTemplate', 'toTrash']),
+          gridMode: this.gridMode,
+          source: this.source.filter((v)=>(v.status === 'ready' && v.deleted === false)),
+        },
+        'tabDrafts': {
+          title: 'Черновики',
+          menuItems: this.menuItems(['start', 'change', 'duplicate', 'toReady', 'toTemplate', 'toTrash']),
+          gridMode: this.gridMode,
+          source: this.source.filter((v)=>v.status === 'draft' && v.deleted === false)
+        },
+        'tabTemplates': {
+          title: 'Шаблоны',
+          menuItems: this.menuItems(['start', 'change', 'duplicate', 'toReady', 'toDraft', 'toTrash']),
+          gridMode: this.gridMode,
+          source: this.source.filter((v)=>v.status === 'template' && v.deleted === false)
+        },
+        'tabTrash': {
+          title: 'Корзина',
+          menuItems: this.menuItems(['restore', 'remove']),
+          gridMode: this.gridMode,
+          source: this.source.filter((v)=>v.deleted === true)
+        },
+        'tabAll': {
+          title: 'Все',
+          menuItems: this.menuItems(['toTrash']),
+          gridMode: this.gridMode,
+          source: this.source
+        }
       }
     },
-
-    sortedSource() {
-      let orderDESC = this.sortMode.order === 'DESC';
-      return [...this.source].sort((a, b) => {
-        if (a[this.sortMode.field] < b[this.sortMode.field]) {
-          return orderDESC ? 1 : -1
-        } else {
-          return orderDESC ? -1 : 1
-        }
+    arrTabs() {
+      return Object.entries(this.tabs).map((v)=> {
+        let newValue = v[1];
+        newValue['name'] = v[0];
+        return newValue;
       });
+    },
+
+    selectedIDs() {
+      if (!!this.checkedList[this.currentTab]) {
+        return Object.entries(this.checkedList[this.currentTab]).map((v) => {
+          if (v[1] === true) return v[0]
+        });
+      }
+      else return [];
     },
   },
   methods: {
-    onRowClick(v) {
-      this.currentRow = v.rowIdx;
+    menuItems(v) {
+      return v.reduce((s, w)=>{
+        s[w]=this.allMenuItems[w];
+        return s;
+      }, {});
     },
     onToggleMenu(v) {
         this.openedMenus = {[v]: !this.openedMenus[v]};
@@ -223,24 +207,22 @@ export default {
     },
 
     onSelectProcesses() {
-      this.prepareToSave = true;
+      this.showCheckboxes = true;
     },
     onCancel() {
-      this.prepareToSave = false;
+      this.showCheckboxes = false;
     },
     onSave() {
       this.$emit('doAction', 'save', this.selectedIDs, null);
-      this.prepareToSave = false;
+      // this.showCheckboxes = false;
     },
     onSelectAll() {
-      this.source.forEach((v) => {
-        this.checkedList[v.id] = true;
+      this.tabs[this.currentTab].source.forEach((v) => {
+        this.checkedList[this.currentTab][v.id] = true;
       });
     },
     onUnselectAll() {
-      this.source.forEach((v) => {
-        this.checkedList[v.id] = false;
-      });
+      this.checkedList[this.currentTab] = {};
     },
     onCreateProcess() {
       this.$emit('doAction', 'create', [], null);
@@ -250,26 +232,17 @@ export default {
       let file = e.target.files[0];
       this.$emit('doAction', 'load', null, file);
     },
-    onChangeProcess(v) {
-      this.$emit('doAction', 'change', [v], null);
-      this.openedMenus = {};
-    },
-    onDuplicateProcess(v) {
-      this.$emit('doAction', 'duplicate', [v], null);
-      this.openedMenus = {};
-    },
-    onRemoveProcess(v) {
-      this.$emit('doAction', 'remove', [v], null);
-      this.openedMenus = {};
-    },
+    onSelectTab(v) {
+      if (this.currentTab !== v) {
+        this.checkedList[this.currentTab] = {};
+        this.currentTab = v;
+      }
 
-    onStartProcess(v) {
-      this.$emit('doAction', 'start', [v], null);
-      this.openedMenus = {};
     },
   },
 
   mounted() {
+    Object.keys(this.tabs).forEach((v)=>this.checkedList[v]={});
   },
 
 }
@@ -294,9 +267,11 @@ export default {
 
       .menu-container {
         position: absolute;
-        top: -44px;
+        //top: -44px;
+        bottom: -10px;
         right: 15px;
         width: auto;
+        height: auto;
         display: flex;
         flex-flow: column nowrap;
         justify-content: center;
@@ -305,6 +280,7 @@ export default {
         border: 1px solid hsl(50, 30%, 65%);
         box-shadow: 2px 1px 12px 0px hsla(0, 0%, 50%, 0.7);
         background-color: white;
+        overflow: visible;
         z-index: 10;
 
         .menu-item {
@@ -312,6 +288,7 @@ export default {
           height: 30px;
           padding-left: 20px;
           padding-right: 20px;
+          white-space: nowrap;
           cursor: pointer;
           color: black;
           border-bottom: 1px solid hsl(50, 30%, 65%);
@@ -359,5 +336,11 @@ export default {
     }
   }
 
+  .tabs-container {
+    position: relative;
+    width: 100%;
+    height: auto;
+    border: 1px solid #dcdfe6;
+  }
 }
 </style>
