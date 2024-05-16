@@ -2,6 +2,15 @@ import {createStore} from "vuex";
 import createPersistedState from 'vuex-persistedstate';
 import {v4} from "uuid";
 
+const screenBreakpoints = {
+    xs: 0,
+    sm: 576,
+    md: 768,
+    lg: 992,
+    xl: 1200,
+    xxl: 1600,
+};
+
 const defaultSortOrder = {
     field: 'changedDt',
     order: 'ASC'
@@ -13,6 +22,12 @@ const generateID = () => {
 
 export default createStore({
     state: {
+        screenBreakpoints,
+        screen: {
+            width: 1200,
+            height: 900,
+            type: 'lg',
+        },
         mobileMenuActive: false,
         mobileMenuTransition: false,
         processList: [],
