@@ -2,15 +2,6 @@ import {createStore} from "vuex";
 import createPersistedState from 'vuex-persistedstate';
 import {v4} from "uuid";
 
-const screenBreakpoints = {
-    xs: 0,
-    sm: 576,
-    md: 768,
-    lg: 992,
-    xxl: 1600,
-};
-
-    xl: 1200,
 const defaultSortOrder = {
     field: 'changedDt',
     order: 'ASC'
