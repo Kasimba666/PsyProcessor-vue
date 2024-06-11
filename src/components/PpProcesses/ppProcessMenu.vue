@@ -42,7 +42,7 @@ export default {
     color: black;
     border-bottom: 1px solid hsl(50, 30%, 65%);
     font-size: 12px;
-    z-index: 15;
+    z-index: 25;
 
     &:last-child {
       border-bottom: none;
