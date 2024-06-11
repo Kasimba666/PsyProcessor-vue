@@ -87,16 +87,15 @@ export default {
           id: this.currentSessionID,
           status: 'paused'
         });
-        this.$router.push({name: 'PgSession', params: {id: v.id}});
         this.$store.commit('currentSessionID', v.id);
         //запустить текущую сессию
         this.$store.commit('changeSessionStatusByID', {
           id: this.currentSessionID,
           status: 'inProgress'
         });
-      } else {
-
       }
+      //переход на страницу сессии
+      this.$router.push({name: 'PgSession', params: {id: v.id}});
     },
   },
   mounted() {
