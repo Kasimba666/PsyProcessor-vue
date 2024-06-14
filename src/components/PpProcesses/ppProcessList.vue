@@ -25,11 +25,18 @@
         </div>
         <div class="process-list-control">
           <button
-              v-if="!showCheckboxes"
+              v-if="!showCheckboxes && currentTab==='tabDrafts'"
               class="btn btn-outline-primary btn-actions btn-sm"
-              @click="onCreateProcess"
+              @click="onCreateDraft"
           >
             Создать черновик
+          </button>
+          <button
+              v-if="!showCheckboxes && currentTab==='tabTemplates'"
+              class="btn btn-outline-primary btn-actions btn-sm"
+              @click="onCreateTemplate"
+          >
+            Создать шаблон
           </button>
           <button
               v-if="!showCheckboxes"
@@ -224,8 +231,12 @@ export default {
     onUnselectAll() {
       this.checkedList[this.currentTab] = {};
     },
-    onCreateProcess() {
-      this.$emit('doAction', 'create', [], null);
+    onCreateDraft() {
+      this.$emit('doAction', 'createDraft', [], null);
+      this.openedMenus = {};
+    },
+    onCreateTemplate() {
+      this.$emit('doAction', 'createTemplate', [], null);
       this.openedMenus = {};
     },
     onLoadProcesses(e) {

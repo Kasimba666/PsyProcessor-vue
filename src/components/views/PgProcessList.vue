@@ -70,13 +70,21 @@ export default {
     onDoAction(action, IDs, file) {
       console.log(action, IDs);
       switch (action) {
-        case 'create': {
-          this.$store.dispatch('createNewProcess').then((v)=>
+        case 'createDraft': {
+          this.$store.dispatch('createNewProcess', 'draft').then((v)=>
           {
             this.$store.commit('currentEditableProcessID', v);
             this.$store.commit('currentEditableProcess', this.processesByID[v]);
-            this.$router.push({name: 'PgConstructor'});
-            alert(v);
+            this.$router.push({name: 'PgConstructor', params: {id: v}});
+          });
+        }
+          return;
+        case 'createTemplate': {
+          this.$store.dispatch('createNewProcess', 'template').then((v)=>
+          {
+            this.$store.commit('currentEditableProcessID', v);
+            this.$store.commit('currentEditableProcess', this.processesByID[v]);
+            this.$router.push({name: 'PgConstructor', params: {id: v}});
           });
         }
           return;
@@ -208,6 +216,7 @@ export default {
 .ProcessList {
   width: 100%;
   height: auto;
+  z-index: 30;
 
 }
 </style>

@@ -3,7 +3,20 @@
     <div class="container">
       <div class="row">
         <div class="col-12">
+<!--          <el-button type="primary" @click="openModal">Выбрать</el-button>-->
+          <el-dialog v-model="dialogVisible" title="Выберите пункт">
+            <el-radio-group v-model="selectedType">
+              <el-radio :value="'draft'">Черновик</el-radio>
+              <el-radio :value="'template'">Шаблон</el-radio>
+            </el-radio-group>
+            <div slot="footer" class="dialog-footer">
+              <el-button @click="dialogVisible = false">Отмена</el-button>
+              <el-button type="primary" @click="confirmSelection">Подтвердить</el-button>
+            </div>
+          </el-dialog>
+<!--          <p>Выбранный тип: {{ selectedType }}</p>-->
           <PpConstructor
+              v-if="!!currentEditableProcess"
               v-model:process="currentEditableProcess"
               @changed="processChanged"
               :key="currentEditableProcess.id"
@@ -24,23 +37,23 @@
 import PpConstructor from "@/components/PpConstructor/PpConstructor.vue";
 import {mapGetters, mapState} from "vuex";
 import {v4} from "uuid";
-let generateID = () => {
-    return v4();
-};
+import { ElButton, ElDialog, ElRadioGroup, ElRadio } from 'element-plus';
+
 export default {
   name: "PgConstructor",
-  components: {PpConstructor},
+  components: {PpConstructor, ElButton, ElDialog, ElRadioGroup, ElRadio},
   props: [],
   data() {
     return {
-
       debounceTime: 800,
       debounceHandle: null,
+      dialogVisible: false,
+      selectedType: 'draft',
     }
   },
 
   computed: {
-    ...mapState(['currentEditableProcess', 'currentEditableProcessID', 'isNewProcess']),
+    ...mapState(['currentEditableProcess', 'currentEditableProcessID']),
     ...mapGetters(['processesByID']),
       routeConstructor() {
         return this.$route.params.id;
@@ -56,50 +69,101 @@ export default {
     },
     onSaveInList() {
       let forSave = JSON.parse(JSON.stringify(this.currentEditableProcess));
-      if (!this.isNewProcess) {
+
+      //если процесс с таким id есть в списке, то обновляем его, если нет, то добавляем новый
+      if (!!this.processesByID[this.currentEditableProcessID]) {
+        console.log('есть такой процесс');
         this.$store.commit('changeProcessInListByID', {id: this.currentEditableProcessID, process: forSave});
       } else {
+        console.log('нет такого процесса и сейчас мы его добавим в список');
         this.$store.commit('addProcessesInList', [forSave]);
-        //убрать флаг нового процесса
-        this.$store.commit('isNewProcess', false);
+
       };
 
+      // this.$router.push({name: 'PgProcessList', params:{id: forSave.id}});
       this.$router.push({name: 'PgProcessList'});
+    },
+    createProcess() {
+      //проверить, есть ли текущий процесс
+      //спросить, процесс какого типа надо создать
+      console.log('создание нового процесса');
+      this.openModal();
+      this.$store.dispatch('createNewProcess', this.selectedType).then((v)=>
+      {
+        this.$store.commit('currentEditableProcessID', v);
+        this.$store.commit('currentEditableProcess', this.processesByID[v]);
+        this.$router.push({name: 'PgConstructor', params: {id: v}});
+      });
+    },
+
+    openModal(){
+      this.dialogVisible = true;
+    },
+
+    confirmSelection(){
+      this.dialogVisible = false;
     },
   },
   mounted() {
-    let newId = this.$route.params.id;
-    if (newId === 'new') {
-      console.log('задать вопрос: создаём новый черновик или шаблон');
-      return;
-    };
-    //проверить вхождение в список существующих процессов
-    const procByID = this.processesByID[newId];
-    if (!procByID) {
-      const msgError = 'Ошибка в адресной строке.';
-      let msgErrorDetail = '';
-      if (newId.length<36) {
-        msgErrorDetail = 'Слишком короткий идентификатор.'
+    if (this.routeConstructor === undefined) {
+      console.log('routeConstructor is Undefined, вы попали сюда через ссылку в Хедере');
+      //проверяем, существует ли CurrentProcess
+      this.createProcess();
+      return
+    }
+
+    if (this.routeConstructor === '') {
+      console.log('routeConstructor = пустаяСтрока, вы попали сюда через адресную строку без указания id');
+      //проверяем, существует ли CurrentProcess
+      this.createProcess();
+      return
+    }
+
+    if (!!this.routeConstructor) {
+      console.log('routeConstructor:', this.routeConstructor);
+      const procByID = this.processesByID[this.routeConstructor];
+      console.log('procByID', procByID);
+      //проверить вхождение в список существующих процессов
+      if (!procByID) {
+        console.log('процесс не найден');
+        const msgError = 'Ошибка в адресной строке.';
+        let msgErrorDetail = '';
+        if (this.routeConstructor.length<36) {
+          msgErrorDetail = 'Слишком короткий идентификатор.'
+        } else {
+          msgErrorDetail = 'Процесс с таким идентификатором не найден.'
+        };
+        const msgErrorFullText = msgError+' '+msgErrorDetail+' Проверьте правильность ссылки.'
+        alert(msgErrorFullText);
+        if (!this.currentEditableProcess) this.createProcess();
+        return;
       } else {
-        msgErrorDetail = 'Процесс с таким идентификатором не найден.'
+        //Загрузить процесс для редактирования
+        this.$store.commit('currentEditableProcessID', procByID.id);
+        this.$store.commit('currentEditableProcess', procByID);
       };
-      const msgErrorFullText = msgError+' '+msgErrorDetail+'Проверьте правильность ссылки.'
-      return;
+
     } else {
-      alert(newId.length);
-      //Загрузить процесс для редактирования
+      //проверить, есть ли какой-либо текущий процесс
+      //если нет, то:
+      if (!this.currentEditableProcess) this.createProcess();
+      return;
+
     };
+
+    //
+
+
 
   },
   watch: {
       routeConstructor: {
           handler(v, old) {
-              console.log('Сработал вотчер', v);
+              console.log('Сработал вотчер', v, old);
               // if (v === 'new') console.log('Новый процесс');
               // if (v !== null && v !== old) {
               //     console.log('Проверка процесса на существование');
               //     console.log('Загрузка процесса для редактирования:', v);
-              //     // this.currentEditableProcess = this.currentEditableProcess;
               // }
           }
       }

@@ -200,6 +200,7 @@ export default {
     align-items: flex-start;
     gap: 10px;
     flex: 1 1 auto;
+    pointer-events: none;
     z-index: 10;
 
 
@@ -217,6 +218,7 @@ export default {
       box-shadow: 2px 1px 12px 0px hsla(0, 0%, 50%, 0.7);
       transition: all 0.4s ease;
       cursor: pointer;
+      pointer-events: visible;
       flex-shrink: 0;
       z-index: 10;
 

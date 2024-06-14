@@ -15,7 +15,7 @@ const app = createApp(App);
 
 app.directive('numberOnly', {
     mounted(el, config) {
-        console.log("numberOnly =",config);
+        // console.log("numberOnly =",config);
         el.inputHandler = function (e) {
             function search(str, char) {
                 for (let i = str.length; i--;) {

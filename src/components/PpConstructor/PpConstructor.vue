@@ -166,7 +166,7 @@ export default {
             this.$emit('changed', this.process);
         },
         updateAttrs(key, value) {
-            console.log("updateAttrs::", arguments);
+            // console.log("updateAttrs::", arguments);
             this.currentNode.attrs = {...this.currentNode.attrs, [key]: value};
 
             this.$emit('changed', this.process);
@@ -182,7 +182,7 @@ export default {
             };
         },
         changeNodeType() {
-            console.log("! changeNodeType");
+            // console.log("! changeNodeType");
         },
         changeAttrs(type) {
             this.currentNode.attrs = {
@@ -269,7 +269,7 @@ export default {
             this.currentNode = selected;
         },
         unselectAllChildren() {
-            console.log('!! unselectAllChildren  fired !!');
+            // console.log('!! unselectAllChildren  fired !!');
             this.$refs.rootNode.unselectNode();
         },
     },
@@ -278,10 +278,10 @@ export default {
     },
     mounted() {
 //            vm = this;
-        console.log('process >> ', this.process);
+//         console.log('process >> ', this.process);
         this.currentNode = this.process.rootNode;
         this.$el.addEventListener('unselectAllNodes', this.unselectAllChildren);
-        console.log('PpConstructor::this =', this);
+        // console.log('PpConstructor::this =', this);
     },
 }
 </script>

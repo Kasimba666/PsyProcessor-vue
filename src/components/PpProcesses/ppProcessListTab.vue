@@ -89,10 +89,6 @@
                   @onClickMenuItem="(action)=>$emit('doActionOnMenu', action, [row.id])"
               />
           </div>
-          <!--                <div class="menu-overlay"-->
-          <!--                     @click="hideMenu"-->
-          <!--                     v-if="openedMenus[rowIdx]"-->
-          <!--                />-->
 
         </template>
 

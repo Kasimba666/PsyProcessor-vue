@@ -190,7 +190,7 @@ export default createStore({
             return new Promise((resolve)=>resolve(newSession.id));
         },
 
-        createNewProcess({commit, state}) {
+        createNewProcess({commit, state}, newStatus) {
             let newProcess = {
                     id: generateID(),
                     header: {
@@ -204,7 +204,7 @@ export default createStore({
                         toAdd: false,
                     },
                     type: 'process',
-                    status: 'draft',
+                    status: newStatus,
                     deleted: false,
                     vars: [
                         {name: '$topic', value: '',},
