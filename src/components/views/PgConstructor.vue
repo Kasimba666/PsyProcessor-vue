@@ -159,7 +159,7 @@ export default {
   watch: {
       routeConstructor: {
           handler(v, old) {
-              console.log('Сработал вотчер', v, old);
+              // console.log('Сработал вотчер', v, old);
               // if (v === 'new') console.log('Новый процесс');
               // if (v !== null && v !== old) {
               //     console.log('Проверка процесса на существование');
