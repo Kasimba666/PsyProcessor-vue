@@ -16,7 +16,7 @@ export default {
     computed: {
         SortMode: {
             get() {
-                console.log('>> ', this.sortMode);
+                // console.log('>> ', this.sortMode);
                 return this.sortMode;
             },
             set(v) {
@@ -39,7 +39,7 @@ export default {
     },
     methods: {},
     mounted() {
-        console.log('mixin activated!!!');
+        // console.log('mixin activated!!!');
     },
 };
 </script>
