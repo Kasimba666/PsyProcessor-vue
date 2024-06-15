@@ -2,55 +2,96 @@ import {createStore} from "vuex";
 import createPersistedState from 'vuex-persistedstate';
 import {v4} from "uuid";
 
+
+const defaultSortOrder = {
+    field: 'changedDt',
+    order: 'ASC'
+};
+
+const generateID = () => {
+    return v4();
+};
+
 export default createStore({
     state: {
-        screen: {},
         mobileMenuActive: false,
         mobileMenuTransition: false,
         processList: [],
+        processListSortMode: {...defaultSortOrder},
         currentEditableProcess: null,
-        currentEditableProcessIdx: -1,
         currentEditableProcessID: null,
+        isNewProcess: false,
         answer: '',
         sessionList: [],
-
+        currentSessionID: null,
         token: null,
-        user: null, //curLang: 'en',
+        user: null,
+        //curLang: 'en',
         //verbs: verbs['en'],
         isMobile: false,
         blur: false,
         testData: '',
     },
     mutations: {
-
         processList(state, v) {
             state.processList = v;
+        },
+        processListSortMode(state, v) {
+            state.processListSortMode = v;
+        },
+        isNewProcess(state, v) {
+            state.isNewProcess = v;
         },
         addProcessesInList(state, arr) {
             if (!!arr) arr.forEach((v) => state.processList.unshift(v));
         },
-        changeProcessInListByIdx(state, v) {
-            state.processList[v.idx] = v.process;
+        changeProcessStatusByID(state, v) {
+            this.getters.processesByID[v.id].status = v.status;
+        },
+        changeProcessInListByID(state, v) {
+            //найти индекс по ID и заменить по индексу
+            for (let i=0; i<state.processList.length; i++)
+                if (state.processList[i].id === v.id) {
+                    state.processList[i] = v.process;
+                    return
+                }
+        },
+        trashProcessInListByID(state, v) {
+            this.getters.processesByID[v.id].deleted = v.deleted;
+        },
+        removeProcessInListByID(state, v) {
+            //найти индекс по ID и удалить по индексу
+            for (let i=0; i<state.processList.length; i++)
+                if (state.processList[i].id === v) {
+                    state.processList.splice(i, 1);
+                    return
+                }
         },
 
         currentEditableProcess(state, v) {
             state.currentEditableProcess = v;
         },
-        currentEditableProcessIdx(state, v) {
-            state.currentEditableProcessIdx = v;
+        currentEditableProcessID(state, v) {
+            state.currentEditableProcessID = v;
         },
-
+        currentSessionID(state, v) {
+            state.currentSessionID = v;
+        },
         sessionList(state, v) {
             state.sessionList = v;
         },
-        changeSessionInListByIdx(state, v) {
-            state.sessionList[v.idx] = v.session;
-        },
+
         changeSessionInListByID(state, v) {
             state.sessionList.filter((vv) => vv.id === v.id)[0] = v.session;
         },
-        changeSessionStatusByIdx(state, {idx, status}) {
-            state.sessionList[idx].status = status;
+
+        changeSessionStatusByID(state, {id, status}) {
+            state.sessionList.filter((vv) => vv.id === id)[0].status = status;
+        },
+        sessionsToPausedExceptThis(state, id) {
+            state.sessionList.forEach((v) => {
+                if (v.id !== id && v.status === 'inProgress') v.status = 'paused'
+            })
         },
         removeSessionInListByID(state, v) {
             state.sessionList = state.sessionList.filter((vv) => vv.id !== v);
@@ -77,9 +118,6 @@ export default createStore({
         mobileMenuTransitionEnd(state, v) {
             state.mobileMenuTransition = false;
         },
-        screen(state, v) {
-            state.screen = v;
-        },
         isMobile(state, v) {
             state.isMobile = v;
         },
@@ -99,9 +137,6 @@ export default createStore({
         },
     },
     actions: {
-        setDefaultSession() {
-
-        },
         createNewSession({commit, state}, p) {
             let preparePositions = (node) => {
                 let result = {};
@@ -121,9 +156,7 @@ export default createStore({
                 });
                 return result;
             };
-            let generateID = () => {
-                return v4();
-            };
+
             let newSession = {
                 id: generateID(),
                 header: {
@@ -154,26 +187,112 @@ export default createStore({
                 history: []
             };
             commit('addSessionInList', newSession);
+            return new Promise((resolve)=>resolve(newSession.id));
+        },
+
+        createNewProcess({commit, state}, newStatus) {
+            let newProcess = {
+                    id: generateID(),
+                    header: {
+                        processTitle: "Новый процесс",
+                        version: "0.0.1",
+                        processCategory: ["common"],
+                        createdDt: (new Date()).toISOString(),
+                        changedDt: (new Date()).toISOString(),
+                        description: 'Описание',
+                        toSave: false,
+                        toAdd: false,
+                    },
+                    type: 'process',
+                    status: newStatus,
+                    deleted: false,
+                    vars: [
+                        {name: '$topic', value: '',},
+                        {name: '$last', value: '',},
+                    ],
+                    rootNode: {
+                        type: 'loopList',
+                        attrs: {
+                            nodeName: {
+                                inpType: 'text',
+                                inpLabel: 'Название узла (optional)',
+                                value: 'root',
+                            },
+                            loopCount: {
+                                inpType: 'number',
+                                inpLabel: 'Количество циклов',
+                                value: 0, // ноль означает бесконечный цикл
+                            },
+                        },
+                        list: [],
+                        forKey: 'root',
+                    }
+             };
+            commit('addProcessesInList', [newProcess]);
+            return new Promise((resolve)=>resolve(newProcess.id));
         },
     },
     getters: {
+        //формирует объект, у которого в качестве ключей используются идентификаторы сессий, а в качестве значений - объекты сессий
         sessionsByID(state) {
-            return state.sessionList.reduce((s, v)=>{
+            return state.sessionList.reduce((s, v) => {
                 s[v.id] = v;
                 return s;
             }, {});
         },
-        processesByID(state) {
-            return state.processList.reduce((s, v)=>{
-                s[v.id] = v;
+        finishedProcessesByID(state) {
+            return state.processList.reduce((s, v) => {
+                if (v.status='finished') {
+                    s[v.id] = v;
+                    return s;
+                }
             }, {});
+        },
+        //формирует объект, у которого в качестве ключей используются идентификаторы процессов, а в качестве значений - объекты процессов
+        processesByID(state) {
+            return state.processList.reduce((s, v) => {
+                s[v.id] = v;
+                return s;
+            }, {});
+        },
+
+        readyProcessesByID(state) {
+            return state.processList.reduce((s, v) => {
+                if (v.status='ready') {
+                    s[v.id] = v;
+                    return s;
+                }
+            }, {});
+        },
+        draftProcessesByID(state) {
+            return state.processList.reduce((s, v) => {
+                if (v.status='draft') {
+                    s[v.id] = v;
+                    return s;
+                }
+            }, {});
+        },
+
+        templateProcessesByID(state) {
+            return state.processList.reduce((s, v) => {
+                if (v.status='template') {
+                    s[v.id] = v;
+                    return s;
+                }
+            }, {});
+        },
+
+        markerSessions(state){
+            return state.sessionList.map((v)=>{return {id: v.id, title: v.header.sessionTitle, time: v.header.changedDt}}).sort((a, b) => b.time - a.time);
         },
     },
 
     plugins: [createPersistedState({
         key: 'psyProc', paths: [
+            'processListSortMode',
             'currentEditableProcess',
-            'currentEditableProcessIdx',
+            'currentEditableProcessID',
+            'currentSessionID',
             'processList',
             'sessionList',
             'answer'

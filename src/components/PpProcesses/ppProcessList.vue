@@ -1,294 +1,329 @@
 <template>
   <div class="ppProcessList">
-    <div class="table-custom">
-      <div class="table-head">
-        <div class="table-checkbox">
-        </div>
-        <div class="table-cell cell-title" :class="{right: (i === fields.length-1)}"
-             v-for="(field, i) of fields" :key="i">
-          {{ field.label }}
-        </div>
-        <div class="table-button border-right">
-        </div>
-        <div class="table-button">
-        </div>
-      </div>
-      <div class="table-row"
-           :class="{last: (r === rows.length-1)}"
-           v-if="!!rows && rows.length  >0"
-           v-for="(row, r) of rows" :key="r"
-           :style="{backgroundColor: (r%2 === 1) ? 'hsl(0, 0%, 83%, 0.3)' : 'none'}"
-           @click="onRowClicked(r)">
-        <div :class="{current: r===currentIdx}">
-        </div>
-        <div class="table-checkbox"
-
-        >
-          <input class="form-check-input" type="checkbox"
-                 v-model="arrayCheckboxes[r]"
-                 value="true"
-                 unchecked-value="false"
-                 @click.stop="onCheckBoxClick(r)"
+    <b-container>
+      <b-row>
+        <div class="tabs-container">
+          <AppTabs
+              :currentTab="currentTab"
+              v-model:tabsList="tabsList"
+              @selectTab="onSelectTab"
           />
+          <div
+              v-for="tab in arrTabs"
+          >
+            <ppProcessListTab
+                v-if="tab.name===this.currentTab"
+                :menuItems="tab.menuItems"
+                :source="tab.source"
+                :gridMode="tab.gridMode"
+                :showCheckboxes="showCheckboxes"
+                v-model:tabCheckedList="checkedList[currentTab]"
+                @doActionOnMenu="((v1, v2)=>{$emit('doAction', v1, v2)})"
+                :key="currentTab+'_'+showCheckboxes"
+            />
+          </div>
         </div>
-        <div class="table-cell cell-row" :class="{right: (f === fields.length-1)}"
-             v-if="!!fields && fields.length>0"
-             v-for="(field, f) of fields" :key="f"
-        >
-          {{ Array.isArray(row[field.key]) ? row[field.key].join(', ') : row[field.key] }}
-        </div>
-        <div class="table-button border-right">
-          <button class="btn btn-outline-primary btn-next btn-sm"
-                  @click.stop="changeProcess(r)">
-            Изменить
+        <div class="process-list-control">
+          <button
+              v-if="!showCheckboxes && currentTab==='tabDrafts'"
+              class="btn btn-outline-primary btn-actions btn-sm"
+              @click="onCreateDraft"
+          >
+            Создать черновик
+          </button>
+          <button
+              v-if="!showCheckboxes && currentTab==='tabTemplates'"
+              class="btn btn-outline-primary btn-actions btn-sm"
+              @click="onCreateTemplate"
+          >
+            Создать шаблон
+          </button>
+          <button
+              v-if="!showCheckboxes"
+              class="btn btn-outline-primary btn-actions btn-sm"
+          >
+            <label class="add-item" for="id-input-file" style="margin-bottom: 0">
+              <input type="file" class="d-none" id="id-input-file"
+                     value=""
+                     :accept="'.'+'json'"
+                     @change.prevent="onLoadProcesses($event)">
+              Загрузить
+            </label>
+          </button>
+
+          <button
+              v-if="!showCheckboxes"
+              class="btn btn-outline-primary btn-actions btn-sm"
+              @click="onSelectProcesses"
+          >
+            Выбрать для выгрузки
+          </button>
+          <button
+              v-if="showCheckboxes"
+              class="btn btn-outline-primary btn-actions btn-sm"
+              @click="onCancel"
+          >
+            Отмена
+          </button>
+          <button
+              v-if="showCheckboxes"
+              :disabled="selectedIDs.length===source.length"
+              class="btn btn-outline-primary btn-actions btn-sm"
+              @click="onSelectAll">
+            Выбрать все
+          </button>
+          <button
+              v-if="showCheckboxes"
+              :disabled="selectedIDs.length===0"
+              class="btn btn-outline-primary btn-actions btn-sm"
+              @click="onUnselectAll">
+            Развыбрать все
+          </button>
+          <button
+              v-if="showCheckboxes"
+              :disabled="selectedIDs.length===0"
+              class="btn btn-outline-primary btn-actions btn-sm"
+              @click="onSave"
+          >
+            Выгрузить выбранные
           </button>
         </div>
-        <div class="table-button">
-          <button class="btn btn-outline-primary btn-next btn-sm"
-                  @click.stop="startProcess(r)">
-            Начать
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="process-list-control">
-      <button class="btn btn-outline-primary btn-next btn-sm"
-              @click="selectAll">
-        Выбрать все
-      </button>
-      <button class="btn btn-outline-primary btn-next btn-sm"
-              @click="unselectAll">
-        Развыбрать все
-      </button>
-      <button class="btn btn-outline-primary btn-next btn-sm"
-              @click="createProcess">
-        Создать
-      </button>
-      <button class="btn btn-outline-primary btn-next btn-sm"
-              @click="removeProcess">
-        Удалить
-      </button>
-      <button class="btn btn-outline-primary btn-next btn-sm"
-              @click="duplicateProcess">
-        Дублировать
-      </button>
-      <button class="btn btn-outline-primary btn-next btn-sm">
-        <label class="add-item" for="id-input-file" style="margin-bottom: 0">
-          <input type="file" class="d-none" id="id-input-file"
-                 value=""
-                 :accept="'.'+'json'"
-                 @change.prevent="loadProcesses($event)">
-          Загрузить
-        </label>
-      </button>
-      <button class="btn btn-outline-primary btn-next btn-sm"
-              @click="saveProcesses">
-        Выгрузить
-      </button>
-    </div>
-
-
+      </b-row>
+    </b-container>
   </div>
 </template>
+
 <script>
 
+import AppTransTable from '@/components/Common/AppTransformerTable/AppTransTable.vue';
+import TtColumn from '@/components/Common/AppTransformerTable/TtColumn.vue';
+import TableMixin from "@/components/Common/AppTransformerTable/TableMixin.vue";
+import ppProcessMenu from "@/components/PpProcesses/ppProcessMenu.vue";
+import AppTabs from "@/components/PpProcesses/AppTabs.vue";
+import ppProcessListTab from "@/components/PpProcesses/ppProcessListTab.vue";
+import {useIdFilters} from "@/composables/useIdFilters.js";
+import {useDtFilters} from "@/composables/useDtFilters.js";
+
+const defaultSortOrder = {
+  field: 'changedDt',
+  order: 'ASC'
+};
+
 export default {
-  name: "ppProcessList",
-  props: ['rows', 'fields'],
+  name: 'ppProcessList',
+  components: {AppTransTable, TtColumn, AppTabs, ppProcessMenu, ppProcessListTab},
+  props: ['source'],
   data() {
     return {
-      currentIdx: -1,
-      arrayCheckboxes: [],
+      sortMode: {...defaultSortOrder},
+      showCheckboxes: false,
+      openedMenus: {},
+      currentTab: 'tabAll',
+      previousTab: '',
+      checkedList: {}
+
     }
   },
-  computed: {
-    selectedIdxs() {
-      let s = [];
-      for (let i = 0; i < this.arrayCheckboxes.length; i++) if (this.arrayCheckboxes[i] === true) s.push(i);
-      return s;
-    },
+  setup() {
+    const limitRows = 20;
+    const allMenuItems = {'start': 'Начать сессию', 'change': 'Редактировать', 'duplicate': 'Дублировать', 'toDraft': 'В черновики', 'toReady': 'В готовые', 'toTemplate': 'В шаблоны', 'toTrash': 'В корзину', 'restore': 'Восстановить', 'remove': 'Удалить насовсем'};
+    const gridMode = {
+        xxl: '20px 2fr 100px 80px 1fr 1fr 40px',
+        xl: '20px 2fr 100px 80px 1fr 1fr 40px',
+        lg: '20px 2fr 100px 80px 1fr 1fr 40px',
+        md: '20px 2fr 100px 80px 1fr 1fr 40px',
+      };
+    const {idShort} = useIdFilters();
+    const {dtIsoShort, dtIsoFileName} = useDtFilters();
+    return {
+      allMenuItems,
+      gridMode,
+      dtIsoShort,
+      dtIsoFileName,
+      idShort,
+    }
   },
 
-  methods: {
-    setCheckboxesValues() {
-      for (let i = 0; i < this.rows.length; i++) this.arrayCheckboxes[i] = false;
+  computed: {
+    tabsList() {
+      return Object.entries(this.tabs).map((v)=>{return {value: v[0], name: v[1].title}});
     },
-    selectAll() {
-      for (let i = 0; i < this.arrayCheckboxes.length; i++) this.arrayCheckboxes[i] = true;
+    tabs() {
+      return {
+        'tabReady': {
+          title: 'Готовые',
+          menuItems: this.menuItems(['start', 'change', 'duplicate', 'toDraft', 'toTemplate', 'toTrash']),
+          gridMode: this.gridMode,
+          source: this.source.filter((v)=>(v.status === 'ready' && v.deleted === false)),
+        },
+        'tabDrafts': {
+          title: 'Черновики',
+          menuItems: this.menuItems(['start', 'change', 'duplicate', 'toReady', 'toTemplate', 'toTrash']),
+          gridMode: this.gridMode,
+          source: this.source.filter((v)=>v.status === 'draft' && v.deleted === false)
+        },
+        'tabTemplates': {
+          title: 'Шаблоны',
+          menuItems: this.menuItems(['start', 'change', 'duplicate', 'toReady', 'toDraft', 'toTrash']),
+          gridMode: this.gridMode,
+          source: this.source.filter((v)=>v.status === 'template' && v.deleted === false)
+        },
+        'tabTrash': {
+          title: 'Корзина',
+          menuItems: this.menuItems(['restore', 'remove']),
+          gridMode: this.gridMode,
+          source: this.source.filter((v)=>v.deleted === true)
+        },
+        'tabAll': {
+          title: 'Все',
+          menuItems: this.menuItems(['toTrash']),
+          gridMode: this.gridMode,
+          source: this.source
+        }
+      }
     },
-    unselectAll() {
-      for (let i = 0; i < this.arrayCheckboxes.length; i++) this.arrayCheckboxes[i] = false;
+    arrTabs() {
+      return Object.entries(this.tabs).map((v)=> {
+        let newValue = v[1];
+        newValue['name'] = v[0];
+        return newValue;
+      });
     },
 
-    createProcess() {
-      this.$emit('doAction', 'create', [], null);
+    selectedIDs() {
+      if (!!this.checkedList[this.currentTab]) {
+        return Object.entries(this.checkedList[this.currentTab]).map((v) => {
+          if (v[1] === true) return v[0]
+        });
+      }
+      else return [];
     },
-    changeProcess(v) {
-      this.$emit('doAction', 'change', [v], null);
+  },
+  methods: {
+    menuItems(v) {
+      return v.reduce((s, w)=>{
+        s[w]=this.allMenuItems[w];
+        return s;
+      }, {});
     },
-    duplicateProcess() {
-      this.$emit('doAction', 'duplicate', this.selectedIdxs, null);
+    onToggleMenu(v) {
+        this.openedMenus = {[v]: !this.openedMenus[v]};
     },
-    removeProcess() {
-      if (this.selectedIdxs.length > 0) this.$emit('doAction', 'remove', this.selectedIdxs, null);
+    hideMenu() {
+      this.openedMenus = {};
     },
-    loadProcesses(e) {
+
+    onSelectProcesses() {
+      this.showCheckboxes = true;
+    },
+    onCancel() {
+      this.showCheckboxes = false;
+    },
+    onSave() {
+      this.$emit('doAction', 'save', this.selectedIDs, null);
+      // this.showCheckboxes = false;
+    },
+    onSelectAll() {
+      this.tabs[this.currentTab].source.forEach((v) => {
+        this.checkedList[this.currentTab][v.id] = true;
+      });
+    },
+    onUnselectAll() {
+      this.checkedList[this.currentTab] = {};
+    },
+    onCreateDraft() {
+      this.$emit('doAction', 'createDraft', [], null);
+      this.openedMenus = {};
+    },
+    onCreateTemplate() {
+      this.$emit('doAction', 'createTemplate', [], null);
+      this.openedMenus = {};
+    },
+    onLoadProcesses(e) {
       let file = e.target.files[0];
       this.$emit('doAction', 'load', null, file);
     },
-    saveProcesses() {
-      if (this.selectedIdxs.length > 0) this.$emit('doAction', 'save', this.selectedIdxs, null);
-    },
-    startProcess(v) {
-      this.$emit('doAction', 'start', [v], null);
-    },
-
-    onRowClicked(v) {
-      this.currentIdx = v;
-    },
-
-    onCheckBoxClick(idx) {
-      if (!this.selectedIdxs.includes(idx)) {
-        this.selectedIdxs.push(idx)
-      } else {
-        let index = this.selectedIdxs.indexOf(idx);
-        this.selectedIdxs.splice(index, 1);
+    onSelectTab(v) {
+      if (this.currentTab !== v) {
+        this.checkedList[this.currentTab] = {};
+        this.currentTab = v;
       }
+
     },
   },
-  mounted() {
-  },
-  watch: {
-    rows: {
-      handler(v, old) {
-        this.setCheckboxesValues();
-      },
-      deep: true,
-      immediate: true,
-    }
-  },
-}
 
+  mounted() {
+    Object.keys(this.tabs).forEach((v)=>this.checkedList[v]={});
+  },
+
+}
 </script>
+
 <style lang="scss">
 .ppProcessList {
-  width: 100%;
-  height: auto;
-  font-size: 13px;
+  position: relative;
 
-
-  .table-custom {
-    position: relative;
-    width: 100%;
-    min-width: 500px;
-    height: auto;
-    display: flex;
-    flex-flow: column nowrap;
-    justify-content: start;
-    border: 1px solid hsla(0, 0%, 50%, 0.8);
+  .trans-table {
     user-select: none;
+    font-size: 12px;
 
-    .table-head {
+    .btn-menu {
       position: relative;
-      width: 100%;
-      height: auto;
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: center;
-      border-bottom: 1px solid hsla(0, 0%, 50%, 0.6);
-      background-color: hsl(0, 0%, 83%, 0.3);
-
-    }
-
-    .table-row {
-      position: relative;
-      width: 100%;
-      height: auto;
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: center;
-      border-bottom: 1px solid hsla(0, 0%, 50%, 0.6);
-      cursor: pointer;
+      padding: 6px;
 
       &:hover {
-        box-shadow: 0 0 10px 3px hsla(195, 100%, 36%, 0.5);
+        color: white;
+        background-color: hsl(50, 30%, 75%);
       }
 
-      &.last {
-        border-bottom: none;
-      }
-
-      .current {
+      .menu-container {
         position: absolute;
-        width: 100%;
-        height: 100%;
-        border: 2px solid rgba(0, 140, 186, 0.5);
-        pointer-events: none;
-        background-color: hsla(195, 100%, 36%, 0.05);
-      }
-
-
-    }
-
-    .table-checkbox {
-      width: 25px;
-      min-width: 25px;;
-      display: flex;
-      flex-flow: column nowrap;
-      justify-content: start;
-      align-items: center;
-      padding: 5px;
-      border-right: 1px solid hsla(0, 0%, 50%, 0.8);
-
-    }
-
-    .table-button {
-      width: 100px;
-      min-width: 100px;
-      display: flex;
-      flex-flow: column nowrap;
-      justify-content: start;
-      align-items: center;
-      padding: 0px;
-
-      &.border-right {
-        border-right: 1px solid hsla(0, 0%, 50%, 0.8);
-      }
-    }
-
-    .table-cell {
-      position: relative;
-      width: 100px;
-      height: auto;
-      padding: 2px;
-      flex: 1 1 auto;
-      min-width: 50px;
-      border-right: 1px solid hsla(0, 0%, 50%, 0.8);
-      text-align: left;
-
-      &.cell-title {
+        //top: -44px;
+        bottom: -10px;
+        right: 15px;
+        width: auto;
+        height: auto;
+        display: flex;
+        flex-flow: column nowrap;
         justify-content: center;
-        align-items: center;
-        text-align: center;
-        word-break: break-word;
-        font-weight: bold;
-      }
+        align-items: start;
+        //border-radius: 5px 0px 5px 5px;
+        border: 1px solid hsl(50, 30%, 65%);
+        box-shadow: 2px 1px 12px 0px hsla(0, 0%, 50%, 0.7);
+        background-color: white;
+        overflow: visible;
+        z-index: 10;
 
-      &.cell-row {
-        justify-content: flex-start;
-        align-items: flex-start;
-        text-align: left;
-        word-break: break-all;
-      }
-
-      &.right {
-        //border-right: none;
+        .menu-item {
+          width: 100%;
+          height: 30px;
+          padding-left: 20px;
+          padding-right: 20px;
+          white-space: nowrap;
+          cursor: pointer;
+          color: black;
+          border-bottom: 1px solid hsl(50, 30%, 65%);
+          font-size: 12px;
+          z-index: 15;
+          &:last-child {
+            border-bottom: none;
+          }
+          &:hover {
+            background-color: hsl(50, 30%, 75%);
+          }
+        }
       }
     }
 
+    .menu-overlay {
+      position: fixed;
+      left: 0px;
+      height: 0px;
+      width: 100dvw;
+      height: 100dvh;
+      z-index: 5;
+    }
   }
-
 
   .process-list-control {
     width: auto;
@@ -296,16 +331,13 @@ export default {
     flex-flow: row;
     justify-content: center;
     gap: 10px;
-    //padding-right: 5px;
     margin: 10px;
-
   }
 
-  .btn-next {
+  .btn-actions {
     height: auto;
     width: auto;
     color: black;
-    background-color: transparent;
     border: 1px solid hsl(50, 30%, 75%);
     margin: 5px;
 
@@ -315,6 +347,11 @@ export default {
     }
   }
 
+  .tabs-container {
+    position: relative;
+    width: 100%;
+    height: auto;
+    border: 1px solid #dcdfe6;
+  }
 }
-
 </style>

@@ -1,18 +1,23 @@
 <template>
   <div class="PersonalSpace">
-    <div class="menu-panel">
-      <ppUserMenu class="user-menu"/>
-      <ppSessionList class="session-list"
-                     :rows="rows"
-                     :fields="fields"
-                     @doAction="onDoAction"
-      />
-    </div>
+    <ppSidePanel
+        :isOpened=isOpenedSidePanel
+        @onToggleClick="onToggleSidePanel">
+      <div class="menu-panel">
+        <ppUserMenu class="user-menu"/>
+        <ppSessionList class="session-list"
+                       :rows="rows"
+                       :fields="fields"
+                       @doAction="onDoAction"
+        />
+      </div>
+    </ppSidePanel>
+
     <div class="container">
       <div class="row">
         <div class="col-12">
           <router-view
-              :sessionID=currentID
+              :sessionID=currentSessionID
           />
         </div>
       </div>
@@ -37,19 +42,20 @@
 <script>
 import ppSessionList from "@/components/PpUserSpace/ppSessionList.vue";
 import ppUserMenu from "@/components/PpUserSpace/ppUserMenu.vue";
-import {mapState} from "vuex";
+import ppSidePanel from "@/components/Common/ppSidePanel.vue";
+import {mapGetters, mapMutations, mapState} from "vuex";
 import SessionPlayer from "@/components/SessionPlayer/ppSessionPlayer.vue";
+import {useDtFilters} from "@/composables/useDtFilters.js";
 
 export default {
   name: "PgPersonalSpace",
-  components: {SessionPlayer, ppUserMenu, ppSessionList},
+  components: {SessionPlayer, ppUserMenu, ppSessionList, ppSidePanel},
   props: [],
   data() {
     return {
       file: null,
       newSessionName: '',
       showModalName: false,
-      currentIdx: null,
       currentID: null,
       currentSession: null,
       fields: [
@@ -58,18 +64,28 @@ export default {
         {key: 'createdDt', label: 'Дата создания'},
         {key: 'status', label: 'Состояние'},
       ],
+      isOpenedSidePanel: false,
     }
   },
+  setup() {
+      const {dtIsoShort} = useDtFilters();
+      return {
+        dtIsoShort
+      }
+  },
   computed: {
-    ...mapState(['sessionList']),
+    ...mapState(['sessionList', 'currentSessionID']),
+    ...mapGetters(['sessionsByID']),
+    ...mapMutations(['sessionsToPausedExceptThis']),
 
     rows() {
       if (this.sessionList === null || this.sessionList.length === 0) return [];
       return this.sessionList.map(v => {
         return {
+          id: v.id,
           sessionTitle: v.header.sessionTitle,
           processTitle: v.process.header.processTitle,
-          createdDt: this.dtFormatCustom(v.header.createdDt),
+          createdDt: this.dtIsoShort(v.header.createdDt),
           status: v.status,
 
         }
@@ -110,37 +126,27 @@ export default {
       return result;
 
     },
-    dtFormatCustom(dtISO) {
-      let result = dtISO.substring(0, 19).split('');
-      result[10] = '-';
-      result[13] = '-';
-      result[16] = '-';
-      return result.join('');
-    },
-    allInProgressToPausedExceptThis(id) {
-      this.sessionList.forEach((v) => {
-        if (v.id !== id && v.status === 'inProgress') v.status = 'paused'
-      })
-    },
-    onDoAction(action, idxs, file) {
-      if (idxs !== null) {
-        console.log('idxs !== null')
-        this.currentIdx = idxs[0];
-        this.currentID = this.sessionList[this.currentIdx].id;
+
+    onDoAction(action, IDs, file) {
+      if (IDs !== null) {
+        this.currentID = IDs[0];
+        this.$store.commit('currentSessionID', this.currentID);
       }
       switch (action) {
         case 'changeStatus': {
-          let oldStatus = this.sessionList[this.currentIdx].status;
+          let oldStatus = this.sessionsByID[this.currentID].status;
           switch (oldStatus) {
             case 'new':
             case 'paused': {
-              this.allInProgressToPausedExceptThis(this.currentID);
-              this.$router.push({name: 'PgSession', params: {id: this.currentID}});
+              this.onToggleSidePanel();
+              this.$store.commit('changeSessionStatusByID', {id: this.currentID, status: 'inProgress'});
+              this.$store.commit('sessionsToPausedExceptThis', this.currentSessionID);
+              this.$router.push({name: 'PgSession', params: {id: this.currentSessionID}});
             }
               break;
             case 'inProgress': {
-              this.sessionList[this.currentIdx].status = 'paused';
-
+              this.sessionsByID[this.currentID].status = 'paused';
+              this.onToggleSidePanel();
             }
               break;
             default: {
@@ -149,13 +155,13 @@ export default {
         }
           return
         case 'remove': {
-          if (this.currentIdx !== -1 && !!this.currentID) this.$store.commit('removeSessionInListByID', this.currentID);
+          if (this.currentID !== -1 && !!this.currentSessionID) this.$store.commit('removeSessionInListByID', this.currentSessionID);
 
         }
           return
         case 'changeName': {
-          if (this.currentIdx !== -1 && !!this.currentID) {
-            this.newSessionName = this.sessionList[this.currentIdx].header.sessionTitle;
+          if (this.currentID !== -1 && !!this.currentSessionID) {
+            this.newSessionName = this.sessionsByID[this.currentID].header.sessionTitle;
             this.showModalName = true;
           }
         }
@@ -184,16 +190,21 @@ export default {
         }
           return
         case 'save': {
-          let session = this.sessionList[this.currentIdx];
-          this.saveJSONFile(session, session.header.sessionTitle + ' ' + this.dtFormatCustom(session.header.changedDt));
+          let session = this.sessionsByID[this.currentID];
+          this.saveJSONFile(session, session.header.sessionTitle + ' ' + this.dtIsoShort(session.header.changedDt));
         }
           return
         default: {
         }
       }
     },
+
+
     onOkChangeName() {
-      this.$store.commit('changeSessionNameByID', {id: this.currentID, name: this.newSessionName});
+      this.$store.commit('changeSessionNameByID', {id: this.currentSessionID, name: this.newSessionName});
+    },
+    onToggleSidePanel() {
+      this.isOpenedSidePanel = !this.isOpenedSidePanel
     },
 
   },
@@ -215,12 +226,15 @@ export default {
 
   .menu-panel {
     width: 400px;
-    height: 80dvh;
+    height: 100%;
     display: flex;
     flex-flow: column nowrap;
     justify-content: start;
     align-items: start;
-    //border-right: 1px solid hsl(0, 0%, 70%);
+    padding: 15px;
+    background-color: hsla(0, 0%, 95%, 0.85);
+    border-radius: 0px;
+    z-index: 20;
 
     .user-menu {
       width: 100%;
@@ -233,5 +247,6 @@ export default {
       margin-top: auto;
     }
   }
+
 }
 </style>

@@ -3,14 +3,10 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <h4>Session:</h4>
+                    <h4>Сессия:</h4>
                     {{ sessionsByID?.[sessionID]?.header.sessionTitle ?? '' }}
                     <hr/>
-<!--                    <button-->
-<!--                            @click="$store.commit('sessionID', null)">-->
-<!--                        Удалить сессию-->
-<!--                    </button>-->
-                    <hr/>
+
                     <SessionPlayer
                             v-if="!!sessionID"
                             :key="sessionID"
@@ -39,6 +35,7 @@ export default {
         return {}
     },
     computed: {
+        ...mapState(['currentSessionID']),
         ...mapGetters(['sessionsByID']),
         sessionID() {
             return this.$route.params.id;
@@ -46,8 +43,8 @@ export default {
     },
     methods: {},
     mounted() {
-        // console.log(this.$route);
-        // console.log(this.$router);
+       // if (!!this.currentSessionID)  this.$router.push({name: 'PgSession', params: {id: this.currentSessionID}});
+
     },
 }
 </script>

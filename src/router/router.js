@@ -4,7 +4,7 @@ import PgPersonalSpace from "@/components/views/PgPersonalSpace.vue";
 import PgProcessList from "@/components/views/PgProcessList.vue";
 import PgConstructor from "@/components/views/PgConstructor.vue";
 import PgSession from "@/components/views/PgSession.vue";
-import Pg404 from "../components/views/Pg404.vue";
+import Pg404 from "@/components/views/Pg404.vue";
 
 const routes = [
     {
@@ -36,7 +36,7 @@ const routes = [
     },
     {
         name: 'PgConstructor',
-        path: '/constructor',
+        path: '/constructor/:id?',
         component: PgConstructor,
     },
     {
@@ -52,8 +52,8 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from) => {
-    console.log('to', from.path.toString());
-    console.log('from', to.path.toString());
+    // console.log('to', from.path.toString());
+    // console.log('from', to.path.toString());
 
     // if (true) {
     //     return ({name: 'Pg404'});

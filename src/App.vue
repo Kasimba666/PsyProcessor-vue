@@ -1,4 +1,5 @@
 <template>
+
     <div class="App">
         <AppLayout/>
     </div>
@@ -6,8 +7,18 @@
 <script>
 import AppLayout from "@/components/Layouts/AppLayout.vue";
 
+
 export default {
-    components: {AppLayout}
+    name: 'App',
+    components: {AppLayout},
+    data() {
+        return {
+
+        }
+    },
+    computed: {
+    },
+    methods: {}
 }
 </script>
 <style>
@@ -20,4 +31,5 @@ export default {
 .App {
     padding: 0px;
 }
+
 </style>

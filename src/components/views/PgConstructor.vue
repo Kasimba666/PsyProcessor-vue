@@ -1,10 +1,24 @@
--++++++++++++++++++++++++++++++++++++<template>
+<template>
   <div class="Constructor">
     <div class="container">
       <div class="row">
         <div class="col-12">
-          <PpConstructor v-model:process="process" @changed="processChanged"/>
-
+          <el-dialog v-model="dialogVisible" title="Укажите тип нового процесса:">
+            <el-radio-group v-model="selectedType">
+              <el-radio :value="'draft'">Черновик</el-radio>
+              <el-radio :value="'template'">Шаблон</el-radio>
+            </el-radio-group>
+            <div slot="footer" class="dialog-footer">
+              <el-button @click="onDialogCancel">Отмена</el-button>
+              <el-button type="primary" @click="onDialogConfirm">Подтвердить</el-button>
+            </div>
+          </el-dialog>
+          <PpConstructor
+              v-if="!!currentEditableProcess"
+              v-model:process="currentEditableProcess"
+              @changed="processChanged"
+              :key="currentEditableProcess.id"
+          />
         </div>
         <div class="files-control">
           <button class="btn btn-outline-primary btn-next btn-sm"
@@ -19,92 +33,153 @@
 
 <script>
 import PpConstructor from "@/components/PpConstructor/PpConstructor.vue";
-import {mapState} from "vuex";
-import {reactive} from "vue";
+import {mapGetters, mapState} from "vuex";
 import {v4} from "uuid";
-let generateID = () => {
-    return v4();
-};
+import { ElButton, ElDialog, ElRadioGroup, ElRadio } from 'element-plus';
+
 export default {
   name: "PgConstructor",
-  components: {PpConstructor},
+  components: {PpConstructor, ElButton, ElDialog, ElRadioGroup, ElRadio},
   props: [],
   data() {
     return {
-      isNew: Boolean,
-      process: reactive({
-        id: generateID(),
-        header: {
-          processTitle: "Новый процесс",
-          version: "0.0.1",
-          processCategory: ["common"],
-          createdDt: (new Date()).toISOString(),
-          changedDt: (new Date()).toISOString(),
-          description: 'Описание',
-          toSave: false,
-          toAdd: false,
-
-        },
-        type: 'process',
-        vars: [
-          {name: '$topic', value: '',},
-          {name: '$last', value: '',},
-        ],
-        rootNode: {
-          type: 'loopList',
-          attrs: {
-            nodeName: {
-              inpType: 'text',
-              inpLabel: 'Название узла (optional)',
-              value: 'root',
-            },
-            loopCount: {
-              inpType: 'number',
-              inpLabel: 'Количество циклов',
-              value: 0, // ноль означает бесконечный цикл
-            },
-          },
-          list: [],
-          forKey: 'root',
-        }
-      }),
       debounceTime: 800,
       debounceHandle: null,
-
+      dialogVisible: false,
+      selectedType: 'draft',
     }
   },
+
   computed: {
-    ...mapState(['currentEditableProcess', 'currentEditableProcessIdx']),
+    ...mapState(['currentEditableProcess', 'currentEditableProcessID']),
+    ...mapGetters(['processesByID']),
+      routeConstructor() {
+        return this.$route.params.id;
+      },
   },
   methods: {
     processChanged() {
-      this.process.header.changedDt = (new Date()).toISOString();
+      this.currentEditableProcess.header.changedDt = (new Date()).toISOString();
       clearTimeout(this.debounceHandle);
       this.debounceHandle = setTimeout(() => {
-        this.$store.commit('currentEditableProcess', this.process);
+        this.$store.commit('currentEditableProcess', this.currentEditableProcess);
       }, this.debounceTime);
     },
     onSaveInList() {
-      let forSave = JSON.parse(JSON.stringify(this.process));
-      if (this.currentEditableProcessIdx !== -1) {
-        //изменить в списке по индексу
-        this.$store.commit('changeProcessInListByIdx', {idx: this.currentEditableProcessIdx, process: forSave});
+      let forSave = JSON.parse(JSON.stringify(this.currentEditableProcess));
+
+      //если процесс с таким id есть в списке, то обновляем его, если нет, то добавляем новый
+      if (!!this.processesByID[this.currentEditableProcessID]) {
+        console.log('есть такой процесс');
+        this.$store.commit('changeProcessInListByID', {id: this.currentEditableProcessID, process: forSave});
       } else {
-        //добавить в список
+        console.log('нет такого процесса и сейчас мы его добавим в список');
         this.$store.commit('addProcessesInList', [forSave]);
-      }
+
+      };
+
+      // this.$router.push({name: 'PgProcessList', params:{id: forSave.id}});
       this.$router.push({name: 'PgProcessList'});
+    },
+    createProcess() {
+      //проверить, есть ли текущий процесс
+      //спросить, процесс какого типа надо создать
+      console.log('создание нового процесса');
+      this.openDialogCreateProcess();
+
+    },
+
+    openDialogCreateProcess(){
+      this.dialogVisible = true;
+    },
+
+    onDialogConfirm(){
+      this.dialogVisible = false;
+      this.$store.dispatch('createNewProcess', this.selectedType).then((v)=>
+      {
+        this.$store.commit('currentEditableProcessID', v);
+        this.$store.commit('currentEditableProcess', this.processesByID[v]);
+        this.$router.push({name: 'PgConstructor', params: {id: v}});
+      });
+    },
+
+    onDialogCancel(){
+      this.dialogVisible = false;
     },
   },
   mounted() {
-    if (this.currentEditableProcessIdx !== -1) {
+    console.log('мы попали в mounted');
+    console.log('currentEditableProcess', this.currentEditableProcess);
+    if (this.routeConstructor === undefined) {
+      console.log('routeConstructor is Undefined, вы попали сюда через ссылку в Хедере');
+      //проверяем, существует ли CurrentProcess
       if (!!this.currentEditableProcess) {
-        this.process = this.currentEditableProcess;
-      }
+        console.log('процесс существует');
+      } else {
+        this.createProcess()
+      };
+      return
     }
-    // if (!!this.currentEditableProcess) {
-    //   this.process = this.currentEditableProcess;
-    // }
+
+    if (this.routeConstructor === '') {
+      console.log('routeConstructor = пустаяСтрока, вы попали сюда через адресную строку без указания id');
+      //проверяем, существует ли CurrentProcess
+      if (!!this.currentEditableProcess) {
+        console.log('процесс существует');
+      } else {
+        this.createProcess()
+      };
+      return
+    }
+
+    if (!!this.routeConstructor) {
+      console.log('routeConstructor:', this.routeConstructor);
+      const procByID = this.processesByID[this.routeConstructor];
+      console.log('procByID', procByID);
+      //проверить вхождение в список существующих процессов
+      if (!procByID) {
+        console.log('процесс не найден');
+        const msgError = 'Ошибка в адресной строке.';
+        let msgErrorDetail = '';
+        if (this.routeConstructor.length<36) {
+          msgErrorDetail = 'Слишком короткий идентификатор.'
+        } else {
+          msgErrorDetail = 'Процесс с таким идентификатором не найден.'
+        };
+        const msgErrorFullText = msgError+' '+msgErrorDetail+' Проверьте правильность ссылки.'
+        alert(msgErrorFullText);
+        if (!this.currentEditableProcess) this.createProcess();
+        return;
+      } else {
+        //Загрузить процесс для редактирования
+        this.$store.commit('currentEditableProcessID', procByID.id);
+        this.$store.commit('currentEditableProcess', procByID);
+      };
+
+    } else {
+      //проверить, есть ли какой-либо текущий процесс
+      //если нет, то:
+      if (!this.currentEditableProcess) this.createProcess();
+      return;
+
+    };
+
+    //
+
+
+
+  },
+  watch: {
+      routeConstructor: {
+          handler(v, old) {
+              // console.log('Сработал вотчер', v, old);
+              // if (v === 'new') console.log('Новый процесс');
+              // if (v !== null && v !== old) {
+              //     console.log('Проверка процесса на существование');
+              //     console.log('Загрузка процесса для редактирования:', v);
+              // }
+          }
+      }
   },
 }
 </script>
@@ -113,7 +188,7 @@ export default {
 .Constructor {
   width: 100%;
   height: auto;
-  min-height: 100 dvh;
+  min-height: 100dvh;
 
   .files-control {
     width: auto;

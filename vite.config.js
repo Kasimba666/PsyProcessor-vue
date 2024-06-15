@@ -23,7 +23,7 @@ export default defineConfig({
     //     ? '/PsyProcessor-vue/'
     //     : '/FuckAll/',
     // base:  import.meta.env.BASE_URL,
-    // base:  !!import.meta.env.MODE ? import.meta.env.MODE : '/fuckYou/',
+    base:  '/PsyProcessor-vue/',
 
     plugins: [
         vue(),

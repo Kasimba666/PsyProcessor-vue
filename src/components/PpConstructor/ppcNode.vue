@@ -181,7 +181,7 @@ export default {
       this.focused = true;
     },
     unselectNode() {
-      console.log('unselectNode!', this.index);
+      // console.log('unselectNode!', this.index);
       this.focused = false;
       this.selectedChild = -1;
       if (Object.keys(this.$refs).length !== 0) {
@@ -190,7 +190,7 @@ export default {
       ;
     },
     unselectAllNodes() {
-      console.log('!! unselectAllNodes  fired !!');
+      // console.log('!! unselectAllNodes  fired !!');
       let e = new Event('unselectAllNodes', {
         bubbles: true,
       });
@@ -205,7 +205,7 @@ export default {
       }
     },
     "node.type"(v, old) {
-      console.log(`Node Type Changed !! (${old} ==> ${v})`);
+      // console.log(`Node Type Changed !! (${old} ==> ${v})`);
       this.node.forKey = this.node.forKey.replace(old, this.node.type);
       if (old === 'quest') {
         this.node.list.push(this.createNodeFunc('quest', this.node.forKey));
@@ -221,7 +221,7 @@ export default {
     }
   },
   mounted() {
-    console.log("ppcNode: this >>", this);
+    // console.log("ppcNode: this >>", this);
   },
 }
 </script>
@@ -314,6 +314,7 @@ export default {
           background-color: transparent;
           border-radius: 5px;
           border: none;
+          padding: 0px 0px;
 
           &:focus {
             width: 26px;

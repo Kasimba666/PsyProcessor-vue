@@ -3,13 +3,12 @@
     <div class="sp-main">
       <div class="history" ref="history">
         <div
-          class="history-item"
-          v-for="(v, i) in session.history"
-          :key="i"
-          v-html="v.handledQuest +' : '+ v.answer"
+            class="history-item"
+            v-for="(v, i) in session.history"
+            :key="i"
+            v-html="v.handledQuest +' : '+ v.answer"
         >
         </div>
-        <!--                    v-html="session.history[i].handledQuest +' : '+ session.history[i].answer"-->
       </div>
 
       <div class="quest-zone mt-3">
@@ -18,15 +17,15 @@
       </div>
       <div class="answer mt-2">
                 <textarea
-                  class="w-100"
-                  v-model="answer"
-                  placeholder="Введите ответ"
-                  @keyup.enter="onClickNext()"
+                    class="w-100"
+                    v-model="answer"
+                    placeholder="Введите ответ"
+                    @keyup.enter="onClickNext()"
                 />
       </div>
       <div class="next">
         <button class="btn btn-outline-primary btn-next btn-sm"
-                @click="onClickPauseSession">
+                @click="onPauseSession">
           Пауза
         </button>
         <button class="btn btn-outline-primary btn-next btn-sm"
@@ -38,30 +37,41 @@
       </div>
       <div class="finish">
         <button
-          v-if="!!session && session.stack.length > 0 && session.stack[0].maxCount === 0"
-          class="btn btn-outline-primary btn-next btn-sm"
-          @click="onClickFinishCycle">
+            v-if="!!session && session.stack.length > 0 && session.stack[0].maxCount === 0"
+            class="btn btn-outline-primary btn-next btn-sm"
+            @click="onFinishCycle">
           Завершить текущий цикл
         </button>
         <button class="btn btn-outline-primary btn-next btn-sm"
-                @click="onClickFinishSession">
+                @click="onFinishSession">
           Завершить сессию
         </button>
       </div>
-      <!--{{!!session ? session : ''}}-->
-      <!--{{!!sessionID ? sessionID : ''}}-->
 
-      <pre>Вопрос и ответ: {{ !!this.session ? this.session.questInfo : '' }} </pre>
-      <!--            <pre>Стек: {{ !!this.session ? this.session.stack : '' }}</pre>-->
-      <!--            <pre>Сдвиг: {{ !!this.session ? this.session.positions : '' }}</pre>-->
-      <!--            <pre>Переменные: {{ !!this.session ? this.session.varsByName : '' }}</pre>-->
+      <button
+          class="btn btn-outline-primary btn-continue btn-sm"
+          :class="{'show': session.status === 'paused'}"
+          @click="onContinueSession"
+      >
+        Продолжить
+      </button>
+<!--      <pre>Вопрос и ответ: {{ !!session ? session.questInfo : '' }} </pre>-->
+<!--      <pre>Стек: {{ !!this.session ? this.session.stack : '' }}</pre>-->
+<!--      <pre>Сдвиг: {{ !!this.session ? this.session.positions : '' }}</pre>-->
+<!--      <pre>Переменные: {{ !!this.session ? this.session.varsByName : '' }}</pre>-->
     </div>
+    <div
+        class="menu-overlay"
+        :class="{'opened': session.status !== 'inProgress'}">
+
+    </div>
+
   </div>
 </template>
 
 <script>
 
-import {mapGetters, mapState} from "vuex";
+import {mapGetters} from "vuex";
 
 const startSubstr = '{{';
 const endSubstr = '}}';
@@ -82,7 +92,6 @@ export default {
     ...mapGetters(['sessionsByID']),
     session() {
       return this.sessionsByID[this.sessionID];
-      // return this.$store.getters.sessionsByID[this.sessionID];
     },
 
     mapKeyNodes() {
@@ -99,8 +108,8 @@ export default {
     },
     questHTML() {
       let result = this.session.questInfo.handledQuest
-        .replaceAll(startSubstr, '<span class="inserted-text">')
-        .replaceAll(endSubstr, '</span>');
+          .replaceAll(startSubstr, '<span class="inserted-text">')
+          .replaceAll(endSubstr, '</span>');
       return result;
     },
     confirmHTML() {
@@ -110,16 +119,16 @@ export default {
   methods: {
     onClickQuest(e) {
       console.log('onClickQuest::e=>>', e);
-      if(e.target.className==="inserted-text") {
+      if (e.target.className === "inserted-text") {
         console.log('inserted-text clicked !!!');
-        let newText = prompt("Редактирование текста", );
+        let newText = prompt("Редактирование текста",);
         console.log('newText =>>', newText);
-        if(!!newText) {
+        if (!!newText) {
           const oldText = e.target.outerText;
           console.log('oldText =>>', oldText);
-          for(let key in this.session.varsByName) {
+          for (let key in this.session.varsByName) {
             console.log('###0 key=>>', key, this.session.varsByName[key]);
-            if(this.session.varsByName[key] === oldText) {
+            if (this.session.varsByName[key] === oldText) {
               console.log('###1');
               this.session.varsByName[key] = newText;
             }
@@ -148,7 +157,7 @@ export default {
 
     handleQuest(goNext = true) {
       let response = this.session.questInfo;
-      if(goNext){
+      if (goNext) {
         response = this.nextQuest();
         this.session.questInfo.rawQuest = response.rawQuest;
       }
@@ -171,13 +180,11 @@ export default {
         diffDt: 0,
         outVarNames: this.session.questInfo.outVarNames,
       });
+      this.session.header.changedDt = new Date().toISOString();
       let hist = this.$refs['history'];
       this.$nextTick(
-        () => hist.scrollTo({left: 0, top: hist.scrollHeight, behavior: "smooth"})
+          () => hist.scrollTo({left: 0, top: hist.scrollHeight, behavior: "smooth"})
       );
-      // console.log('hist.scrollHeight =>>', hist.scrollHeight);
-      // console.log('hist =>>', hist);
-      // console.dir(hist);
     },
     showConfirmation() {
       this.showConfirm = true;
@@ -205,8 +212,8 @@ export default {
         //положить ответ в переменные, указанные в предыдущем вопросе
         this.session.varsByName['$last'] = this.answer;
         this.session.questInfo.outVarNames.forEach((v) => {
-            if (!!v) this.session.varsByName[v] = this.answer;
-          }
+              if (!!v) this.session.varsByName[v] = this.answer;
+            }
         );
 
         this.saveHistoryItem();
@@ -223,19 +230,21 @@ export default {
       this.$store.commit('answer', 'save test');
 
     },
-    onClickFinishCycle() {
+    onFinishCycle() {
       if (this.session.stack.length > 0) this.session.stack.shift();
     },
-    onClickPauseSession() {
+    onPauseSession() {
       this.session.status = 'paused';
       this.setCurrSessionInList();
     },
-    onClickFinishSession() {
+    onFinishSession() {
       this.session.stack = [];
       this.session.status = 'finished';
       this.setCurrSessionInList();
     },
-
+    onContinueSession() {
+      this.session.status = 'inProgress';
+    },
     nextQuest() {
       if (true || this.session.status === 'inProgress') {
         let response = {};
@@ -320,7 +329,7 @@ export default {
         }
         if (this.session.stack.length === 0) {
           this.session.status = 'finished';
-          result = {rawQuest: 'Сказочке конец'};
+          result = {rawQuest: 'Сессия завершена'};
         }
       }
       return result;
@@ -329,32 +338,31 @@ export default {
   },
   mounted() {
     console.log('mounted');
-    if (this.session.status === 'new') {
+    if (this.session.status === 'new' || this.session.questInfo.rawQuest === '') {
       this.onClickNext(true);
       this.session.status = 'inProgress';
     }
     if (this.session.status === 'paused') {
       this.session.status = 'inProgress';
     }
-
+    // window.onbeforeunload = () => {
+    //   this.onPauseSession()
+    // };
+    // window.addEventListener('beforeunload', () => {
+    //   this.onPauseSession();
+    // })
   },
-  // watch: {
-  //     sessionFirstQuest: {
-  //         handler(v) {
-  //             if (v) {
-  //
-  //             }
-  //         },
-  //         deep: false,
-  //         immediate: true,
-  //     }
-  // },
+  beforeUnmount() {
+    // this.onPauseSession();
+  },
+
 };
 </script>
 
 <style lang="scss">
 /****  SessionPlayer  ****/
 .SessionPlayer {
+  position: relative;
   width: 100%;
   height: auto;
   font-size: 14px;
@@ -491,13 +499,49 @@ export default {
     height: auto;
     width: 200px;
     color: black;
-    background-color: transparent;
+    //background-color: transparent;
     border: 1px solid hsl(50, 30%, 75%);
 
     &:hover {
       color: black;
       background-color: hsl(52, 29%, 90%);
     }
+  }
+
+
+  .menu-overlay {
+    position: fixed;
+    right: 100%;
+    top: var(--header-height);
+    height: 100dvh;
+    //height: 600px;
+    width: 100%;
+    z-index: 5;
+    transition: all 0.3s ease;
+    pointer-events: none;
+
+    &.opened {
+      background-color: hsla(0, 0%, 0%, 0.2);
+      backdrop-filter: blur(4px);
+      pointer-events: all;
+      transform: translateX(100%);
+    }
+  }
+
+  .btn-continue {
+    //position: absolute;
+    position: fixed;
+    top: calc(100dvh / 2.5 - 15px);
+    right: 100%;
+    height: auto;
+    width: 200px;
+    transition: all 0.8s ease;
+    z-index: 10;
+
+    &.show {
+      transform: translateX(calc(100% + 100%));
+    }
+
   }
 }
 </style>
