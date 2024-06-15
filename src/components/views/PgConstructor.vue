@@ -3,18 +3,16 @@
     <div class="container">
       <div class="row">
         <div class="col-12">
-<!--          <el-button type="primary" @click="openModal">Выбрать</el-button>-->
-          <el-dialog v-model="dialogVisible" title="Выберите пункт">
+          <el-dialog v-model="dialogVisible" title="Укажите тип нового процесса:">
             <el-radio-group v-model="selectedType">
               <el-radio :value="'draft'">Черновик</el-radio>
               <el-radio :value="'template'">Шаблон</el-radio>
             </el-radio-group>
             <div slot="footer" class="dialog-footer">
-              <el-button @click="dialogVisible = false">Отмена</el-button>
-              <el-button type="primary" @click="confirmSelection">Подтвердить</el-button>
+              <el-button @click="onDialogCancel">Отмена</el-button>
+              <el-button type="primary" @click="onDialogConfirm">Подтвердить</el-button>
             </div>
           </el-dialog>
-<!--          <p>Выбранный тип: {{ selectedType }}</p>-->
           <PpConstructor
               v-if="!!currentEditableProcess"
               v-model:process="currentEditableProcess"
@@ -87,7 +85,16 @@ export default {
       //проверить, есть ли текущий процесс
       //спросить, процесс какого типа надо создать
       console.log('создание нового процесса');
-      this.openModal();
+      this.openDialogCreateProcess();
+
+    },
+
+    openDialogCreateProcess(){
+      this.dialogVisible = true;
+    },
+
+    onDialogConfirm(){
+      this.dialogVisible = false;
       this.$store.dispatch('createNewProcess', this.selectedType).then((v)=>
       {
         this.$store.commit('currentEditableProcessID', v);
@@ -96,26 +103,32 @@ export default {
       });
     },
 
-    openModal(){
-      this.dialogVisible = true;
-    },
-
-    confirmSelection(){
+    onDialogCancel(){
       this.dialogVisible = false;
     },
   },
   mounted() {
+    console.log('мы попали в mounted');
+    console.log('currentEditableProcess', this.currentEditableProcess);
     if (this.routeConstructor === undefined) {
       console.log('routeConstructor is Undefined, вы попали сюда через ссылку в Хедере');
       //проверяем, существует ли CurrentProcess
-      this.createProcess();
+      if (!!this.currentEditableProcess) {
+        console.log('процесс существует');
+      } else {
+        this.createProcess()
+      };
       return
     }
 
     if (this.routeConstructor === '') {
       console.log('routeConstructor = пустаяСтрока, вы попали сюда через адресную строку без указания id');
       //проверяем, существует ли CurrentProcess
-      this.createProcess();
+      if (!!this.currentEditableProcess) {
+        console.log('процесс существует');
+      } else {
+        this.createProcess()
+      };
       return
     }
 

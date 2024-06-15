@@ -35,7 +35,7 @@
     <div class="top-nav">
       <router-link class="menu-item home" :to="{name: 'PgHome'}">Главная</router-link>
       <router-link class="menu-item" :to="{name: 'PgProcessList'}">Процессы</router-link>
-      <router-link class="menu-item" :to="{name: 'PgConstructor'}">Конструктор</router-link>
+      <router-link class="menu-item" :to="{name: 'PgConstructor', params: {id: this.currentEditableProcessID}}">Конструктор</router-link>
       <router-link class="menu-item" :to="{name: 'PgSession', params: {id: this.currentSessionID}}">Личный кабинет</router-link>
     </div>
   </div>
@@ -71,7 +71,7 @@ export default {
       }
   },
   computed: {
-    ...mapState(['currentSessionID', 'sessionList']),
+    ...mapState(['currentSessionID', 'sessionList', 'currentEditableProcessID']),
     ...mapGetters(['markerSessions']),
     ...mapMutations(['changeSessionStatusByID', 'sessionsToPausedExceptThis']),
     markersStacked() {
