@@ -118,7 +118,8 @@ export default {
       sortMode: {...defaultSortOrder},
       showCheckboxes: false,
       openedMenus: {},
-      currentTab: 'tabAll',
+      // currentTab: 'tabAll',
+      currentTab: 'tabDrafts',
       previousTab: '',
       checkedList: {}
 
