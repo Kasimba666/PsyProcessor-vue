@@ -32,6 +32,13 @@
             Создать черновик
           </button>
           <button
+              v-if="!showCheckboxes && (currentTab==='tabReady' || currentTab==='tabAll')"
+              class="btn btn-outline-primary btn-actions btn-sm"
+              @click="onLoadDefault"
+          >
+            Загрузить базовые
+          </button>
+          <button
               v-if="!showCheckboxes && currentTab==='tabTemplates'"
               class="btn btn-outline-primary btn-actions btn-sm"
               @click="onCreateTemplate"
@@ -118,8 +125,7 @@ export default {
       sortMode: {...defaultSortOrder},
       showCheckboxes: false,
       openedMenus: {},
-      // currentTab: 'tabAll',
-      currentTab: 'tabDrafts',
+      currentTab: 'tabAll',
       previousTab: '',
       checkedList: {}
 
@@ -243,6 +249,9 @@ export default {
     onLoadProcesses(e) {
       let file = e.target.files[0];
       this.$emit('doAction', 'load', null, file);
+    },
+    onLoadDefault(e) {
+      this.$emit('doAction', 'loadDefault', null);
     },
     onSelectTab(v) {
       if (this.currentTab !== v) {

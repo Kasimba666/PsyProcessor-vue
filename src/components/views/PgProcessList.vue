@@ -13,6 +13,17 @@
       </div>
     </div>
   </div>
+  <el-dialog
+      v-model="dialogVisible"
+  >
+    <span>Процесс {{dialogProcessName}} с таким id существует</span>
+    <br/>
+    <br/>
+    <span slot="footer" class="dialog-footer">
+      <el-button type="primary" @click="dialogResult='skip'; dialogVisible = false">Пропустить</el-button>
+      <el-button @click="dialogResult='overwrite'; dialogVisible = false">Перезаписать</el-button>
+    </span>
+  </el-dialog>
 </template>
 
 <script>
@@ -31,6 +42,9 @@ export default {
     return {
       file: null,
       typeFile: 'json',
+      dialogVisible: false,
+      dialogResult: 'skip',
+      dialogProcessName: '',
     }
   },
     setup() {
@@ -44,9 +58,9 @@ export default {
         };
     },
     computed: {
-    ...mapState(['processList', 'currentEditableProcess', 'currentEditableProcessID', 'currentSessionID']),
+    ...mapState(['processList', 'currentEditableProcess', 'currentEditableProcessID', 'currentSessionID', 'defaultProcessList']),
     ...mapGetters(['processesByID', 'sessionsByID']),
-    ...mapMutations(['changeSessionStatusByID','changeProcessStatusByID', 'trashProcessInListByID', 'sessionsToPausedExceptThis']),
+    ...mapMutations(['changeSessionStatusByID','changeProcessStatusByID', 'trashProcessInListByID', 'sessionsToPausedExceptThis', 'addProcessesInList']),
     ...mapActions(['createNewProcess']),
 
     rows() {
@@ -68,7 +82,7 @@ export default {
   },
   methods: {
     onDoAction(action, IDs, file) {
-      console.log(action, IDs);
+      // console.log(action, IDs);
       switch (action) {
         case 'createDraft': {
           this.$store.dispatch('createNewProcess', 'draft').then((v)=>
@@ -175,6 +189,28 @@ export default {
           }).catch(e => {
             console.log('onload error:', e);
           });
+        }
+          return;
+
+        case 'loadDefault': {
+          console.log('зашли в действие loadDefault');
+          if (!!this.defaultProcessList && this.defaultProcessList.length>0) {
+            this.defaultProcessList.forEach((v)=>{
+              if (!!this.processesByID[v.id]) {
+                this.dialogProcessName = v.name;
+                this.dialogVisible = true;
+                if (this.dialogResult==='overwrite') {
+                  //удалить существующий с таким id
+                  this.$store.commit('removeProcessInListByID', v.id);
+                  //записать новый
+                  this.$store.commit('addProcessesInList', [v]);
+                }
+
+              }else{
+                this.$store.commit('addProcessesInList', [v]);
+              }
+            });
+          }
         }
           return;
 

@@ -14,7 +14,7 @@
       "toAdd": false
     },
     "type": "process",
-    "status": "draft",
+    "status": "ready",
 	"deleted": false,
     "vars": [
       {
@@ -278,7 +278,7 @@
       "toAdd": false
     },
     "type": "process",
-	"status": "draft",
+	"status": "ready",
 	"deleted": false,
     "vars": [
       {

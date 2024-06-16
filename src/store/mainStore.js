@@ -20,6 +20,7 @@ export default createStore({
         processListSortMode: {...defaultSortOrder},
         currentEditableProcess: null,
         currentEditableProcessID: null,
+        defaultProcessList: [],
         isNewProcess: false,
         answer: '',
         sessionList: [],
@@ -79,6 +80,9 @@ export default createStore({
         },
         sessionList(state, v) {
             state.sessionList = v;
+        },
+        defaultProcessList(state, v) {
+            state.defaultProcessList = v;
         },
 
         changeSessionInListByID(state, v) {
@@ -294,6 +298,7 @@ export default createStore({
             'currentEditableProcessID',
             'currentSessionID',
             'processList',
+            'defaultProcessList',
             'sessionList',
             'answer'
 

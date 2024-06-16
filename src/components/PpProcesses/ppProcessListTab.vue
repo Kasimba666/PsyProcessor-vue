@@ -80,30 +80,6 @@
               class="btn-menu d-flex align-items-center"
               @click.stop="onToggleMenu(rowIdx)"
           >
-<!--            <i class="ico ico-menu" style="font-size: 20px"></i>-->
-<!--                  <ppProcessMenu-->
-<!--                          class="menu-container"-->
-<!--                          v-if="openedMenus[rowIdx]"-->
-<!--                          v-click-outside="hideMenu"-->
-<!--                          :items="menuItems"-->
-<!--                          @onClickMenuItem="(action)=>$emit('doActionOnMenu', action, [row.id])"-->
-<!--                  />-->
-
-<!--              <el-dropdown-->
-<!--                  trigger='click'-->
-<!--                  placement="top"-->
-<!--              >-->
-<!--                  <i class="ico ico-menu" style="font-size: 20px"></i>-->
-<!--                  <template #dropdown>-->
-<!--                              <ppProcessMenu-->
-<!--                                  class="menu-container"-->
-<!--                                  v-if="openedMenus[rowIdx]"-->
-<!--                                  v-click-outside="hideMenu"-->
-<!--                                  :items="menuItems"-->
-<!--                                  @onClickMenuItem="(action)=>$emit('doActionOnMenu', action, [row.id])"-->
-<!--                              />-->
-<!--                  </template>-->
-<!--              </el-dropdown>-->
               <el-dropdown
                   trigger='click'
                   placement="top"
