@@ -10,29 +10,45 @@
         :gridMode="gridMode"
         @rowClick="onRowClick"
     >
-      <TtColumn
-          label=""
-          prop="deleted"
-          v-model:sortable="SortMode"
-      >
-        <template
-            #default="{ row }"
-        > {{!!row.deleted ? '-' : '+'}}
-        </template>
-      </TtColumn>
+<!--      <TtColumn-->
+<!--          label=""-->
+<!--          prop="deleted"-->
+<!--          v-model:sortable="SortMode"-->
+<!--      >-->
+<!--        <template-->
+<!--            #default="{ row }"-->
+<!--        >-->
+<!--          <div :style="{backgroundColor: row.deleted ? 'hsl(0,94%,90%)' : 'none'}">-->
+<!--            {{ !!row.deleted ? '-' : '+' }}-->
+<!--          </div>-->
+<!--        </template>-->
+<!--      </TtColumn>-->
 
       <TtColumn
           label="Имя"
           prop="processTitle"
           v-model:sortable="SortMode"
       >
+        <template
+            #default="{ row }"
+        >
+          <div
+              :style="{backgroundColor: row.deleted ? 'hsl(0,94%,90%)' : 'none'}" style="width: 100%"
+          >
+            {{row.processTitle}}
+          </div>
+        </template>
       </TtColumn>
       <TtColumn
           label="ID"
           prop="id"
       >
         <template #default={row}>
-          {{ idShort(row.id) }}
+          <div
+              :style="{backgroundColor: row.deleted ? 'hsl(0,94%,90%)' : 'none'}" style="width: 100%"
+          >
+            {{ idShort(row.id) }}
+          </div>
         </template>
 
       </TtColumn>
@@ -95,12 +111,27 @@
                   </template>
               </el-dropdown>
           </div>
-
         </template>
 
       </TtColumn>
 
     </AppTransTable>
+
+          <el-dialog v-model="dialogVisible" width="50%">
+            <template #header>
+              <span>{{ processesByID[sortedSource[currentRow].id].header.processTitle }}</span>
+            </template>
+<!--            <pre> {{ processesByID[sortedSource[currentRow].id].rootNode }}</pre>-->
+            <el-tree
+                :data="[processesByID[sortedSource[currentRow].id].rootNode]"
+                :props="props"
+            />
+            <template #footer>
+              <span class="dialog-footer">
+                <el-button @click="dialogVisible = false">Закрыть</el-button>
+              </span>
+            </template>
+          </el-dialog>
   </div>
 </template>
 
@@ -110,6 +141,7 @@ import TableMixin from "@/components/Common/AppTransformerTable/TableMixin.vue";
 import AppTransTable from '@/components/Common/AppTransformerTable/AppTransTable.vue';
 import TtColumn from '@/components/Common/AppTransformerTable/TtColumn.vue';
 import {useIdFilters} from "@/composables/useIdFilters.js";
+import {mapGetters, mapState} from "vuex";
 
 const defaultSortOrder = {
   field: 'changedDt',
@@ -126,15 +158,20 @@ export default {
     return {
       openedMenus: {},
       currentRow: null,
+      dialogVisible: false,
+
     }
   },
-    setup() {
+   setup() {
         const {idShort} = useIdFilters();
+        const props = {label: 'forKey', children: 'list', id: 'forKey'}
         return {
-            idShort
+            idShort,
+            props
         }
     },
   computed: {
+    ...mapGetters(['processesByID']),
     sortedSource() {
       let orderDESC = this.sortMode.order === 'DESC';
       return [...this.source].sort((a, b) => {
@@ -157,6 +194,7 @@ export default {
       this.$emit('setChecked', this.tabCheckedList);
     },
     onRowClick(v) {
+      this.dialogVisible = true;
       this.currentRow = v.rowIdx;
     },
   },
@@ -175,6 +213,7 @@ export default {
 
 <style lang="scss">
 .ppProcessListTab {
+  width: 100%;
 
 }
 </style>

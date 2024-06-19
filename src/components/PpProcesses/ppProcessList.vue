@@ -1,7 +1,5 @@
 <template>
   <div class="ppProcessList">
-    <b-container>
-      <b-row>
         <div class="tabs-container">
           <AppTabs
               :currentTab="currentTab"
@@ -95,8 +93,6 @@
             Выгрузить выбранные
           </button>
         </div>
-      </b-row>
-    </b-container>
   </div>
 </template>
 
@@ -106,7 +102,7 @@ import AppTransTable from '@/components/Common/AppTransformerTable/AppTransTable
 import TtColumn from '@/components/Common/AppTransformerTable/TtColumn.vue';
 import TableMixin from "@/components/Common/AppTransformerTable/TableMixin.vue";
 import ppProcessMenu from "@/components/PpProcesses/ppProcessMenu.vue";
-import AppTabs from "@/components/PpProcesses/AppTabs.vue";
+import AppTabs from "@/components/Common/AppTabs.vue";
 import ppProcessListTab from "@/components/PpProcesses/ppProcessListTab.vue";
 import {useIdFilters} from "@/composables/useIdFilters.js";
 import {useDtFilters} from "@/composables/useDtFilters.js";
@@ -125,7 +121,8 @@ export default {
       sortMode: {...defaultSortOrder},
       showCheckboxes: false,
       openedMenus: {},
-      currentTab: 'tabAll',
+      // currentTab: 'tabAll',
+      currentTab: 'tabReady',
       previousTab: '',
       checkedList: {}
 
@@ -135,10 +132,10 @@ export default {
     const limitRows = 20;
     const allMenuItems = {'start': 'Начать сессию', 'change': 'Редактировать', 'duplicate': 'Дублировать', 'toDraft': 'В черновики', 'toReady': 'В готовые', 'toTemplate': 'В шаблоны', 'toTrash': 'В корзину', 'restore': 'Восстановить', 'remove': 'Удалить насовсем'};
     const gridMode = {
-        xxl: '20px 2fr 100px 80px 1fr 1fr 40px',
-        xl: '20px 2fr 100px 80px 1fr 1fr 40px',
-        lg: '20px 2fr 100px 80px 1fr 1fr 40px',
-        md: '20px 2fr 100px 80px 1fr 1fr 40px',
+        xxl: '2fr 100px 80px 1fr 1fr 40px',
+        xl: '2fr 100px 80px 1fr 1fr 40px',
+        lg: '2fr 100px 80px 1fr 1fr 40px',
+        md: '2fr 100px 80px 1fr 1fr 40px',
       };
     const {idShort} = useIdFilters();
     const {dtIsoShort, dtIsoFileName} = useDtFilters();
@@ -183,7 +180,7 @@ export default {
         },
         'tabAll': {
           title: 'Все',
-          menuItems: this.menuItems(['toTrash']),
+          menuItems: this.menuItems(['start', 'change', 'duplicate', 'toReady', 'toDraft', 'toTemplate', 'toTrash']),
           gridMode: this.gridMode,
           source: this.source
         }
@@ -272,6 +269,8 @@ export default {
 <style lang="scss">
 .ppProcessList {
   position: relative;
+  //width: 100%;
+  width: 100%;
 
   .trans-table {
     user-select: none;

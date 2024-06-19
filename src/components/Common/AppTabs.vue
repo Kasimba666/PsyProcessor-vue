@@ -70,12 +70,14 @@ export default {
     width: 100%;
   }
   .tab-panel {
-    height: 42px;
+    height: auto;
+    min-height: 42px;
     padding: 0 2px;
     border-radius: var(--main-border-radius);
     background-color: var(--root-tabs-bg);
     display: flex;
-    flex-flow: row nowrap;
+    justify-content: center;
+    flex-flow: row wrap;
     align-items: center;
 
     color: var(--root-tabs-cl);

@@ -1,8 +1,8 @@
 <template>
-  <div class="ProcessList">
+  <div class="PgProcessList">
     <div class="container">
       <div class="row">
-        <div class="col-12 mt-40">
+        <div class="col-12">
             <ppProcessList
                 :source="rows"
                 @doAction="onDoAction"
@@ -13,17 +13,17 @@
       </div>
     </div>
   </div>
-  <el-dialog
-      v-model="dialogVisible"
-  >
-    <span>Процесс {{dialogProcessName}} с таким id существует</span>
-    <br/>
-    <br/>
-    <span slot="footer" class="dialog-footer">
-      <el-button type="primary" @click="dialogResult='skip'; dialogVisible = false">Пропустить</el-button>
-      <el-button @click="dialogResult='overwrite'; dialogVisible = false">Перезаписать</el-button>
-    </span>
-  </el-dialog>
+<!--  <el-dialog-->
+<!--      v-model="dialogVisible"-->
+<!--  >-->
+<!--    <span>Процесс {{dialogProcessName}} с таким id существует</span>-->
+<!--    <br/>-->
+<!--    <br/>-->
+<!--    <span slot="footer" class="dialog-footer">-->
+<!--      <el-button type="primary" @click="onClickDialogChoice('skip')">Пропустить</el-button>-->
+<!--      <el-button @click="onClickDialogChoice('overwrite')">Перезаписать</el-button>-->
+<!--    </span>-->
+<!--  </el-dialog>-->
 </template>
 
 <script>
@@ -35,16 +35,13 @@ import {useFiles} from "@/composables/useFiles.js";
 
 
 export default {
-  name: "ProcessList",
+  name: "PgProcessList",
   components: {ppProcessList},
   props: [],
   data() {
     return {
       file: null,
       typeFile: 'json',
-      dialogVisible: false,
-      dialogResult: 'skip',
-      dialogProcessName: '',
     }
   },
     setup() {
@@ -192,28 +189,6 @@ export default {
         }
           return;
 
-        case 'loadDefault': {
-          console.log('зашли в действие loadDefault');
-          if (!!this.defaultProcessList && this.defaultProcessList.length>0) {
-            this.defaultProcessList.forEach((v)=>{
-              if (!!this.processesByID[v.id]) {
-                this.dialogProcessName = v.name;
-                this.dialogVisible = true;
-                if (this.dialogResult==='overwrite') {
-                  //удалить существующий с таким id
-                  this.$store.commit('removeProcessInListByID', v.id);
-                  //записать новый
-                  this.$store.commit('addProcessesInList', [v]);
-                }
-
-              }else{
-                this.$store.commit('addProcessesInList', [v]);
-              }
-            });
-          }
-        }
-          return;
-
         case 'save': {
           let arr = [];
           IDs.forEach((v) => {
@@ -237,10 +212,32 @@ export default {
             });
         }
           return;
+
+        case 'loadDefault': {
+          console.log('зашли в действие loadDefault');
+          if (!!this.defaultProcessList && this.defaultProcessList.length>0) {
+            this.defaultProcessList.forEach((v)=>{
+              if (!!this.processesByID[v.id]) {
+
+                if (confirm(`Процесс "${v.header.processTitle}" с таким id уже существует, перезаписать?`)) {
+
+                  //удалить существующий с таким id
+                  this.$store.commit('removeProcessInListByID', v.id);
+                  //записать новый
+                  this.$store.commit('addProcessesInList', [v]);
+                }
+              }else{
+                this.$store.commit('addProcessesInList', [v]);
+              }
+            });
+          }
+        }
+          return;
         default: {
         }
       }
     },
+
   },
   mounted() {
 
@@ -249,7 +246,7 @@ export default {
 </script>
 
 <style lang="scss">
-.ProcessList {
+.PgProcessList {
   width: 100%;
   height: auto;
   z-index: 30;

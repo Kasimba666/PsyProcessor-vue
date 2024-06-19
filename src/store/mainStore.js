@@ -195,7 +195,7 @@ export default createStore({
         },
 
         createNewProcess({commit, state}, newStatus) {
-            let newProcess = {
+            const newProcess = {
                     id: generateID(),
                     header: {
                         processTitle: "Новый процесс",
@@ -232,7 +232,7 @@ export default createStore({
                         forKey: 'root',
                     }
              };
-            commit('addProcessesInList', [newProcess]);
+            // commit('addProcessesInList', [newProcess]);
             return new Promise((resolve)=>resolve(newProcess.id));
         },
     },
