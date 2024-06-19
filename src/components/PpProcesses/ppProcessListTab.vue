@@ -121,10 +121,10 @@
             <template #header>
               <span>{{ processesByID[sortedSource[currentRow].id].header.processTitle }}</span>
             </template>
-<!--            <pre> {{ processesByID[sortedSource[currentRow].id].rootNode }}</pre>-->
+
             <el-tree
-                :data="[processesByID[sortedSource[currentRow].id].rootNode]"
-                :props="props"
+                :data="[formatted]"
+                default-expand-all
             />
             <template #footer>
               <span class="dialog-footer">
@@ -164,14 +164,26 @@ export default {
   },
    setup() {
         const {idShort} = useIdFilters();
-        const props = {label: 'forKey', children: 'list', id: 'forKey'}
+        const propsDialog = {label: 'type', children: 'list', id: 'forKey'}
         return {
+            propsDialog,
             idShort,
-            props
         }
     },
   computed: {
     ...mapGetters(['processesByID']),
+    formatted(){
+        const transformNode = (node) => {
+            return {
+                id: node.forKey,
+                label: this.nodeLabel(node),
+                children: node.list.map(transformNode)
+            }
+        }
+
+        return transformNode(this.processesByID[this.sortedSource[this.currentRow].id].rootNode)
+
+    },
     sortedSource() {
       let orderDESC = this.sortMode.order === 'DESC';
       return [...this.source].sort((a, b) => {
@@ -184,6 +196,25 @@ export default {
     },
   },
   methods: {
+    nodeLabel(node) {
+      let result='';
+        console.log(node);
+
+      if (node.type==='loopList') {
+          result='Линейный список, число повторов: ' + node.attrs.loopCount.value
+      }
+      if (node.type==='randList'){
+          result='Вероятностный список, число повторов: ' + node.attrs.loopCount.value
+      }
+
+
+      if (node.type==='quest'){
+
+          result='Вопрос: ' + node.attrs.quest?.value
+      }
+
+      return result;
+    },
     onToggleMenu(v) {
       this.openedMenus = {[v]: !this.openedMenus[v]};
     },
