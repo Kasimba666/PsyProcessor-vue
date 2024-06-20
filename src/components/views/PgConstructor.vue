@@ -23,7 +23,17 @@
         <div class="files-control">
           <button class="btn btn-outline-primary btn-next btn-sm"
                   @click="onSaveInList">
-            Сохранить в списке
+            Сохранить
+          </button>
+          <button class="btn btn-outline-primary btn-next btn-sm"
+                  v-if="this.currentEditableProcess.status==='template'"
+                  @click="onSaveAsDraft">
+            Сохранить как черновик
+          </button>
+          <button class="btn btn-outline-primary btn-next btn-sm"
+                  v-if="this.currentEditableProcess.status==='draft' || this.currentEditableProcess.status==='ready'"
+                  @click="onSaveAsTemplate">
+            Сохранить как шаблон
           </button>
         </div>
       </div>
@@ -105,6 +115,13 @@ export default {
 
     onDialogCancel(){
       this.dialogVisible = false;
+    },
+
+    onSaveAsDraft(){
+      alert('Сохраним как черновик и перейдём к черновикам');
+    },
+    onSaveAsTemplate(){
+      alert('Сохраним как шаблон и перейдём к шаблонам');
     },
   },
   mounted() {

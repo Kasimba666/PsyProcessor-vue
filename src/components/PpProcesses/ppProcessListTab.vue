@@ -198,21 +198,15 @@ export default {
   methods: {
     nodeLabel(node) {
       let result='';
-        console.log(node);
-
       if (node.type==='loopList') {
           result='Линейный список, число повторов: ' + node.attrs.loopCount.value
       }
       if (node.type==='randList'){
           result='Вероятностный список, число повторов: ' + node.attrs.loopCount.value
       }
-
-
       if (node.type==='quest'){
-
           result='Вопрос: ' + node.attrs.quest?.value
       }
-
       return result;
     },
     onToggleMenu(v) {

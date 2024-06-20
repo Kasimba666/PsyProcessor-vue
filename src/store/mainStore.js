@@ -21,6 +21,7 @@ export default createStore({
         currentEditableProcess: null,
         currentEditableProcessID: null,
         defaultProcessList: [],
+        currentTabProcessList: '',
         isNewProcess: false,
         answer: '',
         sessionList: [],
@@ -83,6 +84,9 @@ export default createStore({
         },
         defaultProcessList(state, v) {
             state.defaultProcessList = v;
+        },
+        currentTabProcessList(state, v) {
+            state.currentTabProcessList = v;
         },
 
         changeSessionInListByID(state, v) {
@@ -235,6 +239,46 @@ export default createStore({
             // commit('addProcessesInList', [newProcess]);
             return new Promise((resolve)=>resolve(newProcess.id));
         },
+        // createNewProcess({commit, state}, newStatus) {
+        //     commit('addProcessesInList', [{
+        //         id: generateID(),
+        //         header: {
+        //             processTitle: "Новый процесс",
+        //             version: "0.0.1",
+        //             processCategory: ["common"],
+        //             createdDt: (new Date()).toISOString(),
+        //             changedDt: (new Date()).toISOString(),
+        //             description: 'Описание',
+        //             toSave: false,
+        //             toAdd: false,
+        //         },
+        //         type: 'process',
+        //         status: newStatus,
+        //         deleted: false,
+        //         vars: [
+        //             {name: '$topic', value: '',},
+        //             {name: '$last', value: '',},
+        //         ],
+        //         rootNode: {
+        //             type: 'loopList',
+        //             attrs: {
+        //                 nodeName: {
+        //                     inpType: 'text',
+        //                     inpLabel: 'Название узла (optional)',
+        //                     value: 'root',
+        //                 },
+        //                 loopCount: {
+        //                     inpType: 'number',
+        //                     inpLabel: 'Количество циклов',
+        //                     value: 0, // ноль означает бесконечный цикл
+        //                 },
+        //             },
+        //             list: [],
+        //             forKey: 'root',
+        //         }
+        //     }]);
+        //     return new Promise((resolve)=>resolve(newProcess.id));
+        // },
     },
     getters: {
         //формирует объект, у которого в качестве ключей используются идентификаторы сессий, а в качестве значений - объекты сессий
@@ -299,6 +343,7 @@ export default createStore({
             'currentSessionID',
             'processList',
             'defaultProcessList',
+            'currentTabProcessList',
             'sessionList',
             'answer'
 

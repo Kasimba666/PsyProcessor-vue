@@ -134,9 +134,16 @@ export default {
         }
           return;
         case 'toTemplate': {
-          if (this.processesByID[IDs[0]].status !== 'template') {
-            this.$store.commit('changeProcessStatusByID', {id: IDs[0], status: 'template'});
-          }
+            let forSave = [];
+            for (let i = 0; i < IDs.length; i++) {
+                forSave.push(JSON.parse(JSON.stringify(this.processesByID[IDs[i]])));
+            }
+            forSave.forEach(v => {
+                v.id = createUuid();
+                v.header.processTitle += ' - шаблон';
+                v.status = 'template';
+            }); // обновляем IDs
+            this.$store.commit('addProcessesInList', forSave);
         }
           return;
 
@@ -214,7 +221,6 @@ export default {
           return;
 
         case 'loadDefault': {
-          console.log('зашли в действие loadDefault');
           if (!!this.defaultProcessList && this.defaultProcessList.length>0) {
             this.defaultProcessList.forEach((v)=>{
               if (!!this.processesByID[v.id]) {

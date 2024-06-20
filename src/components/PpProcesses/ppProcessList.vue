@@ -106,6 +106,7 @@ import AppTabs from "@/components/Common/AppTabs.vue";
 import ppProcessListTab from "@/components/PpProcesses/ppProcessListTab.vue";
 import {useIdFilters} from "@/composables/useIdFilters.js";
 import {useDtFilters} from "@/composables/useDtFilters.js";
+import {mapMutations, mapState} from "vuex";
 
 const defaultSortOrder = {
   field: 'changedDt',
@@ -122,7 +123,7 @@ export default {
       showCheckboxes: false,
       openedMenus: {},
       // currentTab: 'tabAll',
-      currentTab: 'tabReady',
+      // currentTab: 'tabReady',
       previousTab: '',
       checkedList: {}
 
@@ -149,6 +150,13 @@ export default {
   },
 
   computed: {
+    ...mapState['currentTabProcessList'],
+    ...mapMutations['currentTabProcessList'],
+
+    currentTab(){
+        return !!this.currentTabProcessList ? this.currentTabProcessList : 'tabAll';
+    },
+
     tabsList() {
       return Object.entries(this.tabs).map((v)=>{return {value: v[0], name: v[1].title}});
     },
@@ -251,9 +259,11 @@ export default {
       this.$emit('doAction', 'loadDefault', null);
     },
     onSelectTab(v) {
-      if (this.currentTab !== v) {
+        if (this.currentTab !== v) {
         this.checkedList[this.currentTab] = {};
-        this.currentTab = v;
+        // this.currentTab = v;
+        console.log(v);
+        this.$store.commit('currentTabProcessList', v);
       }
 
     },
