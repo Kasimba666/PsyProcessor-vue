@@ -26,10 +26,11 @@ export default {
   name: 'AppTabs',
   components: {},
   props: ['currentTab', 'tabsList', 'dropdownFrom'],
-  model: {
-    prop: 'currentTab',
-    event: 'selectTab'
-  },
+  emits: ['update:currentTab'],
+  // model: {
+  //   prop: 'currentTab',
+  //   event: 'selectTab'
+  // },
   data() {
     return {
     };
@@ -56,7 +57,8 @@ export default {
   methods: {
     selectTab(tab) {
       // console.log('fromAppTabs', tab);
-      this.$emit('selectTab', tab);
+      // this.$emit('selectTab', tab);
+      this.$emit('update:currentTab', tab);
     },
   },
 }

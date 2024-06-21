@@ -2,10 +2,11 @@
   <div class="ppProcessList">
         <div class="tabs-container">
           <AppTabs
-              :currentTab="currentTab"
-              v-model:tabsList="tabsList"
-              @selectTab="onSelectTab"
+              v-model:currentTab="currentTab"
+              dropdown-from="sm"
+              :tabsList="tabsList"
           />
+<!--              @selectTab="onSelectTab"-->
           <div
               v-for="tab in arrTabs"
           >
@@ -15,7 +16,7 @@
                 :source="tab.source"
                 :gridMode="tab.gridMode"
                 :showCheckboxes="showCheckboxes"
-                v-model:tabCheckedList="checkedList[currentTab]"
+                :tabCheckedList="checkedList[currentTab]"
                 @doActionOnMenu="((v1, v2)=>{$emit('doAction', v1, v2)})"
                 :key="currentTab+'_'+showCheckboxes"
             />
@@ -150,12 +151,16 @@ export default {
   },
 
   computed: {
-    ...mapState['currentTabProcessList'],
-    ...mapMutations['currentTabProcessList'],
-
-    currentTab(){
+    ...mapState(['currentTabProcessList']),
+    // ...mapMutations(['currentTabProcessList']),
+    currentTab:{
+    get (){
         return !!this.currentTabProcessList ? this.currentTabProcessList : 'tabAll';
     },
+    set(v){
+      this.$store.commit('currentTabProcessList', v);
+    }
+},
 
     tabsList() {
       return Object.entries(this.tabs).map((v)=>{return {value: v[0], name: v[1].title}});
@@ -258,15 +263,14 @@ export default {
     onLoadDefault(e) {
       this.$emit('doAction', 'loadDefault', null);
     },
-    onSelectTab(v) {
-        if (this.currentTab !== v) {
-        this.checkedList[this.currentTab] = {};
-        // this.currentTab = v;
-        console.log(v);
-        this.$store.commit('currentTabProcessList', v);
-      }
-
-    },
+    // onSelectTab(v) {
+    //     if (this.currentTab !== v) {
+    //     this.checkedList[this.currentTab] = {};
+    //     this.currentTab = v;
+    //     console.log(v);
+    //     // this.$store.commit('currentTabProcessList', v);
+    //   }
+    // },
   },
 
   mounted() {

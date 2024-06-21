@@ -236,7 +236,7 @@ export default createStore({
                         forKey: 'root',
                     }
              };
-            // commit('addProcessesInList', [newProcess]);
+            commit('addProcessesInList', [newProcess]);
             return new Promise((resolve)=>resolve(newProcess.id));
         },
         // createNewProcess({commit, state}, newStatus) {
@@ -290,7 +290,7 @@ export default createStore({
         },
         finishedProcessesByID(state) {
             return state.processList.reduce((s, v) => {
-                if (v.status='finished') {
+                if (v.status==='finished') {
                     s[v.id] = v;
                     return s;
                 }
@@ -306,7 +306,7 @@ export default createStore({
 
         readyProcessesByID(state) {
             return state.processList.reduce((s, v) => {
-                if (v.status='ready') {
+                if (v.status==='ready') {
                     s[v.id] = v;
                     return s;
                 }
@@ -314,7 +314,7 @@ export default createStore({
         },
         draftProcessesByID(state) {
             return state.processList.reduce((s, v) => {
-                if (v.status='draft') {
+                if (v.status==='draft') {
                     s[v.id] = v;
                     return s;
                 }
@@ -323,7 +323,7 @@ export default createStore({
 
         templateProcessesByID(state) {
             return state.processList.reduce((s, v) => {
-                if (v.status='template') {
+                if (v.status==='template') {
                     s[v.id] = v;
                     return s;
                 }
