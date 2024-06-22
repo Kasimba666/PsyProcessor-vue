@@ -44,7 +44,7 @@
 <script>
 import PpConstructor from "@/components/PpConstructor/PpConstructor.vue";
 import {mapGetters, mapState} from "vuex";
-import {v4} from "uuid";
+import {v4 as createUuid, v4} from "uuid";
 import { ElButton, ElDialog, ElRadioGroup, ElRadio } from 'element-plus';
 
 export default {
@@ -80,10 +80,10 @@ export default {
 
       //если процесс с таким id есть в списке, то обновляем его, если нет, то добавляем новый
       if (!!this.processesByID[this.currentEditableProcessID]) {
-        console.log('есть такой процесс');
+        // console.log('есть такой процесс');
         this.$store.commit('changeProcessInListByID', {id: this.currentEditableProcessID, process: forSave});
       } else {
-        console.log('нет такого процесса и сейчас мы его добавим в список');
+        // console.log('нет такого процесса и сейчас мы его добавим в список');
         this.$store.commit('addProcessesInList', [forSave]);
 
       };
@@ -118,10 +118,25 @@ export default {
     },
 
     onSaveAsDraft(){
-      alert('Сохраним как черновик и перейдём к черновикам');
+      let forSave = JSON.parse(JSON.stringify(this.currentEditableProcess));
+      forSave.id = createUuid();
+      forSave.header.processTitle += ' - черновик';
+      forSave.status = 'draft';
+
+      this.$store.commit('addProcessesInList', [forSave]);
+
+      this.$store.commit('currentTabProcessList', 'tabDrafts');
+      this.$router.push({name: 'PgProcessList'});
     },
     onSaveAsTemplate(){
-      alert('Сохраним как шаблон и перейдём к шаблонам');
+      let forSave = JSON.parse(JSON.stringify(this.currentEditableProcess));
+      forSave.id = createUuid();
+      forSave.header.processTitle += ' - шаблон';
+      forSave.status = 'template';
+      this.$store.commit('addProcessesInList', [forSave]);
+
+      this.$store.commit('currentTabProcessList', 'tabTemplates');
+      this.$router.push({name: 'PgProcessList'});
     },
   },
   mounted() {

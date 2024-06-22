@@ -10,19 +10,6 @@
         :gridMode="gridMode"
         @rowClick="onRowClick"
     >
-<!--      <TtColumn-->
-<!--          label=""-->
-<!--          prop="deleted"-->
-<!--          v-model:sortable="SortMode"-->
-<!--      >-->
-<!--        <template-->
-<!--            #default="{ row }"-->
-<!--        >-->
-<!--          <div :style="{backgroundColor: row.deleted ? 'hsl(0,94%,90%)' : 'none'}">-->
-<!--            {{ !!row.deleted ? '-' : '+' }}-->
-<!--          </div>-->
-<!--        </template>-->
-<!--      </TtColumn>-->
 
       <TtColumn
           label="Имя"
@@ -80,7 +67,9 @@
             v-if="showCheckboxes"
             #default="{ row }"
         >
-          <div class="d-flex align-content-center p-10">
+          <div class="d-flex align-content-center p-10"
+               @click.stop=""
+          >
             <input
                 type="checkbox"
                 v-model="tabCheckedList[row.id]"

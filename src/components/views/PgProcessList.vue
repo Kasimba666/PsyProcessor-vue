@@ -13,17 +13,7 @@
       </div>
     </div>
   </div>
-<!--  <el-dialog-->
-<!--      v-model="dialogVisible"-->
-<!--  >-->
-<!--    <span>Процесс {{dialogProcessName}} с таким id существует</span>-->
-<!--    <br/>-->
-<!--    <br/>-->
-<!--    <span slot="footer" class="dialog-footer">-->
-<!--      <el-button type="primary" @click="onClickDialogChoice('skip')">Пропустить</el-button>-->
-<!--      <el-button @click="onClickDialogChoice('overwrite')">Перезаписать</el-button>-->
-<!--    </span>-->
-<!--  </el-dialog>-->
+
 </template>
 
 <script>
@@ -55,7 +45,7 @@ export default {
         };
     },
     computed: {
-    ...mapState(['processList', 'currentEditableProcess', 'currentEditableProcessID', 'currentSessionID', 'defaultProcessList']),
+    ...mapState(['processList', 'currentEditableProcess', 'currentEditableProcessID', 'currentSessionID', 'defaultProcessList', 'currentTabProcessList']),
     ...mapGetters(['processesByID', 'sessionsByID']),
     ...mapMutations(['changeSessionStatusByID','changeProcessStatusByID', 'trashProcessInListByID', 'sessionsToPausedExceptThis', 'addProcessesInList']),
     ...mapActions(['createNewProcess']),
@@ -123,7 +113,22 @@ export default {
           return;
         case 'toDraft': {
           if (this.processesByID[IDs[0]].status !== 'draft') {
-            this.$store.commit('changeProcessStatusByID', {id: IDs[0], status: 'draft'});
+            if (this.processesByID[IDs[0]].status === 'ready') {
+              this.$store.commit('changeProcessStatusByID', {id: IDs[0], status: 'draft'});
+            }
+            if (this.processesByID[IDs[0]].status === 'template') {
+              let forSave = [];
+              for (let i = 0; i < IDs.length; i++) {
+                forSave.push(JSON.parse(JSON.stringify(this.processesByID[IDs[i]])));
+              }
+              forSave.forEach(v => {
+                v.id = createUuid();
+                v.header.processTitle += ' - черновик';
+                v.status = 'draft';
+              }); // обновляем IDs
+              this.$store.commit('addProcessesInList', forSave);
+              this.$store.commit('currentTabProcessList', 'tabDrafts');
+            }
           }
         }
           return;
@@ -144,6 +149,7 @@ export default {
                 v.status = 'template';
             }); // обновляем IDs
             this.$store.commit('addProcessesInList', forSave);
+            this.$store.commit('currentTabProcessList', 'tabTemplates');
         }
           return;
 
@@ -197,9 +203,10 @@ export default {
           return;
 
         case 'save': {
+          console.log('IDs',IDs);
           let arr = [];
           IDs.forEach((v) => {
-            arr.push(this.processesByID[v]);
+            if (!!v) arr.push(this.processesByID[v]);
           });
           let result = prompt('Введите название файла выгрузки', arr.map((v)=>v.header.processTitle).join(' ') + ' ' + this.dtIsoFileName((new Date()).toISOString()));
           if (!!result) this.saveJSONFile(arr, result);

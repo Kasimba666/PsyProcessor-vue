@@ -123,8 +123,6 @@ export default {
       sortMode: {...defaultSortOrder},
       showCheckboxes: false,
       openedMenus: {},
-      // currentTab: 'tabAll',
-      // currentTab: 'tabReady',
       previousTab: '',
       checkedList: {}
 
@@ -155,7 +153,7 @@ export default {
     // ...mapMutations(['currentTabProcessList']),
     currentTab:{
     get (){
-        return !!this.currentTabProcessList ? this.currentTabProcessList : 'tabAll';
+        return !!this.currentTabProcessList ? this.currentTabProcessList : 'tabReady';
     },
     set(v){
       this.$store.commit('currentTabProcessList', v);
@@ -210,7 +208,7 @@ export default {
     selectedIDs() {
       if (!!this.checkedList[this.currentTab]) {
         return Object.entries(this.checkedList[this.currentTab]).map((v) => {
-          if (v[1] === true) return v[0]
+          if (!!v && v[1] === true) return v[0]
         });
       }
       else return [];
