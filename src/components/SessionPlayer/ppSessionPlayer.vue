@@ -374,7 +374,7 @@ export default {
   }
 
   .sp-main {
-    width: 500px;
+    width: 100%;
     height: auto;
     display: flex;
     flex-flow: column nowrap;

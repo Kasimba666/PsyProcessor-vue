@@ -130,7 +130,7 @@ export default {
   },
   setup() {
     const limitRows = 20;
-    const allMenuItems = {'start': 'Начать сессию', 'change': 'Редактировать', 'duplicate': 'Дублировать', 'toDraft': 'В черновики', 'toReady': 'В готовые', 'toTemplate': 'В шаблоны', 'toTrash': 'В корзину', 'restore': 'Восстановить', 'remove': 'Удалить насовсем'};
+    const allMenuItems = {'start': 'Начать сессию', 'change': 'Редактировать', 'duplicate': 'Клонировать', 'toDraft': 'Создать черновик на основе', 'toReady': 'В готовые', 'toTemplate': 'Создать шаблон на основе', 'toTrash': 'В корзину', 'restore': 'Восстановить', 'remove': 'Удалить насовсем'};
     const gridMode = {
         xxl: '2fr 100px 80px 1fr 1fr 40px',
         xl: '2fr 100px 80px 1fr 1fr 40px',
@@ -281,12 +281,25 @@ export default {
 <style lang="scss">
 .ppProcessList {
   position: relative;
-  //width: 100%;
   width: 100%;
 
   .trans-table {
     user-select: none;
     font-size: 12px;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     .btn-menu {
       position: relative;

@@ -63,7 +63,7 @@ export default {
   height: auto;
 
   .main {
-    padding: 40px 0px 80px;
+    padding: 65px 0px 80px;
 
   }
 
