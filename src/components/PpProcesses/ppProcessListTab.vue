@@ -83,10 +83,11 @@
         >
           <div
               class="btn-menu d-flex align-items-center"
-              @click.stop="onToggleMenu(rowIdx)"
+              @click.stop=""
           >
+<!--              @click.stop="onToggleMenu(rowIdx)-->
               <el-dropdown
-                  trigger='click'
+                  trigger='hover'
                   placement="top"
               >
                   <i class="ico ico-menu" style="font-size: 20px"></i>
@@ -188,19 +189,21 @@ export default {
     nodeLabel(node) {
       let result='';
       if (node.type==='loopList') {
-          result='Линейный список, число повторов: ' + node.attrs.loopCount.value
+          result='Линейный список, число повторов: ' + node.attrs.loopCount.value;
+          if (node.attrs.loopCount.value===0) result += ' (бесконечно)';
       }
       if (node.type==='randList'){
-          result='Вероятностный список, число повторов: ' + node.attrs.loopCount.value
+          result='Вероятностный список, число повторов: ' + node.attrs.loopCount.value;
       }
       if (node.type==='quest'){
           result='Вопрос: ' + node.attrs.quest?.value
       }
       return result;
     },
-    onToggleMenu(v) {
-      this.openedMenus = {[v]: !this.openedMenus[v]};
-    },
+    // onToggleMenu(v) {
+    //   this.openedMenus = {[v]: !this.openedMenus[v]};
+    // },
+
     hideMenu() {
       this.openedMenus = {};
     },

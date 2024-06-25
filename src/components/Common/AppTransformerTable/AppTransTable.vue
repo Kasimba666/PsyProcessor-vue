@@ -29,7 +29,7 @@
                     :row="row"
                     :rowIdx="idx"
                     v-for="(row, idx) of data"
-                    @click.native="$emit('rowClick', {row, rowIdx: idx})"
+                    @dblclick.native="$emit('rowClick', {row, rowIdx: idx})"
                     :key="idx"
                 >
                     <slot name="default"></slot>

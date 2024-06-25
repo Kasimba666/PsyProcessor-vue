@@ -73,8 +73,8 @@
 
 import {mapGetters} from "vuex";
 
-const startSubstr = '{{';
-const endSubstr = '}}';
+const startSubstr = /\{\{\s*/g;
+const endSubstr = /\s*\}\}/g;
 export default {
   name: "SessionPlayer",
   components: {},
@@ -121,10 +121,10 @@ export default {
       console.log('onClickQuest::e=>>', e);
       if (e.target.className === "inserted-text") {
         console.log('inserted-text clicked !!!');
-        let newText = prompt("Редактирование текста",);
+        const oldText = e.target.outerText;
+        let newText = prompt("Редактирование текста", oldText);
         console.log('newText =>>', newText);
         if (!!newText) {
-          const oldText = e.target.outerText;
           console.log('oldText =>>', oldText);
           for (let key in this.session.varsByName) {
             console.log('###0 key=>>', key, this.session.varsByName[key]);
@@ -139,6 +139,28 @@ export default {
         }
       }
     },
+    // onClickQuest(e) {
+    //   console.log('onClickQuest::e=>>', e);
+    //   if (e.target.className === "inserted-text") {
+    //     console.log('inserted-text clicked !!!');
+    //     let newText = prompt("Редактирование текста", 'что-то');
+    //     console.log('newText =>>', newText);
+    //     if (!!newText) {
+    //       const oldText = e.target.outerText;
+    //       console.log('oldText =>>', oldText);
+    //       for (let key in this.session.varsByName) {
+    //         console.log('###0 key=>>', key, this.session.varsByName[key]);
+    //         if (this.session.varsByName[key] === oldText) {
+    //           console.log('###1');
+    //           this.session.varsByName[key] = newText;
+    //         }
+    //         this.handleQuest(false);
+    //
+    //         this.$store.commit('answer', 'save test');
+    //       }
+    //     }
+    //   }
+    // },
     getRandomItem(probabilitiesArray) {
       console.log('probabilitiesArray =>>', probabilitiesArray);
       const totalProbability = probabilitiesArray.reduce((accumulator, probability) => accumulator + parseFloat(probability), 0); // Суммируем вероятности
