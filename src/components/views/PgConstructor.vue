@@ -19,8 +19,19 @@
               @changed="processChanged"
               :key="currentEditableProcess.id"
           />
+          <button
+              class="btn btn-outline-primary btn-next btn-sm"
+              @click="createProcess"
+              v-else
+          >
+            Создать
+          </button>
+
         </div>
-        <div class="files-control">
+        <div
+            class="files-control"
+            v-if="!!currentEditableProcess"
+        >
           <button class="btn btn-outline-primary btn-next btn-sm"
                   @click="onSaveInList">
             Сохранить
@@ -92,8 +103,6 @@ export default {
       this.$router.push({name: 'PgProcessList'});
     },
     createProcess() {
-      //проверить, есть ли текущий процесс
-      //спросить, процесс какого типа надо создать
       console.log('создание нового процесса');
       this.openDialogCreateProcess();
 
@@ -146,9 +155,10 @@ export default {
       console.log('routeConstructor is Undefined, вы попали сюда через ссылку в Хедере');
       //проверяем, существует ли CurrentProcess
       if (!!this.currentEditableProcess) {
-        console.log('процесс существует');
+        console.log('текущий процесс существует');
       } else {
-        this.createProcess()
+        console.log('текущий процесс не существует и будет создан');
+        this.createProcess();
       };
       return
     }
@@ -159,6 +169,7 @@ export default {
       if (!!this.currentEditableProcess) {
         console.log('процесс существует');
       } else {
+        console.log('текущий процесс не существует и будет создан');
         this.createProcess()
       };
       return
