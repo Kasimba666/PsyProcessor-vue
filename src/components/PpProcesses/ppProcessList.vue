@@ -287,20 +287,6 @@ export default {
     user-select: none;
     font-size: 12px;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     .btn-menu {
       position: relative;
       padding: 6px;

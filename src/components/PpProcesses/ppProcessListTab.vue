@@ -107,21 +107,25 @@
 
     </AppTransTable>
 
-          <el-dialog v-model="dialogVisible" width="50%">
-            <template #header>
-              <span>{{ processesByID[sortedSource[currentRow].id].header.processTitle }}</span>
-            </template>
+    <el-dialog
+            v-model="dialogVisible"
+            style="top: -40px"
+            width="95%"
 
+    >
+      <template #header>
+        <span>{{ processesByID[sortedSource[currentRow].id].header.processTitle }}</span>
+      </template>
             <el-tree
-                :data="[formatted]"
-                default-expand-all
+                    :data="[formatted]"
+                    default-expand-all
             />
-            <template #footer>
-              <span class="dialog-footer">
-                <el-button @click="dialogVisible = false">Закрыть</el-button>
-              </span>
-            </template>
-          </el-dialog>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogVisible = false">Закрыть</el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -231,6 +235,10 @@ export default {
 <style lang="scss">
 .ppProcessListTab {
   width: 100%;
+
+  .dialog-content {
+
+  }
 
 }
 </style>

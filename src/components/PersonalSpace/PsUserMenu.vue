@@ -1,6 +1,6 @@
 <template>
     <div class="PsUserMenu">
-        <h2>PsUserMenu</h2>
+        <h2>Меню пользователя</h2>
     </div>
 </template>
 

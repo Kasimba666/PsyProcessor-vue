@@ -60,7 +60,7 @@ export default {
       currentSession: null,
       fields: [
         {key: 'sessionTitle', label: 'Наименование'},
-        {key: 'processTitle', label: 'Процесс'},
+        // {key: 'processTitle', label: 'Процесс'},
         {key: 'createdDt', label: 'Дата создания'},
         {key: 'status', label: 'Состояние'},
       ],
@@ -84,7 +84,7 @@ export default {
         return {
           id: v.id,
           sessionTitle: v.header.sessionTitle,
-          processTitle: v.process.header.processTitle,
+          // processTitle: v.process.header.processTitle,
           createdDt: this.dtIsoShort(v.header.createdDt),
           status: v.status,
 
