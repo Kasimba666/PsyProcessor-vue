@@ -359,7 +359,6 @@ export default {
 
   },
   mounted() {
-    console.log('mounted');
     if (this.session.status === 'new' || this.session.questInfo.rawQuest === '') {
       this.onClickNext(true);
       this.session.status = 'inProgress';

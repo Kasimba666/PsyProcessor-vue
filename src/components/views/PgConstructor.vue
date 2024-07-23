@@ -149,8 +149,7 @@ export default {
     },
   },
   mounted() {
-    console.log('мы попали в mounted');
-    console.log('currentEditableProcess', this.currentEditableProcess);
+    console.log('currentEditableProcess: ', this.currentEditableProcess);
     if (this.routeConstructor === undefined) {
       console.log('routeConstructor is Undefined, вы попали сюда через ссылку в Хедере');
       //проверяем, существует ли CurrentProcess

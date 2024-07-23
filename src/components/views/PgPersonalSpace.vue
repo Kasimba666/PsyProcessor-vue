@@ -15,11 +15,11 @@
 
     <div class="container">
       <div class="row">
-        <div class="col-12">
+        <div class="col-12" v-if="!!currentSessionID">
           <router-view
-              :sessionID=currentSessionID
           />
         </div>
+        <div v-else>Нет открытых сессий</div>
       </div>
     </div>
   </div>
@@ -56,8 +56,7 @@ export default {
       file: null,
       newSessionName: '',
       showModalName: false,
-      currentID: null,
-      currentSession: null,
+      currentInListID: null,
       fields: [
         {key: 'sessionTitle', label: 'Наименование'},
         // {key: 'processTitle', label: 'Процесс'},
@@ -129,23 +128,24 @@ export default {
 
     onDoAction(action, IDs, file) {
       if (IDs !== null) {
-        this.currentID = IDs[0];
-        this.$store.commit('currentSessionID', this.currentID);
+        this.currentInListID = IDs[0];
+        // this.$store.commit('currentSessionID', this.currentInListID);
       }
       switch (action) {
         case 'changeStatus': {
-          let oldStatus = this.sessionsByID[this.currentID].status;
+          let oldStatus = this.sessionsByID[this.currentInListID].status;
           switch (oldStatus) {
             case 'new':
             case 'paused': {
               this.onToggleSidePanel();
-              this.$store.commit('changeSessionStatusByID', {id: this.currentID, status: 'inProgress'});
-              this.$store.commit('sessionsToPausedExceptThis', this.currentSessionID);
-              this.$router.push({name: 'PgSession', params: {id: this.currentSessionID}});
+              this.$store.commit('changeSessionStatusByID', {id: this.currentInListID, status: 'inProgress'});
+              this.$store.commit('sessionsToPausedExceptThis', this.currentInListID);
+              this.$router.push({name: 'PgSession', params: {id: this.currentInListID}});
+              this.$store.commit('currentSessionID', this.currentInListID);
             }
               break;
             case 'inProgress': {
-              this.sessionsByID[this.currentID].status = 'paused';
+              this.sessionsByID[this.currentInListID].status = 'paused';
               this.onToggleSidePanel();
             }
               break;
@@ -155,13 +155,16 @@ export default {
         }
           return
         case 'remove': {
-          if (this.currentID !== -1 && !!this.currentSessionID) this.$store.commit('removeSessionInListByID', this.currentSessionID);
-
+          if (this.currentInListID !== -1) this.$store.commit('removeSessionInListByID', this.currentInListID);
+          if (this.currentInListID === this.currentSessionID) {
+            this.$store.commit('currentSessionID', null);
+            this.$router.push({name: 'PgSession', params: {id: ''}});
+          }
         }
           return
         case 'changeName': {
-          if (this.currentID !== -1 && !!this.currentSessionID) {
-            this.newSessionName = this.sessionsByID[this.currentID].header.sessionTitle;
+          if (this.currentInListID !== -1 && !!this.currentSessionID) {
+            this.newSessionName = this.sessionsByID[this.currentInListID].header.sessionTitle;
             this.showModalName = true;
           }
         }
@@ -190,7 +193,7 @@ export default {
         }
           return
         case 'save': {
-          let session = this.sessionsByID[this.currentID];
+          let session = this.sessionsByID[this.currentInListID];
           this.saveJSONFile(session, session.header.sessionTitle + ' ' + this.dtIsoShort(session.header.changedDt));
         }
           return
@@ -201,7 +204,8 @@ export default {
 
 
     onOkChangeName() {
-      this.$store.commit('changeSessionNameByID', {id: this.currentSessionID, name: this.newSessionName});
+      this.$store.commit('changeSessionNameByID', {id: this.currentInListID, name: this.newSessionName});
+      // this.$store.commit('changeSessionNameByID', {id: this.currentSessionID, name: this.newSessionName});
     },
     onToggleSidePanel() {
       this.isOpenedSidePanel = !this.isOpenedSidePanel

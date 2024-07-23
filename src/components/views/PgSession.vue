@@ -2,7 +2,7 @@
     <div class="PgSession">
         <div class="container">
             <div class="row">
-                <div class="col-12">
+                <div class="col-12" v-if="sessionsByID[this.sessionID]">
                     <h4>Сессия:</h4>
                     {{ sessionsByID?.[sessionID]?.header.sessionTitle ?? '' }}
                     <hr/>
@@ -13,13 +13,14 @@
                             :sessionID="sessionID"
                     />
                 </div>
+              <div v-else>Выберите сессию</div>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-import {mapGetters, mapState} from "vuex";
+import {mapGetters, mapMutations, mapState} from "vuex";
 import SessionPlayer from "@/components/SessionPlayer/ppSessionPlayer.vue";
 
 export default {
@@ -29,7 +30,6 @@ export default {
     layout: 'default',
     name: "PgSession",
     components: {SessionPlayer},
-    // props: ['sessionID'],
 
     data() {
         return {}
@@ -37,13 +37,19 @@ export default {
     computed: {
         ...mapState(['currentSessionID']),
         ...mapGetters(['sessionsByID']),
+        ...mapMutations(['sessionsToPausedExceptThis']),
         sessionID() {
             return this.$route.params.id;
         },
     },
     methods: {},
     mounted() {
-       // if (!!this.currentSessionID)  this.$router.push({name: 'PgSession', params: {id: this.currentSessionID}});
+      if (!!this.sessionsByID[this.sessionID]) {
+        //деактивировать другие сессии
+        this.$store.commit('sessionsToPausedExceptThis', this.sessionID);
+      }else{
+        alert('Адрес указан неверно, проверьте правильность');
+      }
 
     },
 }
