@@ -20,7 +20,7 @@
               :key="currentEditableProcess.id"
           />
           <button
-              class="btn btn-outline-primary btn-next btn-sm"
+              class="btn btn-outline-primary btn-control btn-sm"
               @click="createProcess"
               v-else
           >
@@ -32,16 +32,16 @@
             class="files-control"
             v-if="!!currentEditableProcess"
         >
-          <button class="btn btn-outline-primary btn-next btn-sm"
+          <button class="btn btn-outline-primary btn-control btn-sm"
                   @click="onSaveInList">
             Сохранить
           </button>
-          <button class="btn btn-outline-primary btn-next btn-sm"
+          <button class="btn btn-outline-primary btn-control btn-sm"
                   v-if="this.currentEditableProcess.status==='template'"
                   @click="onSaveAsDraft">
             Сохранить как черновик
           </button>
-          <button class="btn btn-outline-primary btn-next btn-sm"
+          <button class="btn btn-outline-primary btn-control btn-sm"
                   v-if="this.currentEditableProcess.status==='draft' || this.currentEditableProcess.status==='ready'"
                   @click="onSaveAsTemplate">
             Сохранить как шаблон
@@ -241,7 +241,7 @@ export default {
     padding: 5px;
     margin: 10px;
 
-    .btn-next {
+    .btn-control {
       color: black;
       border: 1px solid hsl(50, 30%, 75%);
 

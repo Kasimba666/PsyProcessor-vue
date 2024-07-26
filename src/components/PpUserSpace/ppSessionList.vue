@@ -1,12 +1,43 @@
 <template>
   <div class="ppSessionList">
-    <div class="table-custom">
+    <div class="table-custom-short"
+      v-if="isShortMenu"
+    >
+      <div class="table-row-short"
+           v-if="!!rowsShort && rowsShort.length >0"
+           v-for="(rowShort, r) of rowsShort" :key="r"
+           :style="statusShort(rowShort.status)"
+           @click="onRowClicked(rowShort.id)"
+           v-b-tooltip.hover = tooltipOnRow(rowShort.createdDt,rowShort.changedDt)
+
+      >
+        <div class="table-cell-short info-short">
+            {{rowShort.sessionInfo}}
+        </div>
+        <div class="table-cell-short row-button-place-short">
+          <button
+              v-if="rowShort.status === 'inProgress' || rowShort.status === 'paused'"
+              class="btn btn-outline-primary btn-sm my-btn-short"
+              style="backgroundColor: white"
+              @click="changeStatus(rowShort.id)"
+          >
+              <i class="ico" :class="icoControl(rowShort.status)"
+                  style="font-size: 30px; color: hsl(0,0%,50%)"></i>
+        </button>
+          <div v-else>Сессия завершена</div>
+        </div>
+        <div :class="{currentShort: rowShort.id===currentID}">
+        </div>
+
+      </div>
+    </div>
+    <div class="table-custom" v-if="!isShortMenu">
       <div class="table-head">
-        <div class="table-cell cell-title" :class="{right: (i === fields.length-1)}"
+        <div class="table-cell cell-title" :class="{name: (field.key === 'name')}"
              v-for="(field, i) of fields" :key="i">
           {{ field.label }}
         </div>
-        <div class="table-button">
+        <div class="table-cell right">
         </div>
       </div>
       <div class="table-row"
@@ -17,42 +48,47 @@
            @click="onRowClicked(row.id)">
         <div :class="{current: row.id===currentID}">
         </div>
-        <div class="table-cell cell-row" :class="{right: (f === fields.length-1)}"
+        <div class="table-cell cell-row" :class="{name: (field.key === 'name')}"
              v-if="!!fields && fields.length>0"
              v-for="(field, f) of fields" :key="f"
         >
-          {{ Array.isArray(row[field.key]) ? row[field.key].join(', ') : row[field.key] }}
+         {{field.key !== 'status' ? row[field.key] : statusList[row[field.key]] }}
         </div>
-        <div class="table-button">
-          <button class="btn btn-outline-primary btn-next btn-sm"
-                  @click="changeStatus(row.id)">
+
+        <div class="table-cell row-button-place right">
+          <button
+              v-if="row.status === 'inProgress' || row.status === 'paused'"
+              class="btn btn-outline-primary my-btn btn-sm"
+              @click="changeStatus(row.id)"
+          >
             {{ showStatus(row.status) }}
           </button>
+          <div v-else>Сессия завершена</div>
         </div>
       </div>
     </div>
     <div class="session-list-control">
-      <button class="btn btn-outline-primary btn-next btn-sm"
-              @click="changeName(currentID)">
-        Изменить название
-      </button>
-      <button class="btn btn-outline-primary btn-next btn-sm"
-              @click="remove(currentID)">
-        Удалить
-      </button>
-      <button class="btn btn-outline-primary btn-next btn-sm">
-        <label class="add-item" for="id-input-file" style="margin-bottom: 0">
-          <input type="file" class="d-none" id="id-input-file"
-                 value=""
-                 :accept="'.'+'json'"
-                 @change.prevent="loadSession($event)">
-          Загрузить
-        </label>
-      </button>
-      <button class="btn btn-outline-primary btn-next btn-sm"
-              @click="saveSession(currentID)">
-        Выгрузить
-      </button>
+        <button class="btn btn-outline-primary btn-control btn-sm"
+                @click="changeName(currentID)">
+          Изменить название
+        </button>
+        <button class="btn btn-outline-primary btn-control btn-sm"
+                @click="remove(currentID)">
+          Удалить
+        </button>
+        <button class="btn btn-outline-primary btn-control btn-sm">
+          <label class="add-item" for="id-input-file" style="margin-bottom: 0">
+            <input type="file" class="d-none" id="id-input-file"
+                   value=""
+                   :accept="'.'+'json'"
+                   @change.prevent="loadSession($event)">
+            Загрузить
+          </label>
+        </button>
+        <button class="btn btn-outline-primary btn-control btn-sm"
+                @click="saveSession(currentID)">
+          Выгрузить
+        </button>
     </div>
 
   </div>
@@ -63,15 +99,52 @@
 export default {
   name: "ppSessionList",
   components: {},
-  props: ['rows', 'fields'],
+  props: ['rows', 'fields', 'rowsShort', 'isShortMenu'],
   data() {
     return {
       // currentIdx: null,
       currentID: null,
     }
   },
-  computed: {},
+  setup() {
+    const statusList = {
+      'new': 'новый',
+      'inProgress': 'выполняется',
+      'paused': 'на паузе',
+      'finished': 'завершён'
+
+    };
+
+    return {
+      statusList,
+    }
+
+  },
+
+  computed: {
+
+  },
   methods: {
+    tooltipOnRow(v1, v2) {
+      return 'Создан: '+v1+' Изменён: '+v2 ;
+    },
+    icoControl(v) {
+      if (v === 'inProgress') return 'ico-pause';
+      if (v === 'paused' || 'new') return 'ico-play2';
+    },
+    statusShort(v) {
+      let color='';
+      switch (v) {
+        case 'inProgress': color='hsla(84, 80%, 90%)';
+        break;
+        case 'paused': color='hsla(58, 80%, 90%)'
+        break;
+        case 'finished': color='hsl(0,0%,85%)'
+        break;
+        default: {}
+      }
+      return {backgroundColor: color}
+    },
     onRowClicked(v) {
       this.currentID = v;
     },
@@ -116,6 +189,96 @@ export default {
   height: auto;
   font-size: 13px;
 
+  .table-custom-short {
+    position: relative;
+    width: 100%;
+    flex: 0 0 auto;
+    height: auto;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: start;
+    border: 1px solid hsla(0, 0%, 50%, 0.8);
+    user-select: none;
+
+
+    .table-row-short {
+      position: relative;
+      width: 100%;
+      height: auto;
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: center;
+      border-bottom: 1px solid hsla(0, 0%, 50%, 0.6);
+      cursor: pointer;
+
+      &:hover {
+        box-shadow: 0 0 10px 3px rgba(0, 140, 186, 0.5);
+      }
+      &:last-child {
+        border-bottom: none;
+      }
+
+
+      .table-cell-short {
+        //position: relative;
+        //width: 100px;
+        //height: auto;
+        padding: 5px;
+        flex: 1 1 auto;
+        //min-width: 50px;
+        //border-right: 1px solid hsla(0, 0%, 50%, 0.8);
+        //text-align: left;
+
+        &.info-short {
+          width: 150px;
+          justify-content: flex-start;
+          align-items: flex-start;
+          text-align: left;
+          word-break: break-all;
+          word-break: break-word;
+          //font-weight: bold;
+        }
+
+        &.row-button-place-short {
+          width: 40px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+          margin-right: 5px;
+
+          .my-btn-short {
+            height: 40px;
+            width: 40px;
+            color: black;
+            background-color: transparent;
+            border: 1px solid hsl(50, 30%, 75%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+
+            &:hover {
+              color: black;
+              background-color: hsl(52, 29%, 90%);
+            }
+          }
+        }
+        &:last-child {
+          border-right: none;
+        }
+      }
+
+    }
+    .currentShort {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 2px solid rgba(0, 140, 186, 0.5);
+      pointer-events: none;
+      //background-color: hsla(195, 100%, 36%, 0.05);
+    }
+  }
   .table-custom {
     position: relative;
     width: 100%;
@@ -166,50 +329,62 @@ export default {
         background-color: hsla(195, 100%, 36%, 0.05);
       }
 
-
     }
+        .my-btn {
+          height: 25px;
+          width: 80px;
+          color: black;
+          background-color: transparent;
+          border: 1px solid hsl(50, 30%, 75%);
+          margin: 0px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
 
-    .table-button {
-      width: 100px;
-      min-width: 100px;
-      display: flex;
-      flex-flow: column nowrap;
-      justify-content: start;
-      align-items: center;
-      padding: 0px;
-
-      &.border-right {
-        border-right: 1px solid hsla(0, 0%, 50%, 0.8);
-      }
-    }
+          &:hover {
+            color: black;
+            background-color: hsl(52, 29%, 90%);
+          }
+        }
 
     .table-cell {
       position: relative;
-      width: 100px;
+      width: 85px;
       height: auto;
       padding: 2px;
       flex: 1 1 auto;
       min-width: 50px;
       border-right: 1px solid hsla(0, 0%, 50%, 0.8);
       text-align: left;
+      word-break: keep-all;
 
       &.cell-title {
         justify-content: center;
         align-items: center;
         text-align: center;
-        word-break: break-word;
+        //word-break: break-word;
         font-weight: bold;
       }
+        &.row-button-place {
+          display: flex;
+          flex-flow: column nowrap;
+          justify-content: center;
+          align-items: center;
+          padding: 0px;
+        }
 
       &.cell-row {
         justify-content: flex-start;
         align-items: flex-start;
         text-align: left;
-        word-break: break-all;
+        //word-break: break-all;
       }
+        &.name {
+          width: 200px;
+        }
 
       &.right {
-        //border-right: none;
+        border-right: none;
       }
     }
 
@@ -218,26 +393,30 @@ export default {
   .session-list-control {
     width: auto;
     display: flex;
-    flex-flow: row;
+    flex-flow: row wrap;
     justify-content: center;
+    align-items: center;
     gap: 10px;
-    //padding-right: 5px;
     margin: 10px;
 
-  }
-
-  .btn-next {
-    height: auto;
-    width: auto;
+  .btn-control {
+    height: 50px;
+    width: 80px;
     color: black;
     background-color: transparent;
     border: 1px solid hsl(50, 30%, 75%);
-    margin: 5px;
+    margin: 0px;
+    display: flex;
+    flex-flow: row;
+    align-items: center;
+    justify-content: center;
 
     &:hover {
       color: black;
       background-color: hsl(52, 29%, 90%);
     }
   }
+}
+
 }
 </style>

@@ -1,5 +1,17 @@
 <template>
-  <div class="PersonalSpace">
+  <div class="PersonalSpace"
+       @touchstart="handleTouchStart"
+       @touchmove="handleTouchMove"
+       @touchend="handleTouchEnd"
+  >
+<!--     <div-->
+<!--       class="for-touch"-->
+<!--       v-if="isTouchDevice"-->
+<!--       @touchstart="handleTouchStart"-->
+<!--       @touchmove="handleTouchMove"-->
+<!--       @touchend="handleTouchEnd"-->
+<!--     >-->
+<!--     </div>-->
     <ppSidePanel
         :isOpened=isOpenedSidePanel
         @onToggleClick="onToggleSidePanel">
@@ -7,7 +19,9 @@
         <ppUserMenu class="user-menu"/>
         <ppSessionList class="session-list"
                        :rows="rows"
+                       :rowsShort="rowsShort"
                        :fields="fields"
+                       :isShortMenu="isTouchDevice"
                        @doAction="onDoAction"
         />
       </div>
@@ -58,20 +72,26 @@ export default {
       showModalName: false,
       currentInListID: null,
       fields: [
-        {key: 'sessionTitle', label: 'Наименование'},
+        {key: 'name', label: 'Имя'},
         // {key: 'processTitle', label: 'Процесс'},
-        {key: 'createdDt', label: 'Дата создания'},
+        {key: 'createdDt', label: 'Создан'},
+        {key: 'changedDt', label: 'Изменён'},
         {key: 'status', label: 'Состояние'},
       ],
       isOpenedSidePanel: false,
+      touchStartX: 0,
+      touchEndX: 0
     }
   },
   setup() {
-      const {dtIsoShort} = useDtFilters();
-      return {
-        dtIsoShort
+    const {dtIsoShort} = useDtFilters();
+    const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    return {
+        dtIsoShort,
+        isTouchDevice,
       }
   },
+
   computed: {
     ...mapState(['sessionList', 'currentSessionID']),
     ...mapGetters(['sessionsByID']),
@@ -82,9 +102,24 @@ export default {
       return this.sessionList.map(v => {
         return {
           id: v.id,
-          sessionTitle: v.header.sessionTitle,
+          name: v.header.sessionTitle,
           // processTitle: v.process.header.processTitle,
           createdDt: this.dtIsoShort(v.header.createdDt),
+          changedDt: this.dtIsoShort(v.header.changedDt),
+          status: v.status
+
+        }
+      });
+    },
+    rowsShort() {
+      if (this.sessionList === null || this.sessionList.length === 0) return [];
+      return this.sessionList.map(v => {
+        return {
+          id: v.id,
+          sessionInfo: v.header.sessionTitle,
+          // processTitle: v.process.header.processTitle,
+          createdDt: this.dtIsoShort(v.header.createdDt),
+          changedDt: this.dtIsoShort(v.header.changedDt),
           status: v.status,
 
         }
@@ -93,6 +128,23 @@ export default {
 
   },
   methods: {
+    handleTouchStart(event) {
+      this.touchStartX = event.changedTouches[0].screenX;
+    },
+
+    handleTouchMove(event) {
+      this.touchEndX = event.changedTouches[0].screenX;
+
+    },
+
+    handleTouchEnd() {
+      if (this.touchStartX - this.touchEndX > 50) {
+        this.isOpenedSidePanel = false;
+      } else if (this.touchEndX - this.touchStartX > 50) {
+        this.isOpenedSidePanel = true;
+      }
+    },
+
     saveJSONFile: function (object, filename) {
       const json = JSON.stringify(object, null, 2); // Преобразуем объект в строку JSON
       const blob = new Blob([json], {type: "application/json"}); // Создаем Blob из строки JSON
@@ -227,9 +279,18 @@ export default {
   justify-content: start;
   align-items: start;
   padding: 0px;
+  .for-touch {
+    position: fixed;
+    top: var(--header-height);
+    width: 100%;
+    height: 95dvh;
+    background-color: hsl(152, 69%, 19%, 0.75);
+    z-index: 30;
 
+  }
   .menu-panel {
-    width: 400px;
+    //width: 400px;
+    width: auto;
     height: 100%;
     display: flex;
     flex-flow: column nowrap;

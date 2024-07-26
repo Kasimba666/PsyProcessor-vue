@@ -24,11 +24,11 @@
                 />
       </div>
       <div class="next">
-        <button class="btn btn-outline-primary btn-next btn-sm"
+        <button class="btn btn-outline-primary btn-control btn-sm"
                 @click="onPauseSession">
           Пауза
         </button>
-        <button class="btn btn-outline-primary btn-next btn-sm"
+        <button class="btn btn-outline-primary btn-control btn-sm"
                 :disabled="answer===''"
                 @click="onClickNext()">
           Далее
@@ -38,11 +38,11 @@
       <div class="finish">
         <button
             v-if="!!session && session.stack.length > 0 && session.stack[0].maxCount === 0"
-            class="btn btn-outline-primary btn-next btn-sm"
+            class="btn btn-outline-primary btn-control btn-sm"
             @click="onFinishCycle">
           Завершить текущий цикл
         </button>
-        <button class="btn btn-outline-primary btn-next btn-sm"
+        <button class="btn btn-outline-primary btn-control btn-sm"
                 @click="onFinishSession">
           Завершить сессию
         </button>
@@ -516,7 +516,7 @@ export default {
     }
   }
 
-  .btn-next {
+  .btn-control {
     height: auto;
     width: 200px;
     color: black;
