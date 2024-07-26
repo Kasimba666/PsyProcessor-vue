@@ -37,9 +37,9 @@
         trigger='hover'
         placement="top"
     >
-      <i class="ico ico-menu" style="font-size: 20px"> Меню</i>
+      <i class="ico ico-menu" style="font-size: 20px"></i>
       <template #dropdown>
-        <el-dropdown-item><router-link class="home" style="color: hsl(180, 99%, 22%)" :to="{name: 'PgHome'}">Главная</router-link></el-dropdown-item>
+        <el-dropdown-item class="home"><router-link class="" style="color: hsl(180, 99%, 22%)" :to="{name: 'PgHome'}">Главная</router-link></el-dropdown-item>
         <el-dropdown-item><router-link class="" style="color: hsl(180, 99%, 22%)" :to="{name: 'PgProcessList'}">Процессы</router-link></el-dropdown-item>
         <el-dropdown-item><router-link class="" style="color: hsl(180, 99%, 22%)" :to="{name: 'PgConstructor', params: {id: this.currentEditableProcessID}}">Конструктор</router-link></el-dropdown-item>
         <el-dropdown-item><router-link class="" style="color: hsl(180, 99%, 22%)" :to="{name: 'PgSession', params: {id: this.currentSessionID}}">Личный кабинет</router-link></el-dropdown-item>

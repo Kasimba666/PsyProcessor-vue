@@ -179,6 +179,7 @@ export default createStore({
                 stack: [{
                     key: 'root',
                     type: p.rootNode.type,
+                    prevProbIdx: -1, //предыдущий номер случайного вопроса внутри цикла
                     counter: -1,
                     maxCount: 0,
                 }],

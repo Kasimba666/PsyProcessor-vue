@@ -161,8 +161,10 @@ export default {
     //     }
     //   }
     // },
-    getRandomItem(probabilitiesArray) {
+    getRandomItem(probabilitiesArray, prevProbIdx) {
       console.log('probabilitiesArray =>>', probabilitiesArray);
+      console.log('prevProbIdx =>>', prevProbIdx);
+
       const totalProbability = probabilitiesArray.reduce((accumulator, probability) => accumulator + parseFloat(probability), 0); // Суммируем вероятности
 
       // if (totalProbability !== 1) throw new Error("Total probability must be equal to 1"); // Проверяем корректность данных
@@ -281,7 +283,6 @@ export default {
 
       let result = {rawQuest: ''};
       let curr = this.session.stack[0];
-
       curr.counter++;
 
       let childrenAmount = this.mapKeyNodes[curr.key].list.length;
@@ -308,7 +309,8 @@ export default {
                 let arrProbs = node.list.map((v) => {
                   return +v.attrs.rate.value;
                 });
-                let probIdx = this.getRandomItem(arrProbs);
+                let probIdx = this.getRandomItem(arrProbs, curr.prevProbIdx);
+                curr.prevProbIdx = probIdx;
                 //проверить, надо ли сохранять ответ в переменной, если да, то послать имя переменной
                 let varNames = [], varName = node.list[probIdx].attrs.out.value;
                 if (!!varName) {
