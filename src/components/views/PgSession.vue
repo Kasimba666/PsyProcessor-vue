@@ -44,12 +44,18 @@ export default {
     },
     methods: {},
     mounted() {
-      if (!!this.sessionsByID[this.sessionID]) {
-        //деактивировать другие сессии
-        this.$store.commit('sessionsToPausedExceptThis', this.sessionID);
-      }else{
-        alert('Адрес указан неверно, проверьте правильность');
-      }
+      console.log('sessionID', this.sessionID);
+      setTimeout(()=>{
+        console.log('sessionID', this.sessionID);
+        if (!!this.sessionsByID[this.sessionID]) {
+          //деактивировать другие сессии
+          this.$store.commit('sessionsToPausedExceptThis', this.sessionID);
+        }else{
+          alert('Адрес указан неверно, проверьте правильность');
+        }
+
+
+      }, 500);
 
     },
 }

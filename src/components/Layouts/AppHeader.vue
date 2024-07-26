@@ -32,7 +32,22 @@
     <div class="logo">
       PsyProcessor
     </div>
-    <div class="top-nav">
+    <el-dropdown
+        v-if="screen.type === 'xs'"
+        trigger='hover'
+        placement="top"
+    >
+      <i class="ico ico-menu" style="font-size: 20px"> Меню</i>
+      <template #dropdown>
+        <el-dropdown-item><router-link class="home" style="color: hsl(180, 99%, 22%)" :to="{name: 'PgHome'}">Главная</router-link></el-dropdown-item>
+        <el-dropdown-item><router-link class="" style="color: hsl(180, 99%, 22%)" :to="{name: 'PgProcessList'}">Процессы</router-link></el-dropdown-item>
+        <el-dropdown-item><router-link class="" style="color: hsl(180, 99%, 22%)" :to="{name: 'PgConstructor', params: {id: this.currentEditableProcessID}}">Конструктор</router-link></el-dropdown-item>
+        <el-dropdown-item><router-link class="" style="color: hsl(180, 99%, 22%)" :to="{name: 'PgSession', params: {id: this.currentSessionID}}">Личный кабинет</router-link></el-dropdown-item>
+      </template>
+    </el-dropdown>
+    <div
+        v-else
+        class="top-nav">
       <router-link class="menu-item home" :to="{name: 'PgHome'}">Главная</router-link>
       <router-link class="menu-item" :to="{name: 'PgProcessList'}">Процессы</router-link>
       <router-link class="menu-item" :to="{name: 'PgConstructor', params: {id: this.currentEditableProcessID}}">Конструктор</router-link>
@@ -130,7 +145,7 @@ export default {
   }
 
   .logo {
-    width: 110px;
+    width: 100px;
     padding: 0 0 0 0px;
     font-family: 'Arial';
     font-size: 30px;
@@ -259,5 +274,43 @@ export default {
     }
   }
 
+  .menu-container-short {
+    position: absolute;
+    //top: -44px;
+    bottom: -10px;
+    right: 15px;
+    width: 200px;
+    height: 200px;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: start;
+    //border-radius: 5px 0px 5px 5px;
+    border: 1px solid hsl(50, 30%, 65%);
+    box-shadow: 2px 1px 12px 0px hsla(0, 0%, 50%, 0.7);
+    background-color: yellow;
+    overflow: visible;
+    z-index: 10;
+
+   .menu-item-short {
+    width: 100%;
+    height: 30px;
+    padding-left: 20px;
+    padding-right: 20px;
+    white-space: nowrap;
+    cursor: pointer;
+    color: black;
+     background-color: yellow;
+    border-bottom: 1px solid hsl(50, 30%, 65%);
+    font-size: 12px;
+    z-index: 15;
+    &:last-child {
+      border-bottom: none;
+    }
+    &:hover {
+      background-color: hsl(50, 30%, 75%);
+    }
+  }
+  }
 }
 </style>

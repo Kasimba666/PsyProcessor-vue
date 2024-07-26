@@ -192,6 +192,7 @@ export default {
               this.onToggleSidePanel();
               this.$store.commit('changeSessionStatusByID', {id: this.currentInListID, status: 'inProgress'});
               this.$store.commit('sessionsToPausedExceptThis', this.currentInListID);
+              // console.log('currentInListID:', this.currentInListID);
               this.$router.push({name: 'PgSession', params: {id: this.currentInListID}});
               this.$store.commit('currentSessionID', this.currentInListID);
             }
