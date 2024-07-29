@@ -3,7 +3,7 @@
 
         <div class="pp-panel mt-4" v-if="!!currentNode">
             <div class="attr-panel">
-                <div class="head">{{ 'Редактор атрибутов' }}</div>
+                <div class="ppp-head">{{ 'Редактор атрибутов' }}</div>
                 <div class="body">
                     <div class="ppcEditorInput mt-1">
                         <!--<div class="type-select">-->
@@ -21,10 +21,12 @@
                     </div>
                     <div v-for="(attr, i) in attrs">
                         <template
-                                v-if="(currentNode.type === 'quest' && (attr.key === 'quest' || attr.key === 'out'|| (attr.key === 'rate' && parentNodeType === 'randList'))) ||
-                      (currentNode.type === 'loopList' && (attr.key === 'loopCount'|| (attr.key === 'rate' && parentNodeType === 'randList'))) ||
-                      (currentNode.type === 'randList' && (attr.key === 'loopCount' || (attr.key === 'rate' && parentNodeType === 'randList')))"
-                        >
+                          v-if=" (
+                            attr.key in {rate, againRate} && parentNodeType === 'randList') ||
+                                (((attr.key === 'quest' || attr.key === 'out') && currentNode.type === 'quest') ||
+                                (attr.key === 'loopCount') &&
+                                ((currentNode.type === 'loopList') || (currentNode.type === 'randList'))
+                                )">
                             <ppcEditorInput
                                     v-model:attr="attr.val"
                                     @update:attr="v=>{updateAttrs(attr.key, v)}"
@@ -36,7 +38,7 @@
             </div>
 
             <div class="struct-panel">
-                <div class="head">
+                <div class="ppp-head">
 
                   <span>{{ processType }}:</span>
 <!--                  <span>{{ 'Процесс:' }}</span>-->
@@ -206,7 +208,13 @@ export default {
                 rate: {
                     inpType: 'number',
                     inpLabel: 'Доля',
-                    value: 1,
+                    value: 10,
+                    min: 1,
+                },
+                againRate: { // доля при повторе
+                    inpType: 'number',
+                    inpLabel: 'Доля при повторе',
+                    value: 5,
                     min: 1,
                 },
             });
@@ -281,7 +289,7 @@ export default {
 //         console.log('process >> ', this.process);
         this.currentNode = this.process.rootNode;
         this.$el.addEventListener('unselectAllNodes', this.unselectAllChildren);
-        // console.log('PpConstructor::this =', this);
+        console.log('PpConstructor::this =', this);
     },
 }
 </script>
@@ -314,7 +322,8 @@ export default {
       border: 1px solid hsl(50, 30%, 80%);
     }
 
-    .head {
+    .ppp-head {
+      test: 33;
       width: 100%;
       height: 35px;
       display: flex;
@@ -421,7 +430,7 @@ export default {
     border-radius: 10px 0 0 10px;
     margin-right: 1px;
 
-    .head {
+    .ppp-head {
       border-radius: 10px 0 0 0;
     }
 
@@ -462,7 +471,7 @@ export default {
     flex: 1 1 auto;
     border-radius: 0 10px 10px 0;
 
-    .head {
+    .ppp-head {
       border-radius: 0 10px 0 0;
     }
 

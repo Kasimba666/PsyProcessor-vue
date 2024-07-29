@@ -150,7 +150,7 @@ export default createStore({
                 let result = {};
                 const getNode = (node) => {
                     if (node.type === "loopList" && node.attrs.loopCount.value > 0) result[node.forKey] = 0;
-                    if (node.list.length > 0) node.list.forEach((v) => {
+                    node.list.forEach((v) => {
                         getNode(v)
                     });
                 };
@@ -204,7 +204,7 @@ export default createStore({
                     id: generateID(),
                     header: {
                         processTitle: "Новый процесс",
-                        version: "0.0.1",
+                        version: "0.0.2",
                         processCategory: ["common"],
                         createdDt: (new Date()).toISOString(),
                         changedDt: (new Date()).toISOString(),

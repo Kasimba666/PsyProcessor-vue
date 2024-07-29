@@ -161,9 +161,10 @@ export default {
     //     }
     //   }
     // },
-    getRandomItem(probabilitiesArray, prevProbIdx) {
+    getRandomItem(probabilitiesArray, againProbsArray,  prevProbIdx) {
       console.log('probabilitiesArray =>>', probabilitiesArray);
-      console.log('prevProbIdx =>>', prevProbIdx);
+      // console.log('againProbsArray =>>', againProbsArray);
+      // console.log('prevProbIdx =>>', prevProbIdx);
 
       const totalProbability = probabilitiesArray.reduce((accumulator, probability) => accumulator + parseFloat(probability), 0); // Суммируем вероятности
 
@@ -309,7 +310,25 @@ export default {
                 let arrProbs = node.list.map((v) => {
                   return +v.attrs.rate.value;
                 });
-                let probIdx = this.getRandomItem(arrProbs, curr.prevProbIdx);
+                // let arrAgainProbs = null;
+                // TODO:  сделать нормальное версионирование
+                // if(this.session.process.header.version !=='0.0.1') {
+                //   let arrAgainProbs = node.list.map((v) => {
+                //     return +v.attrs.againRate.value;
+                //   });
+                //   arrProbs[curr.prevProbIdx] = arrAgainProbs[curr.prevProbIdx];
+                //   if('againRate' in node.list[curr.prevProbIdx]) {
+                //     arrProbs[curr.prevProbIdx] = +node.list[curr.prevProbIdx].attrs.againRate.value;
+                //   }
+                // }
+
+                if('againRate' in (node.list?.[curr.prevProbIdx]?.attrs ?? {})) {
+                  console.log('againRate =>>', +node.list[curr.prevProbIdx].attrs.againRate.value);
+                  arrProbs[curr.prevProbIdx] = +node.list[curr.prevProbIdx].attrs.againRate.value;
+                }
+                let probIdx = this.getRandomItem(arrProbs,
+                  // arrAgainProbs, curr.prevProbIdx
+                );
                 curr.prevProbIdx = probIdx;
                 //проверить, надо ли сохранять ответ в переменной, если да, то послать имя переменной
                 let varNames = [], varName = node.list[probIdx].attrs.out.value;

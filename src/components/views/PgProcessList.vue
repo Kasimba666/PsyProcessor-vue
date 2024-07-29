@@ -133,9 +133,9 @@ export default {
         }
           return;
         case 'toReady': {
-          if (this.processesByID[IDs[0]].status !== 'ready') {
+          // if (this.processesByID[IDs[0]].status !== 'ready') {
             this.$store.commit('changeProcessStatusByID', {id: IDs[0], status: 'ready'});
-          }
+          // }
         }
           return;
         case 'toTemplate': {
