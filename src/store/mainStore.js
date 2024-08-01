@@ -14,6 +14,7 @@ const generateID = () => {
 
 export default createStore({
     state: {
+        version: '0.0.2',
         mobileMenuActive: false,
         mobileMenuTransition: false,
         processList: [],
@@ -204,7 +205,7 @@ export default createStore({
                     id: generateID(),
                     header: {
                         processTitle: "Новый процесс",
-                        version: "0.0.2",
+                        version: state.version,
                         processCategory: ["common"],
                         createdDt: (new Date()).toISOString(),
                         changedDt: (new Date()).toISOString(),
