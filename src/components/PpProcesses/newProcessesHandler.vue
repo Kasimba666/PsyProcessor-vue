@@ -7,16 +7,22 @@
         border
         style="width: 100%"
     >
-      <el-table-column prop="header.processTitle" label="Имя" width="200" />
-      <el-table-column prop="status" label="Статус" width="60" />
-      <el-table-column label="Версия" width="60">
+      <el-table-column label="Имя" width="200" align="center">
+        <template #default="scope">
+          <div :class="{'notUniqueName': isNameExist(scope.row.header.processTitle)}">
+            {{ scope.row.header.processTitle }}
+          </div>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="Версия" width="80" align="center">
         <template #default="scope">
           <div :class="{'notLastVersion': !isLastVersion(scope.row.header.version)}">
             {{ scope.row.header.version }}
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="ID" width="200">
+      <el-table-column label="ID" width="200" align="center">
         <template #default="scope">
           <div :class="{'notUniqueID': isIDExist(scope.row.id)}">
             {{ scope.row.id }}
@@ -24,7 +30,27 @@
         </template>
       </el-table-column>
 
-      <el-table-column label="Обработка"  width="200"/>
+      <el-table-column label="Обработка" align="center">
+        <template #default="scope">
+          <div class="row-controls">
+            <el-button v-if="isNameExist(scope.row.header.processTitle)">
+              Переименовать
+            </el-button>
+            <el-button v-if="!isLastVersion(scope.row.header.version)">
+              Обновить версию
+            </el-button>
+            <el-button v-if="isIDExist(scope.row.id)">
+              Изменить ID
+            </el-button>
+            <el-button
+              v-if="!isNameExist(scope.row.header.processTitle) && isLastVersion(scope.row.header.version) && !isIDExist(scope.row.id)"
+              @click="onClickLoad(scope.row)"
+            >
+              Загрузить
+            </el-button>
+          </div>
+        </template>
+      </el-table-column>
     </el-table>
     <div class="footer">
       <button
@@ -39,7 +65,7 @@
 </template>
 
 <script>
-import {mapGetters, mapState} from "vuex";
+import {mapGetters, mapMutations, mapState} from "vuex";
 
 export default {
   name: 'newProcessesHandler',
@@ -53,7 +79,8 @@ export default {
   },
   computed: {
     ...mapState(['version']),
-    ...mapGetters(['processesByID']),
+    ...mapGetters(['processesByID', 'processesByName']),
+    ...mapMutations(['addProcessesInList']),
 
   },
 
@@ -61,13 +88,21 @@ export default {
     isIDExist(v) {
       return !!this.processesByID[v];
     },
+    isNameExist(v) {
+      return !!this.processesByName[v];
+    },
     isLastVersion(v) {
       return v === this.version;
     },
+    onClickLoad(v) {
+      this.$store.commit('addProcessesInList', v);
+    },
+
     onClose() {
 
       this.$emit('update:visibleNewProcesses', false);
     }
+
   },
   mounted() {
     this.processes = this.newProcesses;
@@ -90,6 +125,14 @@ export default {
     }
     .notUniqueID {
       background-color: hsl(0, 61%, 86%);
+    }
+    .notUniqueName {
+      background-color: hsl(0, 61%, 86%);
+    }
+    .row-controls {
+      display: flex;
+      justify-content: start;
+      align-items: center;
     }
     .footer {
      width: 100%;

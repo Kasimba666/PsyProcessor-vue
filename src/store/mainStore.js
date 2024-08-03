@@ -306,6 +306,14 @@ export default createStore({
             }, {});
         },
 
+        //формирует объект, у которого в качестве ключей используются имена процессов, а в качестве значений - объекты процессов
+        processesByName(state) {
+            return state.processList.reduce((s, v) => {
+                s[v.header.processTitle] = v;
+                return s;
+            }, {});
+        },
+
         readyProcessesByID(state) {
             return state.processList.reduce((s, v) => {
                 if (v.status==='ready') {
