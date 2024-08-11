@@ -209,7 +209,7 @@ export default {
           promise.then((data) => {
             this.newRawProcesses=data.content;
             this.visibleNewProcesses = true;
-            // this.$store.commit('addProcessesInList', data.content);
+            this.$store.commit('addProcessesInList', data.content);
 
           }).catch(error => {
             console.log('Ошибка обработки файла:', error);

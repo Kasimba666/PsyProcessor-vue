@@ -54,9 +54,9 @@
               Изменить ID
             </el-button>
             <el-button
-              v-if="!isNameExist(scope.row.header.processTitle) && isLastVersion(scope.row.header.version) && !isIDExist(scope.row.id)"
               @click="onClickLoad(scope.row)"
             >
+<!--              v-if="!isNameExist(scope.row.header.processTitle) && isLastVersion(scope.row.header.version) && !isIDExist(scope.row.id)"-->
               Загрузить
             </el-button>
           </div>
