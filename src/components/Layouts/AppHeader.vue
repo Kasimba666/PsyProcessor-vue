@@ -12,7 +12,7 @@
                 'active': session.id === currentSessionID,
                 'stacked': markersStacked
             }"
-          :style="{top: markersStacked ? idx*40+'px': 0, zIndex: 1000-idx}"
+          :style="{top: markersStacked ? idx*23+'px': 0, zIndex: 1000-idx}"
           v-for="(session, idx) in sessionList"
           @click="onMarker(session)"
           :key="session.id"
@@ -213,7 +213,7 @@ export default {
     flex-flow: row nowrap;
     justify-content: flex-end;
     align-items: flex-start;
-    gap: 10px;
+    gap: 3px;
     flex: 1 1 auto;
     pointer-events: none;
     z-index: 10;

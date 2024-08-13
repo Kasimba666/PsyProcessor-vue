@@ -19,10 +19,12 @@
                             </option>
                         </select>
                     </div>
+                    forKey: {{ currentNode.forKey }}
+                    parentNodeType: {{!!parentNodeType ? parentNodeType : 'нет'}}
+                    parentKey: {{currentNode.parentKey}}
                     <div v-for="(attr, i) in attrs">
                         <template
-                          v-if=" (
-                            attr.key in {rate, againRate} && parentNodeType === 'randList') ||
+                          v-if=" (new Set(['rate', 'againRate']).has(attr.key) && parentNodeType === 'randList') ||
                                 (((attr.key === 'quest' || attr.key === 'out') && currentNode.type === 'quest') ||
                                 (attr.key === 'loopCount') &&
                                 ((currentNode.type === 'loopList') || (currentNode.type === 'randList'))
@@ -33,6 +35,19 @@
                                     :process="process"
                             />
                         </template>
+<!--                        <template-->
+<!--                          v-if=" (-->
+<!--                            attr.key in {rate, againRate} && parentNodeType === 'randList') ||-->
+<!--                                (((attr.key === 'quest' || attr.key === 'out') && currentNode.type === 'quest') ||-->
+<!--                                (attr.key === 'loopCount') &&-->
+<!--                                ((currentNode.type === 'loopList') || (currentNode.type === 'randList'))-->
+<!--                                )">-->
+<!--                            <ppcEditorInput-->
+<!--                                    v-model:attr="attr.val"-->
+<!--                                    @update:attr="v=>{updateAttrs(attr.key, v)}"-->
+<!--                                    :process="process"-->
+<!--                            />-->
+<!--                        </template>-->
                     </div>
                 </div>
             </div>

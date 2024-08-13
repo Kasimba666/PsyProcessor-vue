@@ -56,7 +56,7 @@
         Продолжить
       </button>
 <!--      <pre>Вопрос и ответ: {{ !!session ? session.questInfo : '' }} </pre>-->
-<!--      <pre>Стек: {{ !!this.session ? this.session.stack : '' }}</pre>-->
+      <pre>Стек: {{ !!this.session ? this.session.stack : '' }}</pre>
 <!--      <pre>Сдвиг: {{ !!this.session ? this.session.positions : '' }}</pre>-->
 <!--      <pre>Переменные: {{ !!this.session ? this.session.varsByName : '' }}</pre>-->
     </div>

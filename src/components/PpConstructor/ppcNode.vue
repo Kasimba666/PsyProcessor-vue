@@ -186,7 +186,7 @@ export default {
       this.focused = false;
       this.selectedChild = -1;
       if (Object.keys(this.$refs).length !== 0) {
-        Object.values(this.$refs).forEach(v => v[0].unselectNode());
+        Object.values(this.$refs).forEach(v => v?.[0]?.unselectNode());
       }
       ;
     },
@@ -206,7 +206,7 @@ export default {
       }
     },
     "node.type"(v, old) {
-      // console.log(`Node Type Changed !! (${old} ==> ${v})`);
+      console.log(`Node Type Changed !! (${old} ==> ${v})`);
       this.node.forKey = this.node.forKey.replace(old, this.node.type);
       if (old === 'quest') {
         this.node.list.push(this.createNodeFunc('quest', this.node.forKey));
