@@ -206,17 +206,21 @@ export default {
       }
     },
     "node.type"(v, old) {
-      console.log(`Node Type Changed !! (${old} ==> ${v})`);
+      // console.log(`Node Type Changed !! (${old} ==> ${v})`);
       this.node.forKey = this.node.forKey.replace(old, this.node.type);
-      if (old === 'quest') {
+      if (old === 'quest') { //из вопроса создаётся список, в который переходит этот вопрос
         this.node.list.push(this.createNodeFunc('quest', this.node.forKey));
         this.node.list[0].attrs.quest.value = this.node.attrs.quest.value;
         this.node.attrs.quest.value = '';
-      } else if (v === 'quest') {
-//                    this.node.type = old;
-//                    this.owner.removeNode(this.index);
-        this.owner.list.splice(this.index + 1, 0, ...this.node.list);
-        this.node.list.length = 0;
+      } else if (v === 'quest') { //список уничтожается, вопросы из него добавляются к вышестоящему списку
+                   // this.node.type = old;
+                   // this.owner.removeNode(this.index);
+        this.owner.list.splice(this.index, 1, ...this.node.list);
+        // this.owner.list.splice(this.index + 1, 0, ...this.node.list);
+        // this.node.list.length = 0;
+      }
+      if (['loopList', 'randList'].includes(v) &&  ['loopList', 'randList'].includes(old)  ) {
+        this.node.list.forEach((item)=>{item.parentKey = this.node.forKey});
       }
       this.processChanged();
     }
