@@ -215,6 +215,7 @@ export default {
       } else if (v === 'quest') { //список уничтожается, вопросы из него добавляются к вышестоящему списку
                    // this.node.type = old;
                    // this.owner.removeNode(this.index);
+        this.node.list.forEach((item)=>{item.parentKey = this.owner.forKey});
         this.owner.list.splice(this.index, 1, ...this.node.list);
         // this.owner.list.splice(this.index + 1, 0, ...this.node.list);
         // this.node.list.length = 0;
