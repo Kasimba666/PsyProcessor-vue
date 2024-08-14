@@ -19,9 +19,9 @@
                             </option>
                         </select>
                     </div>
-                    forKey: {{ currentNode.forKey }}<br/>
-                    parentNodeType: {{!!parentNodeType ? parentNodeType : 'нет'}}<br/>
-                    parentKey: {{currentNode.parentKey}}<br/>
+<!--                    forKey: {{ currentNode.forKey }}<br/>-->
+<!--                    parentNodeType: {{!!parentNodeType ? parentNodeType : 'нет'}}<br/>-->
+<!--                    parentKey: {{currentNode.parentKey}}<br/>-->
                     <div v-for="(attr, i) in attrs">
                         <template
                           v-if=" (new Set(['rate', 'againRate']).has(attr.key) && parentNodeType === 'randList') ||

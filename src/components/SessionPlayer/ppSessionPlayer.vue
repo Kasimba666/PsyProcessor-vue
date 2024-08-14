@@ -56,7 +56,7 @@
         Продолжить
       </button>
 <!--      <pre>Вопрос и ответ: {{ !!session ? session.questInfo : '' }} </pre>-->
-      <pre>Стек: {{ !!this.session ? this.session.stack : '' }}</pre>
+<!--      <pre>Стек: {{ !!this.session ? this.session.stack : '' }}</pre>-->
 <!--      <pre>Сдвиг: {{ !!this.session ? this.session.positions : '' }}</pre>-->
 <!--      <pre>Переменные: {{ !!this.session ? this.session.varsByName : '' }}</pre>-->
     </div>
@@ -256,14 +256,20 @@ export default {
 
     },
     onFinishCycle() {
-      if (this.session.stack.length > 0) this.session.stack.shift();
+      if (this.session.stack.length > 0) {
+          this.answer = '';
+          this.session.stack.shift();
+          this.nextElement();
+          this.handleQuest();
+
+      };
     },
     onPauseSession() {
       this.session.status = 'paused';
       this.setCurrSessionInList();
     },
     onFinishSession() {
-      this.session.stack = [];
+      // this.session.stack = [];
       this.session.status = 'finished';
       this.setCurrSessionInList();
     },
