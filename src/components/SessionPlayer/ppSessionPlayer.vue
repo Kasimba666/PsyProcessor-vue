@@ -37,11 +37,12 @@
       </div>
       <div class="finish">
         <button
-            v-if="!!session && session.stack.length > 0 && session.stack[0].maxCount === 0"
+            v-if="!!session && session.stack.length > 1"
             class="btn btn-outline-primary btn-control btn-sm"
             @click="onFinishCycle">
           Завершить текущий цикл
         </button>
+<!--            v-if="!!session && session.stack.length > 0 && session.stack[0].maxCount === 0"-->
         <button class="btn btn-outline-primary btn-control btn-sm"
                 @click="onFinishSession">
           Завершить сессию
@@ -256,10 +257,9 @@ export default {
 
     },
     onFinishCycle() {
-      if (this.session.stack.length > 0) {
+      if (this.session.stack.length > 1) {
           this.answer = '';
           this.session.stack.shift();
-          this.nextElement();
           this.handleQuest();
 
       };
