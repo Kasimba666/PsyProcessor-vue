@@ -2,7 +2,7 @@
     <div class="Side-panel"
          @click.stop
     >
-        <div class="for-touch" v-if="isTouchDevice"
+        <div class="for-touch" :class="{'opened': isOpened}" v-if="isTouchDevice"
              @touchstart="handleTouchStart"
              @touchmove="handleTouchMove"
              @touchend="handleTouchEnd"
@@ -65,7 +65,7 @@ export default {
             }
         },
         onToggleClick() {
-            console.log('onToggleClick, isOpened=', this.isOpened);
+            console.log('onToggleClick');
             this.$emit('update:isOpened', !this.isOpened);
         },
         onOverlay() {
@@ -86,9 +86,13 @@ export default {
       position: fixed;
       top: 0px;
       width: 100%;
+      right: calc(100% - 30px);
       height: 100dvh;
-      background-color: hsla(216, 100%, 95%, 50%);
+      //background-color: hsla(216, 100%, 95%, 50%);
       z-index: 5;
+      &.opened {
+        transform: translateX(100%);
+      }
   }
   .panel {
     position: fixed;

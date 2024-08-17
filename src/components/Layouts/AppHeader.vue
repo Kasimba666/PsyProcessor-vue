@@ -96,7 +96,7 @@ export default {
   methods: {
     onMarker(v) {
       //обработка нажатия на другую закладку, чем открыта сейчас
-      if (v.id !== this.currentSessionID) {
+      if (v.id !== this.currentSessionID || (v.id === this.currentSessionID && v.status === 'paused')) {
         //поставить на паузу предыдущую сессию
         if (!!this.currentSessionID) this.$store.commit('changeSessionStatusByID', {
           id: this.currentSessionID,
@@ -108,9 +108,9 @@ export default {
           id: this.currentSessionID,
           status: 'inProgress'
         });
-      }
       //переход на страницу сессии
       this.$router.push({name: 'PgSession', params: {id: v.id}});
+      }
     },
   },
   mounted() {
