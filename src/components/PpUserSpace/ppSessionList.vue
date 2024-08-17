@@ -16,7 +16,6 @@
                 </div>
                 <div class="table-cell-short row-button-place-short">
                     <button
-                            v-if="rowShort.status === 'inProgress' || rowShort.status === 'paused'"
                             class="btn btn-outline-primary btn-sm my-btn-short"
                             style="backgroundColor: white"
                             @click="changeStatus(rowShort.id)"
@@ -24,7 +23,6 @@
                         <i class="ico" :class="icoControl(rowShort.status)"
                            style="font-size: 30px; color: hsl(0,0%,50%)"></i>
                     </button>
-                    <div v-else>Сессия завершена</div>
                 </div>
                 <div :class="{currentShort: rowShort.id===currentID}">
                 </div>
@@ -37,7 +35,7 @@
                      v-for="(field, i) of fields" :key="i">
                     {{ field.label }}
                 </div>
-                <div class="table-cell right">
+                <div class="table-cell right" style="width: 100px">
                 </div>
             </div>
             <div class="table-row"
@@ -57,26 +55,30 @@
 
                 <div class="table-cell row-button-place right">
                     <button
-                            v-if="row.status === 'inProgress' || row.status === 'paused'"
                             class="btn btn-outline-primary my-btn btn-sm"
                             @click="changeStatus(row.id)"
                     >
+<!--                            v-if="row.status === 'inProgress' || row.status === 'paused'"-->
                         {{ showStatus(row.status) }}
                     </button>
-                    <div v-else>Сессия завершена</div>
+<!--                    <div v-else>Сессия завершена</div>-->
                 </div>
             </div>
         </div>
         <div class="session-list-control">
-            <button class="btn btn-outline-primary btn-control btn-sm"
-                    @click="changeName(currentID)">
-                Изменить название
+            <button
+                v-if="!JSON.parse(isArchive)"
+                class="btn btn-outline-primary btn-control btn-sm"
+                @click="changeName(currentID)">
+                Cменить имя
             </button>
             <button class="btn btn-outline-primary btn-control btn-sm"
                     @click="remove(currentID)">
                 Удалить
             </button>
-            <button class="btn btn-outline-primary btn-control btn-sm">
+            <button
+                v-if="!JSON.parse(isArchive)"
+                class="btn btn-outline-primary btn-control btn-sm">
                 <label class="add-item" for="id-input-file" style="margin-bottom: 0">
                     <input type="file" class="d-none" id="id-input-file"
                            value=""
@@ -85,8 +87,10 @@
                     Загрузить
                 </label>
             </button>
-            <button class="btn btn-outline-primary btn-control btn-sm"
-                    @click="saveSession(currentID)">
+            <button
+                v-if="!JSON.parse(isArchive)"
+                class="btn btn-outline-primary btn-control btn-sm"
+                @click="saveSession(currentID)">
                 Выгрузить
             </button>
         </div>
@@ -99,10 +103,9 @@
 export default {
     name: "ppSessionList",
     components: {},
-    props: ['rows', 'fields', 'rowsShort', 'isShortMenu'],
+    props: ['rows', 'fields', 'rowsShort', 'isShortMenu', 'isArchive'],
     data() {
         return {
-            // currentIdx: null,
             currentID: null,
         }
     },
@@ -111,14 +114,13 @@ export default {
             'new': 'новый',
             'inProgress': 'выполняется',
             'paused': 'на паузе',
-            'finished': 'завершён'
+            'finished': 'завершена'
 
         };
 
         return {
             statusList,
         }
-
     },
 
     computed: {},
@@ -128,7 +130,7 @@ export default {
         },
         icoControl(v) {
             if (v === 'inProgress') return 'ico-pause';
-            if (v === 'paused' || 'new') return 'ico-play2';
+            if (['paused', 'new', 'finished'].includes(v)) return 'ico-play2';
         },
         statusShort(v) {
             let color = '';
@@ -169,11 +171,13 @@ export default {
         showStatus(v) {
             switch (v) {
                 case 'new':
-                    return 'Запустить';
+                    return 'Начать';
                 case 'paused':
-                    return 'Запустить';
+                    return 'Продолжить';
                 case 'inProgress':
                     return 'Пауза';
+                case 'finished':
+                    return 'Возобновить';
                 default: {
                 }
             }
@@ -190,6 +194,7 @@ export default {
   width: 100%;
   height: auto;
   font-size: 13px;
+  margin-bottom: 10px;
 
   .table-custom-short {
     position: relative;
@@ -341,7 +346,7 @@ export default {
 
     .my-btn {
       height: 25px;
-      width: 80px;
+      width: 95px;
       color: black;
       background-color: transparent;
       border: 1px solid hsl(50, 30%, 75%);
@@ -376,6 +381,7 @@ export default {
       }
 
       &.row-button-place {
+        width: 100px;
         display: flex;
         flex-flow: column nowrap;
         justify-content: center;
@@ -408,11 +414,11 @@ export default {
     justify-content: center;
     align-items: center;
     gap: 10px;
-    margin: 10px;
+    margin: 5px;
 
     .btn-control {
-      height: 50px;
-      width: 80px;
+      height: 25px;
+      width: 110px;
       color: black;
       background-color: transparent;
       border: 1px solid hsl(50, 30%, 75%);

@@ -4,7 +4,7 @@
       {{ screen.type }}<br/>
       {{ screen.width }}px
     </div>
-    <div class="markers-panel">
+    <div class="markers-panel" v-if="!!sessionList">
       <div
           class="marker"
           :class="{
@@ -13,8 +13,8 @@
                 'stacked': markersStacked
             }"
           :style="{top: markersStacked ? idx*23+'px': 0, zIndex: 1000-idx}"
-          v-for="(session, idx) in sessionList"
-          @click="onMarker(session)"
+          v-for="(session, idx) in sessionList.filter(v => v.status !== 'finished')"
+           @click="onMarker(session)"
           :key="session.id"
       >
         {{ dtIsoShort(session.header.changedDt) }}

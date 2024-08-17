@@ -17,13 +17,42 @@
         @onToggleClick="onToggleSidePanel">
       <div class="menu-panel">
         <ppUserMenu class="user-menu"/>
-        <ppSessionList class="session-list"
-                       :rows="rows"
-                       :rowsShort="rowsShort"
-                       :fields="fields"
-                       :isShortMenu="isTouchDevice"
-                       @doAction="onDoAction"
-        />
+        <div class="session-list">
+          <ppSessionList class="session-list"
+                         :rows="rows"
+                         :rowsShort="rowsShort"
+                         :fields="fields"
+                         :isShortMenu="isTouchDevice"
+                         isArchive=false
+                         @doAction="onDoAction"
+          />
+        </div>
+        <div class="session-list-archive"
+             v-if="rowsArchive.length>0"
+             :class="{show: showArchive}">
+          <div class="session-list-archive-toggler">
+            <button
+                class="btn btn-outline-primary btn-sm btn-show-archive"
+                @click="onShowArchive()"
+            >
+              <div>Архив</div>
+              <i class="ico" :class="icoControl()"
+                 style="color: black"></i>
+            </button>
+          </div>
+          <div class="session-list-archive-body">
+            <ppSessionList
+                :rows="rowsArchive"
+                :rowsShort="rowsShortArchive"
+                :fields="fields"
+                :isShortMenu="isTouchDevice"
+                isArchive=true
+                @doAction="onDoAction"
+            />
+          </div>
+
+        </div>
+
       </div>
     </ppSidePanel>
 
@@ -73,14 +102,14 @@ export default {
       currentInListID: null,
       fields: [
         {key: 'name', label: 'Имя'},
-        // {key: 'processTitle', label: 'Процесс'},
-        {key: 'createdDt', label: 'Создан'},
-        {key: 'changedDt', label: 'Изменён'},
+        {key: 'createdDt', label: 'Создана'},
+        {key: 'changedDt', label: 'Изменена'},
         {key: 'status', label: 'Состояние'},
       ],
       isOpenedSidePanel: false,
       touchStartX: 0,
-      touchEndX: 0
+      touchEndX: 0,
+      showArchive: false,
     }
   },
   setup() {
@@ -99,7 +128,7 @@ export default {
 
     rows() {
       if (this.sessionList === null || this.sessionList.length === 0) return [];
-      return this.sessionList.map(v => {
+      return this.sessionList.filter(v=>v.status!=='finished').map(v => {
         return {
           id: v.id,
           name: v.header.sessionTitle,
@@ -113,7 +142,7 @@ export default {
     },
     rowsShort() {
       if (this.sessionList === null || this.sessionList.length === 0) return [];
-      return this.sessionList.map(v => {
+      return this.sessionList.filter(v=>v.status!=='finished').map(v => {
         return {
           id: v.id,
           sessionInfo: v.header.sessionTitle,
@@ -125,7 +154,31 @@ export default {
         }
       });
     },
+    rowsArchive() {
+      if (this.sessionList === null || this.sessionList.length === 0) return [];
+      return this.sessionList.filter(v=>v.status==='finished').map(v => {
+        return {
+          id: v.id,
+          name: v.header.sessionTitle,
+          createdDt: this.dtIsoShort(v.header.createdDt),
+          changedDt: this.dtIsoShort(v.header.changedDt),
+          status: v.status
+        }
+      });
+    },
+    rowsShortArchive() {
+      if (this.sessionList === null || this.sessionList.length === 0) return [];
+      return this.sessionList.filter(v=>v.status==='finished').map(v => {
+        return {
+          id: v.id,
+          sessionInfo: v.header.sessionTitle,
+          createdDt: this.dtIsoShort(v.header.createdDt),
+          changedDt: this.dtIsoShort(v.header.changedDt),
+          status: v.status,
 
+        }
+      });
+    },
   },
   methods: {
     handleTouchStart(event) {
@@ -202,6 +255,16 @@ export default {
               this.onToggleSidePanel();
             }
               break;
+            case 'finished': {
+              this.onToggleSidePanel();
+              this.$store.commit('changeSessionStatusByID', {id: this.currentInListID, status: 'inProgress'});
+              this.$store.commit('sessionsToPausedExceptThis', this.currentInListID);
+              // console.log('currentInListID:', this.currentInListID);
+              this.$router.push({name: 'PgSession', params: {id: this.currentInListID}});
+              this.$store.commit('currentSessionID', this.currentInListID);
+            }
+              break;
+
             default: {
             }
           }
@@ -261,9 +324,15 @@ export default {
       // this.$store.commit('changeSessionNameByID', {id: this.currentSessionID, name: this.newSessionName});
     },
     onToggleSidePanel() {
-      this.isOpenedSidePanel = !this.isOpenedSidePanel
+      this.isOpenedSidePanel = !this.isOpenedSidePanel;
+      console.log('isOpenedSidePanel=', this.isOpenedSidePanel);
     },
-
+    icoControl() {
+      return this.showArchive ? 'ico-circle-up' : 'ico-circle-down';
+    },
+    onShowArchive() {
+      this.showArchive = !this.showArchive;
+    },
   },
   mounted() {
   },
@@ -311,6 +380,38 @@ export default {
       width: 100%;
       height: auto;
       margin-top: auto;
+    }
+    .session-list-archive {
+      width: 100%;
+      max-height: 0px;
+      margin-bottom: 20px;
+
+      transition: max-height 0.8s ease;
+      //margin-top: auto;
+       &.show {
+        max-height: 500px;
+      }
+
+      .btn-show-archive {
+        height: 30px;
+        width: auto;
+        display:flex;
+        flex-flow: row nowrap;
+        justify-content: space-between;
+        gap: 10px;
+        align-items: center;
+        color: black;
+        border-color: gray;
+        border-radius: 10px 10px 10px 10px;
+        //border-radius: 0px 10px 10px 0px;
+        background-color: white;
+        margin-bottom: 5px;
+        &:hover {
+          color: black;
+          background-color: hsl(52, 29%, 90%);
+        }
+
+      }
     }
   }
 
