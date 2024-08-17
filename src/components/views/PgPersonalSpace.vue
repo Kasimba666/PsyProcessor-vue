@@ -1,8 +1,5 @@
 <template>
   <div class="PersonalSpace"
-       @touchstart="handleTouchStart"
-       @touchmove="handleTouchMove"
-       @touchend="handleTouchEnd"
   >
 <!--     <div-->
 <!--       class="for-touch"-->
@@ -13,8 +10,9 @@
 <!--     >-->
 <!--     </div>-->
     <ppSidePanel
-        :isOpened=isOpenedSidePanel
-        @onToggleClick="onToggleSidePanel">
+        v-model:isOpened="isOpenedSidePanel"
+        :isTouchDevice="isTouchDevice"
+    >
       <div class="menu-panel">
         <ppUserMenu class="user-menu"/>
         <div class="session-list">
@@ -33,7 +31,7 @@
           <div class="session-list-archive-toggler">
             <button
                 class="btn btn-outline-primary btn-sm btn-show-archive"
-                @click="onShowArchive()"
+                @click.stop="onShowArchive()"
             >
               <div>Архив</div>
               <i class="ico" :class="icoControl()"
@@ -107,8 +105,7 @@ export default {
         {key: 'status', label: 'Состояние'},
       ],
       isOpenedSidePanel: false,
-      touchStartX: 0,
-      touchEndX: 0,
+
       showArchive: false,
     }
   },
@@ -181,22 +178,7 @@ export default {
     },
   },
   methods: {
-    handleTouchStart(event) {
-      this.touchStartX = event.changedTouches[0].screenX;
-    },
 
-    handleTouchMove(event) {
-      this.touchEndX = event.changedTouches[0].screenX;
-
-    },
-
-    handleTouchEnd() {
-      if (this.touchStartX - this.touchEndX > 50) {
-        this.isOpenedSidePanel = false;
-      } else if (this.touchEndX - this.touchStartX > 50) {
-        this.isOpenedSidePanel = true;
-      }
-    },
 
     saveJSONFile: function (object, filename) {
       const json = JSON.stringify(object, null, 2); // Преобразуем объект в строку JSON
@@ -242,7 +224,8 @@ export default {
           switch (oldStatus) {
             case 'new':
             case 'paused': {
-              this.onToggleSidePanel();
+              // this.onToggleSidePanel();
+              this.isOpenedSidePanel=false;
               this.$store.commit('changeSessionStatusByID', {id: this.currentInListID, status: 'inProgress'});
               this.$store.commit('sessionsToPausedExceptThis', this.currentInListID);
               // console.log('currentInListID:', this.currentInListID);
@@ -252,12 +235,12 @@ export default {
               break;
             case 'inProgress': {
               this.sessionsByID[this.currentInListID].status = 'paused';
-              this.onToggleSidePanel();
+                this.isOpenedSidePanel=false;
             }
               break;
             case 'finished': {
-              this.onToggleSidePanel();
-              this.$store.commit('changeSessionStatusByID', {id: this.currentInListID, status: 'inProgress'});
+                this.isOpenedSidePanel=false;
+                this.$store.commit('changeSessionStatusByID', {id: this.currentInListID, status: 'inProgress'});
               this.$store.commit('sessionsToPausedExceptThis', this.currentInListID);
               // console.log('currentInListID:', this.currentInListID);
               this.$router.push({name: 'PgSession', params: {id: this.currentInListID}});
@@ -318,15 +301,11 @@ export default {
       }
     },
 
-
     onOkChangeName() {
       this.$store.commit('changeSessionNameByID', {id: this.currentInListID, name: this.newSessionName});
       // this.$store.commit('changeSessionNameByID', {id: this.currentSessionID, name: this.newSessionName});
     },
-    onToggleSidePanel() {
-      this.isOpenedSidePanel = !this.isOpenedSidePanel;
-      console.log('isOpenedSidePanel=', this.isOpenedSidePanel);
-    },
+
     icoControl() {
       return this.showArchive ? 'ico-circle-up' : 'ico-circle-down';
     },
@@ -349,15 +328,7 @@ export default {
   justify-content: start;
   align-items: start;
   padding: 0px;
-  .for-touch {
-    position: fixed;
-    top: var(--header-height);
-    width: 100%;
-    height: 95dvh;
-    background-color: hsl(152, 69%, 19%, 0.75);
-    z-index: 30;
 
-  }
   .menu-panel {
     //width: 400px;
     width: auto;

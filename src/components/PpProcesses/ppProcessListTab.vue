@@ -91,10 +91,10 @@
                   placement="top"
               >
                   <i class="ico ico-menu" style="font-size: 20px"></i>
+<!--                  v-click-outside="hideMenu"-->
                   <template #dropdown>
                               <ppProcessMenu
                                   class="menu-container"
-                                  v-click-outside="hideMenu"
                                   :items="menuItems"
                                   @onClickMenuItem="(action)=>$emit('doActionOnMenu', action, [row.id])"
                               />

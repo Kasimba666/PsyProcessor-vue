@@ -564,7 +564,7 @@ export default {
     height: 100dvh;
     //height: 600px;
     width: 100%;
-    z-index: 5;
+    z-index: 0;
     transition: all 0.3s ease;
     pointer-events: none;
 

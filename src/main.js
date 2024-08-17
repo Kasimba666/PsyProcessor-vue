@@ -51,7 +51,8 @@ app.directive('numberOnly', {
     update() {
         // console.log('number-only update');
     },
-}).directive(    'click-outside', {
+});
+app.directive(    'click-outside', {
         beforeMount(el, binding) {
             el.clickOutsideEvent = function(event) {
                 // Check if the clicked element is neither the element
