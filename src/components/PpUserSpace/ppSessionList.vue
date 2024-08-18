@@ -126,7 +126,7 @@ export default {
     computed: {},
     methods: {
         tooltipOnRow(v1, v2) {
-            return 'Создан: ' + v1 + ' Изменён: ' + v2;
+            return 'Создана: ' + v1 + ' Изменена: ' + v2;
         },
         icoControl(v) {
             if (v === 'inProgress') return 'ico-pause';
