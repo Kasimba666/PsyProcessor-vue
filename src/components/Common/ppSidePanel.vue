@@ -1,5 +1,5 @@
 <template>
-    <div class="Side-panel"
+    <div class="ppSidePanel"
          @click.stop
     >
         <div class="for-touch" :class="{'opened': isOpened}" v-if="isTouchDevice"
@@ -48,6 +48,7 @@ export default {
         handleTouchStart(event) {
             console.log('TouchStart');
             this.touchStartX = event.changedTouches[0].screenX;
+            this.touchEndX = event.changedTouches[0].screenX;
         },
 
         handleTouchMove(event) {
@@ -58,9 +59,9 @@ export default {
 
         handleTouchEnd() {
             console.log('TouchEnd');
-            if (this.touchStartX - this.touchEndX > 50) {
+            if (this.touchStartX - this.touchEndX >= 0) {
                 this.$emit('update:isOpened', false);
-            } else if (this.touchEndX - this.touchStartX > 50) {
+            } else if (this.touchEndX - this.touchStartX > 10) {
                 this.$emit('update:isOpened', true);
             }
         },
@@ -80,7 +81,7 @@ export default {
 </script>
 
 <style lang="scss">
-.Side-panel {
+.ppSidePanel {
   //z-index: 5;
   .for-touch {
       position: fixed;
