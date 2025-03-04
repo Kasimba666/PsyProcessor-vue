@@ -27,21 +27,22 @@
 
       <div class="node-list" :class="node.type">
 
+<!--        :style="{zIndex: node.list.length-idx}"-->
         <div
             class="node-item"
             v-for="(child, idx) in node.list"
             :key="child.forKey">
-          <!--                    <div class="insert-bar">-->
-          <!--                        <div class="insert-button">-->
-          <!--                            <i class="ico ico-plus"></i>-->
-          <!--                        </div>-->
-          <!--                        <div class="add-list">-->
-          <!--                            <div class="add-item" v-for="mi in types.arr"-->
-          <!--                                 @click="addNode(mi.value, idx)">-->
-          <!--                                {{mi.title}}-->
-          <!--                            </div>-->
-          <!--                        </div>-->
-          <!--                    </div>-->
+                              <div class="insert-bar">
+                                  <div class="insert-button">
+                                      <i class="ico ico-plus"></i>
+                                  </div>
+                                  <div class="add-list">
+                                      <div class="add-item" v-for="mi in types.arr"
+                                           @click="addNode(mi.value, idx)">
+                                          {{mi.title}}
+                                      </div>
+                                  </div>
+                              </div>
           <div class="rate-field" v-if="node.type==='randList'"
                @click.stop="childFocus(idx)">
             <input class="rate-input"
@@ -341,12 +342,21 @@ export default {
     position: absolute;
     left: 0;
     top: -5px;
+    z-index: 5;
 
     &:hover {
       background-color: hsla(120, 10%, 70%, 0.3);
-
       .insert-button {
         display: flex;
+      }
+      &:after {
+        content: '';
+        position: absolute;
+        left: 20px;
+        top: 4px;
+        width: calc(100% - 25px);
+        height: 2px;
+        background-color: hsl(120, 30%, 35%);
       }
     }
 

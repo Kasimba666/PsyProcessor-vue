@@ -13,7 +13,7 @@
 
       <div class="quest-zone mt-3">
         <div class="confirm" :class="{show: showConfirm}">{{ confirmHTML }}</div>
-        <div class="quest" v-html="questHTML" @dblclick="onClickQuest"/>
+        <div class="quest" :class="{showConfirm}"   v-html="questHTML" @dblclick="onClickQuest"/>
       </div>
       <div class="answer mt-2">
                 <textarea
@@ -111,6 +111,7 @@ export default {
           .replaceAll(startSubstr, '<span class="inserted-text">')
           .replaceAll(endSubstr, '</span>');
       return result;
+        // + ' ' + result + ' ' + result + ' ' + result;
     },
     confirmHTML() {
       return 'Ок, отлично!';
@@ -161,9 +162,10 @@ export default {
     //     }
     //   }
     // },
-    getRandomItem(probabilitiesArray, prevProbIdx) {
+    getRandomItem(probabilitiesArray, againProbsArray,  prevProbIdx) {
       console.log('probabilitiesArray =>>', probabilitiesArray);
-      console.log('prevProbIdx =>>', prevProbIdx);
+      // console.log('againProbsArray =>>', againProbsArray);
+      // console.log('prevProbIdx =>>', prevProbIdx);
 
       const totalProbability = probabilitiesArray.reduce((accumulator, probability) => accumulator + parseFloat(probability), 0); // Суммируем вероятности
 
@@ -309,7 +311,25 @@ export default {
                 let arrProbs = node.list.map((v) => {
                   return +v.attrs.rate.value;
                 });
-                let probIdx = this.getRandomItem(arrProbs, curr.prevProbIdx);
+                // let arrAgainProbs = null;
+                // TODO:  сделать нормальное версионирование
+                // if(this.session.process.header.version !=='0.0.1') {
+                //   let arrAgainProbs = node.list.map((v) => {
+                //     return +v.attrs.againRate.value;
+                //   });
+                //   arrProbs[curr.prevProbIdx] = arrAgainProbs[curr.prevProbIdx];
+                //   if('againRate' in node.list[curr.prevProbIdx]) {
+                //     arrProbs[curr.prevProbIdx] = +node.list[curr.prevProbIdx].attrs.againRate.value;
+                //   }
+                // }
+
+                if('againRate' in (node.list?.[curr.prevProbIdx]?.attrs ?? {})) {
+                  console.log('againRate =>>', +node.list[curr.prevProbIdx].attrs.againRate.value);
+                  arrProbs[curr.prevProbIdx] = +node.list[curr.prevProbIdx].attrs.againRate.value;
+                }
+                let probIdx = this.getRandomItem(arrProbs,
+                  // arrAgainProbs, curr.prevProbIdx
+                );
                 curr.prevProbIdx = probIdx;
                 //проверить, надо ли сохранять ответ в переменной, если да, то послать имя переменной
                 let varNames = [], varName = node.list[probIdx].attrs.out.value;
@@ -425,28 +445,36 @@ export default {
 
     .quest-zone {
       width: 100%;
-      height: 46px;
+      //height: 46px;
+      height: auto;
+      min-height: 80px;
       border: 1px solid hsl(0, 0%, 80%);
       border-radius: 6px;
       display: flex;
       flex-flow: column nowrap;
       justify-content: start;
       align-items: start;
-      gap: 5px;
+      //gap: 5px;
       padding: 3px;
-      font-size: 17px;
-      background-color: hsl(194, 80%, 89%);
+      font-size: 20px;
+      //background-color: hsl(194, 80%, 89%);
 
       .confirm {
         width: 100%;
-        padding: 5px;
-        border: 1px solid hsl(0, 0%, 80%);
+        border: 0px solid hsla(0, 0%, 80%, 0);
         border-radius: 6px;
-        display: none;
-        background-color: hsl(84, 80%, 89%);
-
+        background-color: hsla(84, 80%, 89%, 0);
+        //display: none;
+        padding: 0px;
+        height: 0px;
+        transition: all ease-in-out 300ms;
         &.show {
-          display: block;
+          //display: block;
+          background-color: hsl(84, 80%, 89%);
+          border: 1px solid hsl(0, 0%, 80%);
+          height: 50px;
+          padding: 5px;
+          transition: all ease 50ms;
         }
       }
 
@@ -456,6 +484,14 @@ export default {
         border: 1px solid hsl(0, 0%, 80%);
         border-radius: 6px;
         background-color: hsl(194, 80%, 95%);
+        transform-origin: top right;
+        transition: all ease-in-out 300ms;
+        &.showConfirm {
+          transform: scaleY(0) scaleX(0);
+          line-height: 0;
+          padding: 0px;
+          transition: all ease-in-out 2ms;
+        }
       }
     }
 
