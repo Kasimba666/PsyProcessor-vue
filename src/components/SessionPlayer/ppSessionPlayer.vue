@@ -108,7 +108,7 @@ export default {
       return result;
     },
     questHTML() {
-      let result = this.session.questInfo.handledQuest
+      let result = (this.session.questInfo.aiHandledQuest || this.session.questInfo.handledQuest)
           .replaceAll(startSubstr, '<span class="inserted-text">')
           .replaceAll(endSubstr, '</span>');
       return result;
@@ -188,6 +188,14 @@ export default {
         response = this.nextQuest();
         this.session.questInfo.rawQuest = response.rawQuest;
       }
+      //  fetch()
+      /*
+      *
+      *
+      *
+      *
+      * */
+
       let result = this.session.questInfo.rawQuest;
       for (let key in this.session.varsByName) result = result.replace(key, this.session.varsByName[key]);
       this.session.questInfo.handledQuest = result;
