@@ -5,7 +5,7 @@ import '@/assets/css/app.scss';
 // import '@/style.css'
 
 import { createApp } from 'vue';
-import App from "@/App.vue"
+import App from "@/App.vue";
 import router from "@/router/router.js";
 import store from '@/store/mainStore.js';
 
@@ -51,7 +51,8 @@ app.directive('numberOnly', {
     update() {
         // console.log('number-only update');
     },
-}).directive(    'click-outside', {
+});
+app.directive('click-outside', {
         beforeMount(el, binding) {
             el.clickOutsideEvent = function(event) {
                 // Check if the clicked element is neither the element
@@ -71,5 +72,4 @@ app.directive('numberOnly', {
 );
 
 app.use(ElementPlus);
-
 app.use(router).use(store).mount('#app');

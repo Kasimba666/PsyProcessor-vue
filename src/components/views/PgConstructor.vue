@@ -26,7 +26,6 @@
           >
             Создать
           </button>
-
         </div>
         <div
             class="files-control"

@@ -1,5 +1,14 @@
 <template>
-    <div class="Side-panel">
+    <div class="ppSidePanel"
+         @click.stop
+    >
+        <div class="for-touch" :class="{'opened': isOpened}" v-if="isTouchDevice"
+             @touchstart="handleTouchStart"
+             @touchmove="handleTouchMove"
+             @touchend="handleTouchEnd"
+        >
+        </div>
+
         <div class="panel" :class="{'opened': isOpened}"
         >
             <slot></slot>
@@ -15,28 +24,54 @@
                 ></i>
             </div>
         </div>
-        <div class="overlay-side-panel" :class="{'opened': isOpened}"
-             @click="onOverlay"
-        >
-        </div>
+    </div>
+    <div class="overlay-side-panel" :class="{'opened': isOpened}"
+         @click="onOverlay"
+    >
     </div>
 </template>
 
 <script>
 export default {
     components: {},
-    props: ['isOpened'],
+    props: ['isOpened', 'isTouchDevice'],
+    emits: ['update:isOpened'],
     data() {
-        return {}
+        return {
+            touchStartX: 0,
+            touchEndX: 0,
+        }
     },
 
     computed: {},
     methods: {
+        handleTouchStart(event) {
+            console.log('TouchStart');
+            this.touchStartX = event.changedTouches[0].screenX;
+            this.touchEndX = event.changedTouches[0].screenX;
+        },
+
+        handleTouchMove(event) {
+            console.log('TouchMove');
+            this.touchEndX = event.changedTouches[0].screenX;
+
+        },
+
+        handleTouchEnd() {
+            console.log('TouchEnd');
+            if (this.touchStartX - this.touchEndX >= 0) {
+                this.$emit('update:isOpened', false);
+            } else if (this.touchEndX - this.touchStartX > 10) {
+                this.$emit('update:isOpened', true);
+            }
+        },
         onToggleClick() {
-            this.$emit('onToggleClick');
+            console.log('onToggleClick');
+            this.$emit('update:isOpened', !this.isOpened);
         },
         onOverlay() {
-            this.onToggleClick();
+            console.log('onClickOverlay');
+            this.$emit('update:isOpened', false);
         },
 
     },
@@ -46,7 +81,20 @@ export default {
 </script>
 
 <style lang="scss">
-.Side-panel {
+.ppSidePanel {
+  //z-index: 5;
+  .for-touch {
+      position: fixed;
+      top: 0px;
+      width: 100%;
+      right: calc(100% - 30px);
+      height: 100dvh;
+      //background-color: hsla(216, 100%, 95%, 50%);
+      z-index: 5;
+      &.opened {
+        transform: translateX(100%);
+      }
+  }
   .panel {
     position: fixed;
     right: 100%;
