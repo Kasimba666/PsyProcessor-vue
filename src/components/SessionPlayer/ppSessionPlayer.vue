@@ -74,8 +74,10 @@
 
 import {mapGetters} from "vuex";
 
-const startSubstr = /\{\{\s*/g;
-const endSubstr = /\s*\}\}/g;
+// const startSubstr = /\{\{\s*/g;
+// const endSubstr = /\s*\}\}/g;
+const startSubstr = '{{ ';
+const endSubstr = ' }}';
 export default {
   name: "SessionPlayer",
   components: {},
@@ -182,24 +184,40 @@ export default {
       }
     },
 
+    extractSubstrings(input, startSubstr, endSubstr) {
+      function escapeRegExp(string) {
+        return string.toString().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      }
+      const escapedStart = escapeRegExp(startSubstr);
+      const escapedEnd = escapeRegExp(endSubstr);
+      const regex = new RegExp(`${escapedStart}\\s*(.*?)\\s*${escapedEnd}`, 'g');
+      const result = [];
+      let match;
+      while ((match = regex.exec(input)) !== null) {
+        result.push(match[1]);
+      }
+      return result;
+    },
+
     handleQuest(goNext = true) {
       let response = this.session.questInfo;
       if (goNext) {
         response = this.nextQuest();
         this.session.questInfo.rawQuest = response.rawQuest;
       }
-      //  fetch()
-      /*
-      *
-      *
-      *
-      *
-      * */
+      const extractedVarNames = this.extractSubstrings(this.session.questInfo.rawQuest, startSubstr, endSubstr);
+      let extractedVars ={}
+      extractedVarNames.forEach(v=>extractedVars[v] = startSubstr+this.session.varsByName[v]+endSubstr);
+      const PromptJson = {
+        originalText: this.session.questInfo.rawQuest,
+        variables: extractedVars
+      }
+      console.log('PromptJson:', PromptJson);
 
       let result = this.session.questInfo.rawQuest;
       for (let key in this.session.varsByName) result = result.replace(key, this.session.varsByName[key]);
       this.session.questInfo.handledQuest = result;
-      //Положить дату и время формирования вопроса в qshowConfirmation
+      //Положить дату и время формирования вопроса в showConfirmation
       this.session.questInfo.questDt = new Date().toISOString();
       //положить переменные, указанные в Out, в объект q
       this.session.questInfo.outVarNames = response.outVarNames;
