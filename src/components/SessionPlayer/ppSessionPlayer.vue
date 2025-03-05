@@ -74,10 +74,11 @@
 
 import {mapGetters} from "vuex";
 
-// const startSubstr = /\{\{\s*/g;
-// const endSubstr = /\s*\}\}/g;
-const startSubstr = '{{ ';
-const endSubstr = ' }}';
+const startSubstr = /\{\{\s*/g;
+const endSubstr = /\s*\}\}/g;
+const startRegExp = /\{\{\s*/g;
+const endRegExp = /\s*\}\}/g;
+
 export default {
   name: "SessionPlayer",
   components: {},
@@ -96,7 +97,6 @@ export default {
     session() {
       return this.sessionsByID[this.sessionID];
     },
-
     mapKeyNodes() {
       if (this.session === null) return null;
       let result = {};
@@ -185,18 +185,14 @@ export default {
     },
 
     extractSubstrings(input, startSubstr, endSubstr) {
-      function escapeRegExp(string) {
-        return string.toString().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      }
-      const escapedStart = escapeRegExp(startSubstr);
-      const escapedEnd = escapeRegExp(endSubstr);
-      const regex = new RegExp(`${escapedStart}\\s*(.*?)\\s*${escapedEnd}`, 'g');
-      const result = [];
-      let match;
-      while ((match = regex.exec(input)) !== null) {
-        result.push(match[1]);
-      }
-      return result;
+        const regex = new RegExp(`${startSubstr.source}(.*?)${endSubstr.source}`, 'g');
+        console.log('startSubstr.source', startSubstr.source.toString());
+        const result = [];
+        let match;
+        while ((match = regex.exec(input)) !== null) {
+            result.push(match[1]);
+        }
+        return result;
     },
 
     handleQuest(goNext = true) {
@@ -207,7 +203,7 @@ export default {
       }
       const extractedVarNames = this.extractSubstrings(this.session.questInfo.rawQuest, startSubstr, endSubstr);
       let extractedVars ={}
-      extractedVarNames.forEach(v=>extractedVars[v] = startSubstr+this.session.varsByName[v]+endSubstr);
+      extractedVarNames.forEach(v=>extractedVars[v] = this.session.varsByName[v]);
       const PromptJson = {
         originalText: this.session.questInfo.rawQuest,
         variables: extractedVars
