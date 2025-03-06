@@ -48,7 +48,10 @@
           Завершить сессию
         </button>
       </div>
-
+      <div class="ai-zone">
+        <el-checkbox v-model="useAI">Использовать ИИ</el-checkbox>
+        <ppAI v-if="useAI"/>
+      </div>
       <button
           class="btn btn-outline-primary btn-continue btn-sm"
           :class="{'show': session.status === 'paused'}"
@@ -71,7 +74,7 @@
 </template>
 
 <script>
-
+import ppAI from "@/components/SessionPlayer/ppAI.vue";
 import {mapGetters} from "vuex";
 
 const startSubstr = '{{ ';
@@ -81,7 +84,7 @@ const endSubstr = ' }}';
 
 export default {
   name: "SessionPlayer",
-  components: {},
+  components: {ppAI},
   props: ['sessionID'],
 
   data() {
@@ -89,6 +92,7 @@ export default {
       questComplete: false,
       answer: '',
       showConfirm: false,
+      useAI: false,
 
     };
   },
@@ -213,11 +217,11 @@ export default {
       const extractedVarNames = this.extractSubstrings(this.session.questInfo.rawQuest, this.startRegExp, this.endRegExp);
       let extractedVars ={}
       extractedVarNames.forEach(v=>extractedVars[v] = this.session.varsByName[v]);
-      const PromptJson = {
+      const promptJsonromptJson = {
         originalText: this.session.questInfo.rawQuest,
         substitutions: extractedVars
       }
-      console.log('PromptJson:', PromptJson);
+      console.log('PromptJson:', promptJson);
 
       let result = this.session.questInfo.rawQuest;
       for (let key in this.session.varsByName) result = result.replace(key, this.session.varsByName[key]);
@@ -580,6 +584,16 @@ export default {
     }
 
     .finish {
+      width: 100%;
+      border: 1px solid hsl(0, 0%, 80%);
+      border-radius: 6px;
+      display: flex;
+      justify-content: start;
+      align-items: start;
+      gap: 10px;
+      padding: 5px;
+    }
+    .ai-zone {
       width: 100%;
       border: 1px solid hsl(0, 0%, 80%);
       border-radius: 6px;
