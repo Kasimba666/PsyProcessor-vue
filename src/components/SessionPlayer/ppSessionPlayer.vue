@@ -74,10 +74,10 @@
 
 import {mapGetters} from "vuex";
 
-const startSubstr = /\{\{\s*/g;
-const endSubstr = /\s*\}\}/g;
-const startRegExp = /\{\{\s*/g;
-const endRegExp = /\s*\}\}/g;
+const startSubstr = '{{ ';
+const endSubstr = ' }}';
+// const startSubstr = /\{\{\s*/g;
+// const endSubstr = /\s*\}\}/g;
 
 export default {
   name: "SessionPlayer",
@@ -94,6 +94,12 @@ export default {
   },
   computed: {
     ...mapGetters(['sessionsByID']),
+    startRegExp() {
+      return new RegExp(this.escapeRegExp(startSubstr.trimEnd()) + '\\s*', 'g');
+    },
+    endRegExp() {
+      return new RegExp('\\s*' + this.escapeRegExp(endSubstr.trimStart()), 'g');
+    },
     session() {
       return this.sessionsByID[this.sessionID];
     },
@@ -111,8 +117,8 @@ export default {
     },
     questHTML() {
       let result = (this.session.questInfo.aiHandledQuest || this.session.questInfo.handledQuest)
-          .replaceAll(startSubstr, '<span class="inserted-text">')
-          .replaceAll(endSubstr, '</span>');
+          .replaceAll(this.startRegExp, '<span class="inserted-text">')
+          .replaceAll(this.endRegExp, '</span>');
       return result;
         // + ' ' + result + ' ' + result + ' ' + result;
     },
@@ -121,6 +127,9 @@ export default {
     }
   },
   methods: {
+    escapeRegExp(string) {
+      return string.toString().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    },
     onClickQuest(e) {
       console.log('onClickQuest::e=>>', e);
       if (e.target.className === "inserted-text") {
@@ -186,7 +195,6 @@ export default {
 
     extractSubstrings(input, startSubstr, endSubstr) {
         const regex = new RegExp(`${startSubstr.source}(.*?)${endSubstr.source}`, 'g');
-        console.log('startSubstr.source', startSubstr.source.toString());
         const result = [];
         let match;
         while ((match = regex.exec(input)) !== null) {
@@ -201,12 +209,13 @@ export default {
         response = this.nextQuest();
         this.session.questInfo.rawQuest = response.rawQuest;
       }
-      const extractedVarNames = this.extractSubstrings(this.session.questInfo.rawQuest, startSubstr, endSubstr);
+
+      const extractedVarNames = this.extractSubstrings(this.session.questInfo.rawQuest, this.startRegExp, this.endRegExp);
       let extractedVars ={}
       extractedVarNames.forEach(v=>extractedVars[v] = this.session.varsByName[v]);
       const PromptJson = {
         originalText: this.session.questInfo.rawQuest,
-        variables: extractedVars
+        substitutions: extractedVars
       }
       console.log('PromptJson:', PromptJson);
 
