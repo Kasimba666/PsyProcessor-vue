@@ -50,7 +50,10 @@
       </div>
       <div class="ai-zone">
         <el-checkbox v-model="useAI">Использовать ИИ</el-checkbox>
-        <ppAI v-if="useAI"/>
+        <ppAI
+            v-if="useAI"
+            :promptJson="promptJson"
+        />
       </div>
       <button
           class="btn btn-outline-primary btn-continue btn-sm"
@@ -93,7 +96,6 @@ export default {
       answer: '',
       showConfirm: false,
       useAI: false,
-
     };
   },
   computed: {
@@ -103,6 +105,16 @@ export default {
     },
     endRegExp() {
       return new RegExp('\\s*' + this.escapeRegExp(endSubstr.trimStart()), 'g');
+    },
+
+    promptJson() {
+      const extractedVarNames = this.extractSubstrings(this.session.questInfo.rawQuest, this.startRegExp, this.endRegExp);
+      let extractedVars ={}
+      extractedVarNames.forEach(v=>extractedVars[v] = this.session.varsByName[v]);
+      return {
+        originalText: this.session.questInfo.rawQuest,
+        substitutions: extractedVars
+      }
     },
     session() {
       return this.sessionsByID[this.sessionID];
@@ -214,14 +226,8 @@ export default {
         this.session.questInfo.rawQuest = response.rawQuest;
       }
 
-      const extractedVarNames = this.extractSubstrings(this.session.questInfo.rawQuest, this.startRegExp, this.endRegExp);
-      let extractedVars ={}
-      extractedVarNames.forEach(v=>extractedVars[v] = this.session.varsByName[v]);
-      const promptJsonromptJson = {
-        originalText: this.session.questInfo.rawQuest,
-        substitutions: extractedVars
-      }
-      console.log('PromptJson:', promptJson);
+
+      console.log('PromptJson:', this.promptJson);
 
       let result = this.session.questInfo.rawQuest;
       for (let key in this.session.varsByName) result = result.replace(key, this.session.varsByName[key]);
@@ -598,6 +604,7 @@ export default {
       border: 1px solid hsl(0, 0%, 80%);
       border-radius: 6px;
       display: flex;
+      flex-flow: column;
       justify-content: start;
       align-items: start;
       gap: 10px;
