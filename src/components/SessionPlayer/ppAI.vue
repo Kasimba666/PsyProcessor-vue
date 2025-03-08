@@ -54,7 +54,6 @@
               {{ row.response }}
             </div>
             <el-button
-                type="text"
                 size="small"
                 @click="toggleRow(row)"
                 style="padding: 0"
@@ -94,7 +93,9 @@ export default {
   },
   data() {
     return {
-      systemPrompt: "Look in the \"originalText\" field of this object and replace all substrings in \"originalText\" with values from \"substitutions\" with grammatical agreement of substitutions. The answer is only a string with replaced substrings.",
+      systemPrompt: "In this object we have a string \"originalText\" that contains variables starting with the $ symbol, enclosed between the substrings \"startSubstr\" and \"endSubstr\".\n" +
+          "The variables should be replaced with values from the \"substitution\" object while preserving the \"startSubstr\" and \"endSubstr\" substrings.\n" +
+          "It is important that the substitutions remain grammatically correct within the sentence.\n",
       selectedSource: "Ollama",
       selectedModel: "",
       availableModels: [],
@@ -149,14 +150,15 @@ export default {
 
       if (this.selectedSource === "Ollama") {
         const ollama = new Ollama({ host: OLLAMA_HOST });
+        // console.log(JSON.stringify(...this.promptJson));
         const payload = {
           model: this.selectedModel,
           messages: [
-            { role: "user", content:  JSON.stringify(this.promptJson) + ". " + this.systemPrompt},
+            { role: "user", content: '"' + JSON.stringify(this.promptJson) + '"' + this.systemPrompt },
           ],
           stream: false,
         };
-        console.log(JSON.stringify(this.promptJson)+this.systemPrompt);
+        // console.log(this.systemPrompt + JSON.stringify(this.promptJson));
         ollama
             .chat(payload)
             .then((response) => {
