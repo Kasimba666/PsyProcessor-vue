@@ -76,7 +76,9 @@ import { Ollama } from "ollama";
 import axios from "axios";
 
 const OLLAMA_HOST = "http://192.168.0.100:11434";
-const LMSTUDIO_HOST = "http://192.168.0.100/v1/models";
+const LMSTUDIO_HOST = "http://192.168.0.100:1234";
+// const OLLAMA_HOST = "http://localhost:11434";
+// const LMSTUDIO_HOST = "http://localhost/v1/models";
 
 export default {
   name: "AiPromptComponent",
@@ -100,6 +102,7 @@ export default {
   },
   watch: {
     selectedSource(newSource) {
+      this.availableModels = [];
       this.fetchModels(newSource);
     },
   },
@@ -120,11 +123,11 @@ export default {
               this.availableModels = [];
             });
       } else if (this.selectedSource === "LMStudio") {
-        const url = LMSTUDIO_HOST;
+        const url = LMSTUDIO_HOST + '/v1/models';
         axios
             .get(url)
-            .then((response) => {
-              this.availableModels = response.data.models || [];
+            .then((res) => {
+              this.availableModels = res.data.data.map((v) => v.id);
             })
             .catch(() => {
               this.availableModels = [];
@@ -142,18 +145,17 @@ export default {
       };
 
       const startTime = Date.now();
-
+      const promptText = JSON.stringify(this.promptJson) + ' ' + this.systemPrompt;
+      const payload = {
+        model: this.selectedModel,
+        messages: [
+          { role: "user", content: promptText},
+        ],
+        temperature: 0.3,
+        stream: false,
+      };
       if (this.selectedSource === "Ollama") {
         const ollama = new Ollama({ host: OLLAMA_HOST });
-        // console.log(JSON.stringify(...this.promptJson));
-        const payload = {
-          model: this.selectedModel,
-          messages: [
-            { role: "user", content: '"' + JSON.stringify(this.promptJson) + '"' + this.systemPrompt },
-          ],
-          stream: false,
-        };
-        // console.log(this.systemPrompt + JSON.stringify(this.promptJson));
         ollama
             .chat(payload)
             .then((response) => {
@@ -176,28 +178,27 @@ export default {
               this.loading = false;
             });
       } else if (this.selectedSource === "LMStudio") {
-        // const url = "http://192.168.0.100:1234/api/generate";
-        // axios
-        //     .post(url, requestData)
-        //     .then((response) => {
-        //       const responseTime = Date.now() - startTime;
-        //       this.responseHistory.unshift({
-        //         response: response.data.response,
-        //         modelUsed: this.selectedModel,
-        //         responseTime,
-        //         expanded: false,
-        //       });
-        //       this.loading = false;
-        //     })
-        //     .catch(() => {
-        //       this.responseHistory.unshift({
-        //         response: "Ошибка запроса",
-        //         modelUsed: this.selectedModel,
-        //         responseTime: "-",
-        //         expanded: false,
-        //       });
-        //       this.loading = false;
-        //     });
+        const url = LMSTUDIO_HOST + '/v1/chat/completions';
+        axios.post(url, payload)
+            .then((response) => {
+              const responseTime = Date.now() - startTime;
+              this.responseHistory.unshift({
+                response: response.data.choices[0].message.content,
+                modelUsed: this.selectedModel,
+                responseTime,
+                expanded: false,
+              });
+              this.loading = false;
+            })
+            .catch(() => {
+              this.responseHistory.unshift({
+                response: "Ошибка запроса",
+                modelUsed: this.selectedModel,
+                responseTime: "-",
+                expanded: false,
+              });
+              this.loading = false;
+            });
       }
     },
     toggleRow(row) {
