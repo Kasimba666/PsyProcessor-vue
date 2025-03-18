@@ -76,6 +76,7 @@ import { Ollama } from "ollama";
 import axios from "axios";
 
 const OLLAMA_HOST = "http://192.168.0.100:11434";
+const LMSTUDIO_HOST = "http://192.168.0.100/v1/models";
 
 export default {
   name: "AiPromptComponent",
@@ -83,19 +84,13 @@ export default {
     promptJson: {
       type: Object,
       required: true,
-      validator(value) {
-        return (
-            value.hasOwnProperty("originalText") &&
-            value.hasOwnProperty("substitutions")
-        );
-      },
     },
   },
   data() {
     return {
-      systemPrompt: "In this object we have a string \"originalText\" that contains variables starting with the $ symbol, enclosed between the substrings \"startSubstr\" and \"endSubstr\".\n" +
-          "The variables should be replaced with values from the \"substitution\" object while preserving the \"startSubstr\" and \"endSubstr\" substrings.\n" +
-          "It is important that the substitutions remain grammatically correct within the sentence.\n",
+      systemPrompt: "This json has a string 'originalText' which contains variables specified in 'variables', starting with the '$' character, enclosed between the substrings 'start_delimiter' and 'start_delimiter'.\n" +
+          "Replace each variable in 'originalText' with its corresponding value from 'variables', following the grammar rules. When substituting values, replace the words 'я' with 'ты', 'мне' or 'себе' with 'тебе', 'меня' or 'себя' with 'тебя'. The resulting sentence must be syntactically correct.\n" +
+          "The response must contain only the received string without any additional explanations or comments.",
       selectedSource: "Ollama",
       selectedModel: "",
       availableModels: [],
@@ -125,7 +120,7 @@ export default {
               this.availableModels = [];
             });
       } else if (this.selectedSource === "LMStudio") {
-        const url = "http://192.168.0.100:1234/api/models";
+        const url = LMSTUDIO_HOST;
         axios
             .get(url)
             .then((response) => {

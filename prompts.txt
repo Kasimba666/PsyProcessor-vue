@@ -1,0 +1,10 @@
+
+{ "originalText": "На что ещё ты можешь обратить внимание {{ $context }} ?", "start_delimiter": "{{ ", "end_delimiter": " }}", "variables": { "$context": "новый год" } }
+
+В этом json имеется строка 'originalText', которая содержит переменные, указанные в 'variables', начинающиеся с символа '$', заключенные между подстроками 'start_delimiter' и 'start_delimiter'.
+Замени каждую переменную в 'originalText' на ее соответствующее значение из 'variables', соблюдая правила грамматики. При подстановке значений заменяй слова 'я' на 'ты', 'мне' или 'себе' на 'тебе', 'меня' или 'себя' на 'тебя'. Полученное предложение должно быть синтаксически верным
+Ответ должен содержать только полученную строку без дополнительных пояснений или комментариев.
+
+This json has a string 'originalText' which contains variables specified in 'variables', starting with the '$' character, enclosed between the substrings 'start_delimiter' and 'start_delimiter'.
+Replace each variable in 'originalText' with its corresponding value from 'variables', following the grammar rules. When substituting values, replace the words 'я' with 'ты', 'мне' or 'себе' with 'тебе', 'меня' or 'себя' with 'тебя'. The resulting sentence must be syntactically correct.
+The response must contain only the received string without any additional explanations or comments.

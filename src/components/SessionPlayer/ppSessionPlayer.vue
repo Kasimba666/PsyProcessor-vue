@@ -113,9 +113,9 @@ export default {
       extractedVarNames.forEach(v=>extractedVars[v] = this.session.varsByName[v]);
       return {
         originalText: this.session.questInfo.rawQuest,
-        startSubstr: startSubstr,
-        endSubstr: endSubstr,
-        substitutions: extractedVars
+        start_delimiter: startSubstr,
+        end_delimiter: endSubstr,
+        variables: extractedVars
       }
     },
     session() {
