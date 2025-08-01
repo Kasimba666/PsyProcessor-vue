@@ -91,10 +91,10 @@
                   placement="top"
               >
                   <i class="ico ico-menu" style="font-size: 20px"></i>
+<!--                  v-click-outside="hideMenu"-->
                   <template #dropdown>
                               <ppProcessMenu
                                   class="menu-container"
-                                  v-click-outside="hideMenu"
                                   :items="menuItems"
                                   @onClickMenuItem="(action)=>$emit('doActionOnMenu', action, [row.id])"
                               />
@@ -116,10 +116,17 @@
       <template #header>
         <span>{{ processesByID[sortedSource[currentRow].id].header.processTitle }}</span>
       </template>
-            <el-tree
-                    :data="[formatted]"
-                    default-expand-all
-            />
+      <el-tabs v-model="activeName">
+        <el-tab-pane label="Описание" name='description'>
+          {{processesByID[sortedSource[currentRow].id].header.description}}
+        </el-tab-pane >
+        <el-tab-pane label="Структура" name='structure'>
+          <el-tree
+              :data="[formatted]"
+              default-expand-all
+          />
+        </el-tab-pane>
+      </el-tabs>
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogVisible = false">Закрыть</el-button>
@@ -153,6 +160,7 @@ export default {
       openedMenus: {},
       currentRow: null,
       dialogVisible: false,
+      activeName: 'description',
 
     }
   },

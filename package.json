@@ -19,6 +19,7 @@
     "uuid": "^9.0.1",
     "vue": "^3.3.11",
     "vue-router": "^4.2.5",
+    "vue3-json-viewer": "^2.2.2",
     "vuex": "^4.1.0",
     "vuex-persistedstate": "^4.1.0"
   },

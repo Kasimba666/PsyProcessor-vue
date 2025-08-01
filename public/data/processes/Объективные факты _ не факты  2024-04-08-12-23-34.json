@@ -1,0 +1,426 @@
+[
+  {
+    "id": "f85679d9-bd52-47f1-ae42-1e2ab18b381f",
+    "header": {
+      "processTitle": "Объективные факты / не факты ",
+      "version": "0.0.1",
+      "processCategory": [
+        "common"
+      ],
+      "createdDt": "2024-04-08T12:07:47.714Z",
+      "changedDt": "2024-04-08T12:23:34.458Z",
+      "description": "Описание",
+      "toSave": false,
+      "toAdd": false
+    },
+    "type": "process",
+    "status": "ready",
+	"deleted": false,
+    "vars": [
+      {
+        "name": "$topic",
+        "value": ""
+      },
+      {
+        "name": "$last",
+        "value": ""
+      }
+    ],
+    "rootNode": {
+      "type": "loopList",
+      "attrs": {
+        "nodeName": {
+          "inpType": "text",
+          "inpLabel": "Название узла (optional)",
+          "value": "root"
+        },
+        "loopCount": {
+          "inpType": "number",
+          "inpLabel": "Количество циклов",
+          "value": 0
+        }
+      },
+      "list": [
+        {
+          "type": "loopList",
+          "attrs": {
+            "nodeName": {
+              "inpType": "text",
+              "inpLabel": "Название узла (optional)",
+              "value": "new node"
+            },
+            "rate": {
+              "inpType": "number",
+              "inpLabel": "Доля",
+              "value": 1,
+              "min": 1
+            },
+            "quest": {
+              "inpType": "text",
+              "inpLabel": "Вопрос",
+              "value": ""
+            },
+            "out": {
+              "inpType": "select",
+              "inpLabel": "Output vars",
+              "value": null,
+              "options": "userVars"
+            },
+            "loopCount": {
+              "inpType": "number",
+              "inpLabel": "Количество циклов",
+              "value": 1,
+              "min": 0
+            }
+          },
+          "list": [
+            {
+              "type": "quest",
+              "attrs": {
+                "nodeName": {
+                  "inpType": "text",
+                  "inpLabel": "Название узла (optional)",
+                  "value": "new node"
+                },
+                "rate": {
+                  "inpType": "number",
+                  "inpLabel": "Доля",
+                  "value": 1,
+                  "min": 1
+                },
+                "quest": {
+                  "inpType": "text",
+                  "inpLabel": "Вопрос",
+                  "value": "Посмотри вокруг и найди какой-нибудь факт"
+                },
+                "out": {
+                  "inpType": "select",
+                  "inpLabel": "Output vars",
+                  "value": null,
+                  "options": "userVars"
+                },
+                "loopCount": {
+                  "inpType": "number",
+                  "inpLabel": "Количество циклов",
+                  "value": 1,
+                  "min": 0
+                }
+              },
+              "list": [],
+              "forKey": "quest-88680000",
+              "parentKey": "loopList-8d369a0f"
+            },
+            {
+              "type": "loopList",
+              "attrs": {
+                "nodeName": {
+                  "inpType": "text",
+                  "inpLabel": "Название узла (optional)",
+                  "value": "new node"
+                },
+                "rate": {
+                  "inpType": "number",
+                  "inpLabel": "Доля",
+                  "value": 1,
+                  "min": 1
+                },
+                "quest": {
+                  "inpType": "text",
+                  "inpLabel": "Вопрос",
+                  "value": ""
+                },
+                "out": {
+                  "inpType": "select",
+                  "inpLabel": "Output vars",
+                  "value": null,
+                  "options": "userVars"
+                },
+                "loopCount": {
+                  "inpType": "number",
+                  "inpLabel": "Количество циклов",
+                  "value": 1,
+                  "min": 0
+                }
+              },
+              "list": [
+                {
+                  "type": "quest",
+                  "attrs": {
+                    "nodeName": {
+                      "inpType": "text",
+                      "inpLabel": "Название узла (optional)",
+                      "value": "new node"
+                    },
+                    "rate": {
+                      "inpType": "number",
+                      "inpLabel": "Доля",
+                      "value": 1,
+                      "min": 1
+                    },
+                    "quest": {
+                      "inpType": "text",
+                      "inpLabel": "Вопрос",
+                      "value": "Посмотри ещё раз и убедись, что это точно факт"
+                    },
+                    "out": {
+                      "inpType": "select",
+                      "inpLabel": "Output vars",
+                      "value": null,
+                      "options": "userVars"
+                    },
+                    "loopCount": {
+                      "inpType": "number",
+                      "inpLabel": "Количество циклов",
+                      "value": 1,
+                      "min": 0
+                    }
+                  },
+                  "list": [],
+                  "forKey": "quest-96a40000",
+                  "parentKey": "loopList-72f29a0f"
+                },
+                {
+                  "type": "quest",
+                  "attrs": {
+                    "nodeName": {
+                      "inpType": "text",
+                      "inpLabel": "Название узла (optional)",
+                      "value": "new node"
+                    },
+                    "rate": {
+                      "inpType": "number",
+                      "inpLabel": "Доля",
+                      "value": 1,
+                      "min": 1
+                    },
+                    "quest": {
+                      "inpType": "text",
+                      "inpLabel": "Вопрос",
+                      "value": "По каким признакам ты узнаёшь, что это факт?"
+                    },
+                    "out": {
+                      "inpType": "select",
+                      "inpLabel": "Output vars",
+                      "value": null,
+                      "options": "userVars"
+                    },
+                    "loopCount": {
+                      "inpType": "number",
+                      "inpLabel": "Количество циклов",
+                      "value": 1,
+                      "min": 0
+                    }
+                  },
+                  "list": [],
+                  "forKey": "quest-73f40000",
+                  "parentKey": "loopList-72f29a0f"
+                },
+                {
+                  "type": "quest",
+                  "attrs": {
+                    "nodeName": {
+                      "inpType": "text",
+                      "inpLabel": "Название узла (optional)",
+                      "value": "new node"
+                    },
+                    "rate": {
+                      "inpType": "number",
+                      "inpLabel": "Доля",
+                      "value": 1,
+                      "min": 1
+                    },
+                    "quest": {
+                      "inpType": "text",
+                      "inpLabel": "Вопрос",
+                      "value": "По каким ещё признакам ты узнаёшь, что это факт?"
+                    },
+                    "out": {
+                      "inpType": "select",
+                      "inpLabel": "Output vars",
+                      "value": null,
+                      "options": "userVars"
+                    },
+                    "loopCount": {
+                      "inpType": "number",
+                      "inpLabel": "Количество циклов",
+                      "value": 1,
+                      "min": 0
+                    }
+                  },
+                  "list": [],
+                  "forKey": "quest-26c0000",
+                  "parentKey": "loopList-72f29a0f"
+                },
+                {
+                  "type": "quest",
+                  "attrs": {
+                    "nodeName": {
+                      "inpType": "text",
+                      "inpLabel": "Название узла (optional)",
+                      "value": "new node"
+                    },
+                    "rate": {
+                      "inpType": "number",
+                      "inpLabel": "Доля",
+                      "value": 1,
+                      "min": 1
+                    },
+                    "quest": {
+                      "inpType": "text",
+                      "inpLabel": "Вопрос",
+                      "value": "Посмотри вокруг и убедись, что это факт, используя новые признаки"
+                    },
+                    "out": {
+                      "inpType": "select",
+                      "inpLabel": "Output vars",
+                      "value": null,
+                      "options": "userVars"
+                    },
+                    "loopCount": {
+                      "inpType": "number",
+                      "inpLabel": "Количество циклов",
+                      "value": 1,
+                      "min": 0
+                    }
+                  },
+                  "list": [],
+                  "forKey": "quest-39e9a0f",
+                  "parentKey": "loopList-72f29a0f"
+                }
+              ],
+              "forKey": "loopList-72f29a0f",
+              "parentKey": "loopList-8d369a0f"
+            }
+          ],
+          "forKey": "loopList-8d369a0f",
+          "parentKey": "root"
+        },
+        {
+          "type": "loopList",
+          "attrs": {
+            "nodeName": {
+              "inpType": "text",
+              "inpLabel": "Название узла (optional)",
+              "value": "new node"
+            },
+            "rate": {
+              "inpType": "number",
+              "inpLabel": "Доля",
+              "value": 1,
+              "min": 1
+            },
+            "loopCount": {
+              "inpType": "number",
+              "inpLabel": "Количество циклов",
+              "value": 1,
+              "min": 0
+            }
+          },
+          "list": [
+            {
+              "type": "quest",
+              "attrs": {
+                "nodeName": {
+                  "inpType": "text",
+                  "inpLabel": "Название узла (optional)",
+                  "value": "new node"
+                },
+                "rate": {
+                  "inpType": "number",
+                  "inpLabel": "Доля",
+                  "value": 1,
+                  "min": 1
+                },
+                "quest": {
+                  "inpType": "text",
+                  "inpLabel": "Вопрос",
+                  "value": "Посмотри вокруг и придумай что-то, что могло бы быть фактом, но фактом не является"
+                },
+                "out": {
+                  "inpType": "select",
+                  "inpLabel": "Output vars",
+                  "value": null,
+                  "options": "userVars"
+                },
+                "loopCount": {
+                  "inpType": "number",
+                  "inpLabel": "Количество циклов",
+                  "value": 1,
+                  "min": 0
+                }
+              },
+              "list": [],
+              "forKey": "quest-81180000",
+              "parentKey": "loopList-aaf40000"
+            },
+            {
+              "type": "loopList",
+              "attrs": {
+                "nodeName": {
+                  "inpType": "text",
+                  "inpLabel": "Название узла (optional)",
+                  "value": "new node"
+                },
+                "rate": {
+                  "inpType": "number",
+                  "inpLabel": "Доля",
+                  "value": 1,
+                  "min": 1
+                },
+                "loopCount": {
+                  "inpType": "number",
+                  "inpLabel": "Количество циклов",
+                  "value": 1,
+                  "min": 0
+                }
+              },
+              "list": [
+                {
+                  "type": "quest",
+                  "attrs": {
+                    "nodeName": {
+                      "inpType": "text",
+                      "inpLabel": "Название узла (optional)",
+                      "value": "new node"
+                    },
+                    "rate": {
+                      "inpType": "number",
+                      "inpLabel": "Доля",
+                      "value": 1,
+                      "min": 1
+                    },
+                    "quest": {
+                      "inpType": "text",
+                      "inpLabel": "Вопрос",
+                      "value": "По каким признакам ты узнаёшь, что это не факт?"
+                    },
+                    "out": {
+                      "inpType": "select",
+                      "inpLabel": "Output vars",
+                      "value": null,
+                      "options": "userVars"
+                    },
+                    "loopCount": {
+                      "inpType": "number",
+                      "inpLabel": "Количество циклов",
+                      "value": 1,
+                      "min": 0
+                    }
+                  },
+                  "list": [],
+                  "forKey": "quest-1dc9341e",
+                  "parentKey": "loopList-a4329a0f"
+                }
+              ],
+              "forKey": "loopList-a4329a0f",
+              "parentKey": "loopList-aaf40000"
+            }
+          ],
+          "forKey": "loopList-aaf40000",
+          "parentKey": "root"
+        }
+      ],
+      "forKey": "root"
+    }
+  }
+]

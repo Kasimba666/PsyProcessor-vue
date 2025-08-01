@@ -12,12 +12,22 @@
         </div>
       </div>
     </div>
+    <div class="new-processes-container"
+        v-if="visibleNewProcesses"
+    >
+      <newProcessesHandler
+          :newProcesses="newRawProcesses"
+          v-model:visibleNewProcesses="visibleNewProcesses"
+      >
+      </newProcessesHandler>
+    </div>
   </div>
 
 </template>
 
 <script>
 import ppProcessList from "@/components/PpProcesses/ppProcessList.vue";
+import newProcessesHandler from "@/components/PpProcesses/newProcessesHandler.vue";
 import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
 import {v4 as createUuid} from "uuid";
 import {useDtFilters} from "@/composables/useDtFilters.js";
@@ -26,12 +36,14 @@ import {useFiles} from "@/composables/useFiles.js";
 
 export default {
   name: "PgProcessList",
-  components: {ppProcessList},
+  components: {ppProcessList, newProcessesHandler},
   props: [],
   data() {
     return {
       file: null,
       typeFile: 'json',
+      visibleNewProcesses: false,
+      newRawProcesses: [],
     }
   },
     setup() {
@@ -188,16 +200,20 @@ export default {
                 this.file = {content: content, name: file.name};
                 resolve({content: content, name: file.name});
 
-              } catch (e) {
-                reject(e);
+              } catch (error) {
+                reject(error);
               }
             };
           });
           reader.readAsText(file);
           promise.then((data) => {
+            this.newRawProcesses=data.content;
+            this.visibleNewProcesses = true;
             this.$store.commit('addProcessesInList', data.content);
-          }).catch(e => {
-            console.log('onload error:', e);
+
+          }).catch(error => {
+            console.log('Ошибка обработки файла:', error);
+            alert('Ошибка обработки файла: ' + error);
           });
         }
           return;
@@ -264,5 +280,8 @@ export default {
   height: auto;
   z-index: 30;
 
+  .new-processes-container{
+
+  }
 }
 </style>

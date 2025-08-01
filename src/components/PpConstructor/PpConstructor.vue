@@ -19,10 +19,12 @@
                             </option>
                         </select>
                     </div>
+<!--                    forKey: {{ currentNode.forKey }}<br/>-->
+<!--                    parentNodeType: {{!!parentNodeType ? parentNodeType : 'нет'}}<br/>-->
+<!--                    parentKey: {{currentNode.parentKey}}<br/>-->
                     <div v-for="(attr, i) in attrs">
                         <template
-                          v-if=" (
-                            attr.key in {rate, againRate} && parentNodeType === 'randList') ||
+                          v-if=" (new Set(['rate', 'againRate']).has(attr.key) && parentNodeType === 'randList') ||
                                 (((attr.key === 'quest' || attr.key === 'out') && currentNode.type === 'quest') ||
                                 (attr.key === 'loopCount') &&
                                 ((currentNode.type === 'loopList') || (currentNode.type === 'randList'))
@@ -33,6 +35,19 @@
                                     :process="process"
                             />
                         </template>
+<!--                        <template-->
+<!--                          v-if=" (-->
+<!--                            attr.key in {rate, againRate} && parentNodeType === 'randList') ||-->
+<!--                                (((attr.key === 'quest' || attr.key === 'out') && currentNode.type === 'quest') ||-->
+<!--                                (attr.key === 'loopCount') &&-->
+<!--                                ((currentNode.type === 'loopList') || (currentNode.type === 'randList'))-->
+<!--                                )">-->
+<!--                            <ppcEditorInput-->
+<!--                                    v-model:attr="attr.val"-->
+<!--                                    @update:attr="v=>{updateAttrs(attr.key, v)}"-->
+<!--                                    :process="process"-->
+<!--                            />-->
+<!--                        </template>-->
                     </div>
                 </div>
             </div>
@@ -58,6 +73,10 @@
                         </div>
                         <div class="pp-tab" @click="activeTab=2"
                              :class="{active: activeTab===2}">
+                            Описание
+                        </div>
+                        <div class="pp-tab" @click="activeTab=3"
+                             :class="{active: activeTab===3}">
                             Код
                         </div>
                     </div>
@@ -97,9 +116,26 @@
                             <i class="ico ico-plus"></i>
                         </div>
                     </div>
+                  <div class="description-wrap" v-else-if="activeTab===2">
+                    <el-radio-group v-model="descriptionType">
+                      <el-radio :value="'editDescription'">изменение</el-radio>
+                      <el-radio :value="'previewDescription'">просмотр</el-radio>
+                    </el-radio-group>
+                    <textarea
+                        v-if="descriptionType==='editDescription'"
+                        class="description-text-area"
+                        v-model="process.header.description"
+                    >
+                    </textarea>
+                    <div
+                        v-if="descriptionType==='previewDescription'"
+                        v-html="process.header.description">
+                    </div>
+                  </div>
                     <div class="code-wrap" v-else>
-                        <h4>Код процесса</h4>
-                        <pre class="code-view">{{ process }}</pre>
+<!--                        <h4>Код процесса</h4>-->
+<!--                        <pre class="code-view">{{ process }}</pre>-->
+                            <JsonViewer :value="process" boxed :expand-depth=100 sort/>
                     </div>
                 </div>
             </div>
@@ -108,6 +144,8 @@
 </template>
 
 <script>
+import {JsonViewer} from "vue3-json-viewer";
+import "vue3-json-viewer/dist/index.css";
 import ppcEditorInput from "./ppcEditorInput.vue";
 import ppcNode from "./ppcNode.vue"
 import {nodeTypes} from "/src/assets/js/const.js"
@@ -116,7 +154,7 @@ import {reactive} from "vue";
 //    let vm = null;
 export default {
     name: "PpConstructor",
-    components: {ppcEditorInput, ppcNode},
+    components: {ppcEditorInput, ppcNode, JsonViewer},
     props: ['process'],
     data() {
         return {
@@ -124,6 +162,7 @@ export default {
             currentNodeLastType: 'loopList',
             types: nodeTypes.arr,
             activeTab: 0,
+            descriptionType: 'editDescription',
 
         }
     },
@@ -131,7 +170,7 @@ export default {
         processType() {
           switch (this.process.status) {
             case 'ready': {
-            return 'Готовый процесс';
+            return 'Готовый';
           }
             case 'draft': {
             return 'Черновик';
@@ -140,7 +179,7 @@ export default {
             return 'Шаблон';
           }
             default: {
-              return 'Ошибка!'
+              return 'Ошибка!(статус не указан)'
             }
           }
         },
@@ -356,11 +395,20 @@ export default {
 
     .body {
       width: 100%;
-      height: auto;
+      height: 80%;
       display: flex;
       flex-flow: column nowrap;
       /*border-bottom: 1px solid grey;*/
       padding: 0 15px;
+
+      .description-wrap {
+        height: 100%;
+
+        .description-text-area {
+          width: 100%;
+          height: 100%;
+        }
+      }
     }
 
   }
@@ -436,7 +484,6 @@ export default {
 
     .body {
       padding: 0;
-
       .type-select {
         height: 28px;
         margin-bottom: 5px;
@@ -461,6 +508,7 @@ export default {
           padding: 0 0 0 2px;
           line-height: 28px;
           border: 1px solid hsl(0, 0%, 90%);
+          background-color: #ee8080;
         }
       }
 

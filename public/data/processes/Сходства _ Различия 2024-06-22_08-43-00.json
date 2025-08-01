@@ -1,0 +1,266 @@
+[
+  {
+    "id": "2e726693-1d4d-4298-af7f-0fb682a414c0",
+    "header": {
+      "processTitle": "Сходства / Различия",
+      "version": "0.0.1",
+      "processCategory": [
+        "common"
+      ],
+      "createdDt": "2024-03-16T13:14:16.836Z",
+      "changedDt": "2024-03-16T16:41:57.399Z",
+      "description": "Описание",
+      "toSave": false,
+      "toAdd": false
+    },
+    "type": "process",
+    "status": "ready",
+    "deleted": false,
+    "vars": [
+      {
+        "name": "$topic",
+        "value": ""
+      },
+      {
+        "name": "$last",
+        "value": ""
+      }
+    ],
+    "rootNode": {
+      "type": "loopList",
+      "attrs": {
+        "nodeName": {
+          "inpType": "text",
+          "inpLabel": "Название узла (optional)",
+          "value": "root"
+        },
+        "loopCount": {
+          "inpType": "number",
+          "inpLabel": "Количество циклов",
+          "value": 0
+        }
+      },
+      "list": [
+        {
+          "type": "loopList",
+          "attrs": {
+            "nodeName": {
+              "inpType": "text",
+              "inpLabel": "Название узла (optional)",
+              "value": "new node"
+            },
+            "rate": {
+              "inpType": "number",
+              "inpLabel": "Доля",
+              "value": 1,
+              "min": 1
+            },
+            "quest": {
+              "inpType": "text",
+              "inpLabel": "Вопрос",
+              "value": ""
+            },
+            "out": {
+              "inpType": "select",
+              "inpLabel": "Output vars",
+              "value": null,
+              "options": "userVars"
+            },
+            "loopCount": {
+              "inpType": "number",
+              "inpLabel": "Количество циклов",
+              "value": 1,
+              "min": 0
+            }
+          },
+          "list": [
+            {
+              "type": "quest",
+              "attrs": {
+                "nodeName": {
+                  "inpType": "text",
+                  "inpLabel": "Название узла (optional)",
+                  "value": "new node"
+                },
+                "rate": {
+                  "inpType": "number",
+                  "inpLabel": "Доля",
+                  "value": 1,
+                  "min": 1
+                },
+                "quest": {
+                  "inpType": "text",
+                  "inpLabel": "Вопрос",
+                  "value": "Посмотри вокруг и найди что-то, что нравится."
+                },
+                "out": {
+                  "inpType": "select",
+                  "inpLabel": "Output vars",
+                  "value": null,
+                  "options": "userVars"
+                },
+                "loopCount": {
+                  "inpType": "number",
+                  "inpLabel": "Количество циклов",
+                  "value": 1,
+                  "min": 0
+                }
+              },
+              "list": [],
+              "forKey": "quest-5b69341e",
+              "parentKey": "loopList-382e9a0f"
+            },
+            {
+              "type": "quest",
+              "attrs": {
+                "nodeName": {
+                  "inpType": "text",
+                  "inpLabel": "Название узла (optional)",
+                  "value": "new node"
+                },
+                "rate": {
+                  "inpType": "number",
+                  "inpLabel": "Доля",
+                  "value": 1,
+                  "min": 1
+                },
+                "quest": {
+                  "inpType": "text",
+                  "inpLabel": "Вопрос",
+                  "value": "Посмотри вокруг и найди что-то, что не нравится."
+                },
+                "out": {
+                  "inpType": "select",
+                  "inpLabel": "Output vars",
+                  "value": null,
+                  "options": "userVars"
+                },
+                "loopCount": {
+                  "inpType": "number",
+                  "inpLabel": "Количество циклов",
+                  "value": 1,
+                  "min": 0
+                }
+              },
+              "list": [],
+              "forKey": "quest-86e29a0f",
+              "parentKey": "loopList-382e9a0f"
+            }
+          ],
+          "forKey": "loopList-382e9a0f",
+          "parentKey": "root"
+        },
+        {
+          "type": "randList",
+          "attrs": {
+            "nodeName": {
+              "inpType": "text",
+              "inpLabel": "Название узла (optional)",
+              "value": "new node"
+            },
+            "rate": {
+              "inpType": "number",
+              "inpLabel": "Доля",
+              "value": 1,
+              "min": 1
+            },
+            "quest": {
+              "inpType": "text",
+              "inpLabel": "Вопрос",
+              "value": ""
+            },
+            "out": {
+              "inpType": "select",
+              "inpLabel": "Output vars",
+              "value": null,
+              "options": "userVars"
+            },
+            "loopCount": {
+              "inpType": "number",
+              "inpLabel": "Количество циклов",
+              "value": 8,
+              "min": 0
+            }
+          },
+          "list": [
+            {
+              "type": "quest",
+              "attrs": {
+                "nodeName": {
+                  "inpType": "text",
+                  "inpLabel": "Название узла (optional)",
+                  "value": "new node"
+                },
+                "rate": {
+                  "inpType": "number",
+                  "inpLabel": "Доля",
+                  "value": 6,
+                  "min": 1
+                },
+                "quest": {
+                  "inpType": "text",
+                  "inpLabel": "Вопрос",
+                  "value": "На что похоже (ассоциируется) {{$last}} ?"
+                },
+                "out": {
+                  "inpType": "select",
+                  "inpLabel": "Output vars",
+                  "value": null,
+                  "options": "userVars"
+                },
+                "loopCount": {
+                  "inpType": "number",
+                  "inpLabel": "Количество циклов",
+                  "value": 1,
+                  "min": 0
+                }
+              },
+              "list": [],
+              "forKey": "quest-53d80000",
+              "parentKey": "randList-53769a0f"
+            },
+            {
+              "type": "quest",
+              "attrs": {
+                "nodeName": {
+                  "inpType": "text",
+                  "inpLabel": "Название узла (optional)",
+                  "value": "new node"
+                },
+                "rate": {
+                  "inpType": "number",
+                  "inpLabel": "Доля",
+                  "value": 6,
+                  "min": 1
+                },
+                "quest": {
+                  "inpType": "text",
+                  "inpLabel": "Вопрос",
+                  "value": "От чего отличается {{$last}} ?"
+                },
+                "out": {
+                  "inpType": "select",
+                  "inpLabel": "Output vars",
+                  "value": null,
+                  "options": "userVars"
+                },
+                "loopCount": {
+                  "inpType": "number",
+                  "inpLabel": "Количество циклов",
+                  "value": 1,
+                  "min": 0
+                }
+              },
+              "list": [],
+              "forKey": "quest-3e4c0000",
+              "parentKey": "randList-53769a0f"
+            }
+          ],
+          "forKey": "randList-53769a0f",
+          "parentKey": "root"
+        }
+      ],
+      "forKey": "root"
+    }
+  }
+]
