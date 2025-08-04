@@ -145,7 +145,7 @@
 
 <script>
 import {JsonViewer} from "vue3-json-viewer";
-import "vue3-json-viewer/dist/index.css";
+import "vue3-json-viewer/dist/vue3-json-viewer.css";
 import ppcEditorInput from "./ppcEditorInput.vue";
 import ppcNode from "./ppcNode.vue"
 import {nodeTypes} from "/src/assets/js/const.js"
